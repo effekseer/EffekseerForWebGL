@@ -292,8 +292,6 @@ var effekseer = (function() {
 		// Save WebGL states
 		var program = gl.getParameter(gl.CURRENT_PROGRAM);
 		
-		gl.bindVertexArray(null);
-
 		// Draw the effekseer core
 		Core.Draw();
 		
