@@ -226,10 +226,18 @@ int main(int argc, char *argv[])
 extern "C" {
 	using namespace Effekseer;
 
-	void ArrayToMatrix(float* array, Matrix44& matrix) {
+	static void ArrayToMatrix44(const float* array, Matrix44& matrix) {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				matrix.Values[i][j] = array[i * 4 + j];
+			}
+		}
+	}
+
+	static void ArrayToMatrix43(const float* array, Matrix43& matrix) {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 3; j++) {
+				matrix.Value[i][j] = array[i * 4 + j];
 			}
 		}
 	}
@@ -259,9 +267,9 @@ extern "C" {
 		viewer.Draw();
 	}
 
-	void EXPORT EffekseerSetProjectionMatrix(float* matrix)
+	void EXPORT EffekseerSetProjectionMatrix(const float* matrixElements)
 	{
-		ArrayToMatrix(matrix, viewer.projectionMatrix);
+		ArrayToMatrix44(matrixElements, viewer.projectionMatrix);
 	}
 
 	void EXPORT EffekseerSetProjectionPerspective(float fov, float aspect, float near, float far)
@@ -274,9 +282,9 @@ extern "C" {
 		viewer.projectionMatrix.OrthographicRH(width, height, near, far);
 	}
 
-	void EXPORT EffekseerSetCameraMatrix(float* matrix)
+	void EXPORT EffekseerSetCameraMatrix(const float* matrixElements)
 	{
-		ArrayToMatrix(matrix, viewer.cameraMatrix);
+		ArrayToMatrix44(matrixElements, viewer.cameraMatrix);
 	}
 
 	void EXPORT EffekseerSetCameraLookAt(float eyeX, float eyeY, float eyeZ, 
@@ -321,6 +329,11 @@ extern "C" {
 		viewer.manager->StopRoot(handle);
 	}
 
+	int EXPORT EffekseerExists(int handle)
+	{
+		return viewer.manager->Exists(handle) ? 1 : 0;
+	}
+
 	void EXPORT EffekseerSetLocation(int handle, float x, float y, float z)
 	{
 		viewer.manager->SetLocation(handle, x, y, z);
@@ -334,6 +347,13 @@ extern "C" {
 	void EXPORT EffekseerSetScale(int handle, float x, float y, float z)
 	{
 		viewer.manager->SetScale(handle, x, y, z);
+	}
+
+	void EXPORT EffekseerSetMatrix(int handle, const float* matrixElements)
+	{
+		Matrix43 matrix43;
+		ArrayToMatrix43(matrixElements, matrix43);
+		viewer.manager->SetMatrix(handle, matrix43);
 	}
 
 	void EXPORT EffekseerSetTargetLocation(int handle, float x, float y, float z)

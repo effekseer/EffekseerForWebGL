@@ -5,6 +5,7 @@ var effekseer = (function() {
 	var Module = effekseer();
 	var Runtime = Module.Runtime;
 
+	// C++ functions
 	var Core = {
 		Init: Module.cwrap("EffekseerInit", "void", ["number", "number"]),
 		Update: Module.cwrap("EffekseerUpdate", "void", ["number"]),
@@ -21,9 +22,11 @@ var effekseer = (function() {
 		PlayEffect: Module.cwrap("EffekseerPlayEffect", "number", ["number", "number", "number", "number"]),
 		StopEffect: Module.cwrap("EffekseerStopEffect", "void", ["number"]),
 		StopRoot: Module.cwrap("EffekseerStopRoot", "void", ["number"]),
+		Exists: Module.cwrap("EffekseerExists", "number", ["number"]),
 		SetLocation: Module.cwrap("EffekseerSetLocation", "void", ["number", "number", "number", "number"]),
 		SetRotation: Module.cwrap("EffekseerSetRotation", "void", ["number", "number", "number", "number"]),
 		SetScale: Module.cwrap("EffekseerSetScale", "void", ["number", "number", "number", "number"]),
+		SetMatrix: Module.cwrap("EffekseerSetMatrix", "void", ["number", "number"]),
 		SetTargetLocation: Module.cwrap("EffekseerSetTargetLocation", "void", ["number", "number", "number", "number"]),
 		SetPause: Module.cwrap("EffekseerSetPause", "void", ["number", "number"]),
 		SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number"]),
@@ -33,9 +36,8 @@ var effekseer = (function() {
 	/**
 	 * A loaded effect data
 	 * @class
-	 * @typedef
 	 */
-	var EffekseerEffect = function EffekseerEffect() {
+	var EffekseerEffect = function() {
 		this.nativeptr = 0;
 		this.baseDir = "";
 		this.isLoaded = false;
@@ -77,92 +79,115 @@ var effekseer = (function() {
 	};
 
 	/**
-	 * A handle that played effect
+	 * A handle that played effect instance.
 	 * @class
-	 * @typedef
 	 */
-	var EffekseerHandle = function EffekseerHandle(native) {
+	var EffekseerHandle = function(native) {
 		this.native = native;
 	};
 	
-	/**
-	 * Stop this effect
-	 */
-	EffekseerHandle.prototype.stop = function() {
-		Core.StopEffect(this.native);
-	};
+	EffekseerHandle.prototype = {
+		/**
+		 * Stop this effect instance.
+		 */
+		stop: function() {
+			Core.StopEffect(this.native);
+		},
 	
-	/**
-	 * Stop this effect
-	 */
-	EffekseerHandle.prototype.stopRoot = function() {
-		Core.StopRoot(this.native);
-	};
-	
-	/**
-	 * Set this effect location
-	 * @param {number} x X value of location
-	 * @param {number} y Y value of location
-	 * @param {number} z Z value of location
-	 */
-	EffekseerHandle.prototype.setLocation = function(x, y, z) {
-		Core.SetLocation(this.native, x, y, z);
-	};
-	
-	/**
-	 * Set this effect rotation
-	 * @param {number} x X value of euler angle
-	 * @param {number} y Y value of euler angle
-	 * @param {number} z Z value of euler angle
-	 */
-	EffekseerHandle.prototype.setRotation = function(x, y, z) {
-		Core.SetRotation(this.native, x, y, z);
-	};
-	
-	/**
-	 * Set this effect scale
-	 * @param {number} x X value of scale factor
-	 * @param {number} y Y value of scale factor
-	 * @param {number} z Z value of scale factor
-	 */
-	EffekseerHandle.prototype.setScale = function(x, y, z) {
-		Core.SetScale(this.native, x, y, z);
-	};
-	
-	/**
-	 * Set this effect paused flag
-	 * @param {number} x X value of target location
-	 * @param {number} y Y value of target location
-	 * @param {number} z Z value of target location
-	 */
-	EffekseerHandle.prototype.setTargetLocation = function(x, y, z) {
-		Core.SetTargetLocation(this.native, x, y, z);
-	};
-	
-	/**
-	 * Set this effect paused flag
-	 * @param {boolean} paused Paused flag
-	 */
-	EffekseerHandle.prototype.setPaused = function(paused) {
-		Core.SetPaused(this.native, paused);
-	};
-	
-	/**
-	 * Set this effect shown flag
-	 * @param {boolean} shown Shown flag
-	 */
-	EffekseerHandle.prototype.setShown = function(shown) {
-		Core.SetShown(this.native, shown);
-	};
-	
-	/**
-	 * Set this effect playback speed
-	 * @param {number} speed Speed ratio
-	 */
-	EffekseerHandle.prototype.setSpeed = function(speed) {
-		Core.SetSpeed(this.native, speed);
-	};
+		/**
+		 * Stop the root node of this effect instance.
+		 */
+		stopRoot: function() {
+			Core.StopRoot(this.native);
+		},
 
+		/**
+		 * if returned false, this effect is end of playing.
+		 * @property {boolean}
+		 */
+	    get exists() {
+			return !!Core.Exists(this.native);
+	    },
+		
+		/**
+		 * Set the location of this effect instance.
+		 * @param {number} x X value of location
+		 * @param {number} y Y value of location
+		 * @param {number} z Z value of location
+		 */
+		setLocation: function(x, y, z) {
+			Core.SetLocation(this.native, x, y, z);
+		},
+		
+		/**
+		 * Set the rotation of this effect instance.
+		 * @param {number} x X value of euler angle
+		 * @param {number} y Y value of euler angle
+		 * @param {number} z Z value of euler angle
+		 */
+		setRotation: function(x, y, z) {
+			Core.SetRotation(this.native, x, y, z);
+		},
+		
+		/**
+		 * Set the scale of this effect instance.
+		 * @param {number} x X value of scale factor
+		 * @param {number} y Y value of scale factor
+		 * @param {number} z Z value of scale factor
+		 */
+		setScale: function(x, y, z) {
+			Core.SetScale(this.native, x, y, z);
+		},
+
+		/**
+		 * Set the model matrix of this effect instance.
+		 * @param {array} matrixArray An array that is requred 16 elements
+		 */
+		setMatrix: function(matrixArray) {
+			var stack = Runtime.stackSave();
+			var arrmem = Runtime.stackAlloc(4 * 16);
+			Module.HEAPF32.set(matrixArray, arrmem>>2);
+			Core.SetMatrix(this.native, arrmem);
+			Runtime.stackRestore(stack);
+		},
+		
+		/**
+		 * Set the target location of this effect instance.
+		 * @param {number} x X value of target location
+		 * @param {number} y Y value of target location
+		 * @param {number} z Z value of target location
+		 */
+		setTargetLocation: function(x, y, z) {
+			Core.SetTargetLocation(this.native, x, y, z);
+		},
+		
+		/**
+		 * Set the paused flag of this effect instance.
+		 * if specified true, this effect playing will not advance.
+		 * @param {boolean} paused Paused flag
+		 */
+		setPaused: function(paused) {
+			Core.SetPaused(this.native, paused);
+		},
+		
+		/**
+		 * Set the shown flag of this effect instance.
+		 * if specified false, this effect will be invisible.
+		 * @param {boolean} shown Shown flag
+		 */
+		setShown: function(shown) {
+			Core.SetShown(this.native, shown);
+		},
+		
+		/**
+		 * Set playing speed of this effect.
+		 * @param {number} speed Speed ratio
+		 */
+		setSpeed: function(speed) {
+			Core.SetSpeed(this.native, speed);
+		},
+	};
+	
 	var gl = null;
 	var loadingEffect = null;
 
@@ -245,193 +270,195 @@ var effekseer = (function() {
 	/**
 	 * Effekseer Context
 	 * @class
-	 * @typedef
 	 */
-	function Effekseer() {
-	}
-
-	/**
-	 * Initialize graphics system
-	 * @param {WebGLRenderingContext} webglContext WebGL Context
-	 * @param {object} settings Some settings with Effekseer initialization
-	 */
-	Effekseer.prototype.init = function(webglContext, settings) {
-		gl = webglContext;
-		window.gl = gl;
-		// Setup native OpenGL context
-		var ctx = Module.GL.registerContext(webglContext, {
-			majorVersion: 1, minorVersion: 0, enableExtensionsByDefault: true
-		});
-		Module.GL.makeContextCurrent(ctx);
-
-		if (!settings) {
-			settings = {
-				instanceMaxCount: 2000,
-				squareMaxCount: 8000,
-			};
-		}
-
-		// Initializes Effekseer core
-		Core.Init(settings.instanceMaxCount, settings.squareMaxCount);
+	var Effekseer = function() {
 	};
-	
-	/**
-	 * Advance frames
-	 * @param {number=} deltaFrames number of advance frames
-	 */
-	Effekseer.prototype.update = function(deltaFrames) {
-		if (!deltaFrames) deltaFrames = 1.0;
-		// Update frame
-		Core.Update(deltaFrames);
-	};
-	
-	/**
-	 * Main rendering
-	 */
-	Effekseer.prototype.draw = function() {
-		// Save WebGL states
-		var program = gl.getParameter(gl.CURRENT_PROGRAM);
+
+	Effekseer.prototype = {
+		/**
+		 * Initialize graphics system.
+		 * @param {WebGLRenderingContext} webglContext WebGL Context
+		 * @param {object} settings Some settings with Effekseer initialization
+		 */
+		init: function(webglContext, settings) {
+			gl = webglContext;
+			window.gl = gl;
+			// Setup native OpenGL context
+			var ctx = Module.GL.registerContext(webglContext, {
+				majorVersion: 1, minorVersion: 0, enableExtensionsByDefault: true
+			});
+			Module.GL.makeContextCurrent(ctx);
+
+			if (!settings) {
+				settings = {
+					instanceMaxCount: 2000,
+					squareMaxCount: 8000,
+				};
+			}
+
+			// Initializes Effekseer core.
+			Core.Init(settings.instanceMaxCount, settings.squareMaxCount);
+		},
 		
-		// Draw the effekseer core
-		Core.Draw();
+		/**
+		 * Advance frames.
+		 * @param {number=} deltaFrames number of advance frames
+		 */
+		update: function(deltaFrames) {
+			if (!deltaFrames) deltaFrames = 1.0;
+			// Update frame
+			Core.Update(deltaFrames);
+		},
 		
-		// Restore WebGL states
-		gl.useProgram(program);
-	};
+		/**
+		 * Main rendering.
+		 */
+		draw: function() {
+			// Save WebGL states
+			var program = gl.getParameter(gl.CURRENT_PROGRAM);
+			
+			// Draw the effekseer core
+			Core.Draw();
+			
+			// Restore WebGL states
+			gl.useProgram(program);
+		},
 
-	/**
-	 * Set camera projection from matrix
-	 * @param {array} matrixArray An array that is requred 16 elements
-	 */
-	Effekseer.prototype.setProjectionMatrix = function(matrixArray) {
-		var stack = Runtime.stackSave();
-		var arrmem = Runtime.stackAlloc(4 * 16);
-		Module.HEAPF32.set(matrixArray, arrmem>>2);
-		Core.SetProjectionMatrix(arrmem);
-		Runtime.stackRestore(stack);
-	};
-	
-	/**
-	 * Set camera projection from perspective parameters
-	 * @param {number} fov Field of view in degree
-	 * @param {number} aspect Aspect ratio
-	 * @param {number} near Distance of near plane
-	 * @param {number} aspect Distance of far plane
-	 */
-	Effekseer.prototype.setProjectionPerspective = function(fov, aspect, near, far) {
-		Core.SetProjectionPerspective(fov, aspect, near, far);
-	};
+		/**
+		 * Set camera projection from matrix.
+		 * @param {array} matrixArray An array that is requred 16 elements
+		 */
+		setProjectionMatrix: function(matrixArray) {
+			var stack = Runtime.stackSave();
+			var arrmem = Runtime.stackAlloc(4 * 16);
+			Module.HEAPF32.set(matrixArray, arrmem>>2);
+			Core.SetProjectionMatrix(arrmem);
+			Runtime.stackRestore(stack);
+		},
+		
+		/**
+		 * Set camera projection from perspective parameters.
+		 * @param {number} fov Field of view in degree
+		 * @param {number} aspect Aspect ratio
+		 * @param {number} near Distance of near plane
+		 * @param {number} aspect Distance of far plane
+		 */
+		setProjectionPerspective: function(fov, aspect, near, far) {
+			Core.SetProjectionPerspective(fov, aspect, near, far);
+		},
 
-	/**
-	 * Set camera projection from orthographic parameters
-	 * @param {number} width Width coordinate of the view plane
-	 * @param {number} height Height coordinate of the view plane
-	 * @param {number} near Distance of near plane
-	 * @param {number} aspect Distance of far plane
-	 */
-	Effekseer.prototype.setProjectionOrthographic = function(width, height, near, far) {
-		Core.SetProjectionOrthographic(width, height, near, far);
-	};
-	
-	/**
-	 * Set camera view from matrix
-	 * @param {array} matrixArray An array that is requred 16 elements
-	 */
-	Effekseer.prototype.setCameraMatrix = function(matrixArray) {
-		var stack = Runtime.stackSave();
-		var arrmem = Runtime.stackAlloc(4 * 16);
-		Module.HEAPF32.set(matrixArray, arrmem>>2);
-		Core.SetCameraMatrix(arrmem);
-		Runtime.stackRestore(stack);
-	};
-	
-	/**
-	 * Set camera view from lookat parameters
-	 * @param {number} positionX X value of camera position
-	 * @param {number} positionY Y value of camera position
-	 * @param {number} positionZ Z value of camera position
-	 * @param {number} targetX X value of target position
-	 * @param {number} targetY Y value of target position
-	 * @param {number} targetZ Z value of target position
-	 * @param {number} upvecX X value of upper vector
-	 * @param {number} upvecY Y value of upper vector
-	 * @param {number} upvecZ Z value of upper vector
-	 */
-	Effekseer.prototype.setCameraLookAt = function(positionX, positionY, positionZ, targetX, targetY, targetZ, upvecX, upvecY, upvecZ) {
-		Core.SetCameraLookAt(positionX, positionY, positionZ, targetX, targetY, targetZ, upvecX, upvecY, upvecZ);
-	};
+		/**
+		 * Set camera projection from orthographic parameters.
+		 * @param {number} width Width coordinate of the view plane
+		 * @param {number} height Height coordinate of the view plane
+		 * @param {number} near Distance of near plane
+		 * @param {number} aspect Distance of far plane
+		 */
+		setProjectionOrthographic: function(width, height, near, far) {
+			Core.SetProjectionOrthographic(width, height, near, far);
+		},
+		
+		/**
+		 * Set camera view from matrix.
+		 * @param {array} matrixArray An array that is requred 16 elements
+		 */
+		setCameraMatrix: function(matrixArray) {
+			var stack = Runtime.stackSave();
+			var arrmem = Runtime.stackAlloc(4 * 16);
+			Module.HEAPF32.set(matrixArray, arrmem>>2);
+			Core.SetCameraMatrix(arrmem);
+			Runtime.stackRestore(stack);
+		},
+		
+		/**
+		 * Set camera view from lookat parameters.
+		 * @param {number} positionX X value of camera position
+		 * @param {number} positionY Y value of camera position
+		 * @param {number} positionZ Z value of camera position
+		 * @param {number} targetX X value of target position
+		 * @param {number} targetY Y value of target position
+		 * @param {number} targetZ Z value of target position
+		 * @param {number} upvecX X value of upper vector
+		 * @param {number} upvecY Y value of upper vector
+		 * @param {number} upvecZ Z value of upper vector
+		 */
+		setCameraLookAt: function(positionX, positionY, positionZ, targetX, targetY, targetZ, upvecX, upvecY, upvecZ) {
+			Core.SetCameraLookAt(positionX, positionY, positionZ, targetX, targetY, targetZ, upvecX, upvecY, upvecZ);
+		},
 
-	/**
-	 * Set camera view from lookat vector parameters
-	 * @param {object} position camera position
-	 * @param {object} target target position
-	 * @param {object=} upvec upper vector
-	 */
-	Effekseer.prototype.setCameraLookAtFromVector = function(position, target, upvec) {
-		upvecVector = (typeof upvecVector === "object") ? upvecVector : {x:0, y:1, z:0};
-		Core.SetCameraLookAt(position.x, position.y, position.z, target.x, target.y, target.z, upvec.x, upvec.y, upvec.z);
-	};
+		/**
+		 * Set camera view from lookat vector parameters.
+		 * @param {object} position camera position
+		 * @param {object} target target position
+		 * @param {object=} upvec upper vector
+		 */
+		setCameraLookAtFromVector: function(position, target, upvec) {
+			upvecVector = (typeof upvecVector === "object") ? upvecVector : {x:0, y:1, z:0};
+			Core.SetCameraLookAt(position.x, position.y, position.z, target.x, target.y, target.z, upvec.x, upvec.y, upvec.z);
+		},
 
-	/**
-	 * Load the effect data file (and resources)
-	 * @param {string} path A URL of effect file (*.efk)
-	 * @param {function=} onload A function that is called at loading complete
-	 * @param {function=} onerror A function that is called at loading error
-	 * @returns {EffekseerEffect} The effect data
-	 */
-	Effekseer.prototype.loadEffect = function(path, onload, onerror) {
-		var effect = new EffekseerEffect();
-		var dirIndex = path.lastIndexOf("/");
+		/**
+		 * Load the effect data file (and resources).
+		 * @param {string} path A URL of effect file (*.efk)
+		 * @param {function=} onload A function that is called at loading complete
+		 * @param {function=} onerror A function that is called at loading error
+		 * @returns {EffekseerEffect} The effect data
+		 */
+		loadEffect: function(path, onload, onerror) {
+			var effect = new EffekseerEffect();
+			var dirIndex = path.lastIndexOf("/");
 
-		effect.onload = onload;
-		effect.onerror = onerror;
+			effect.onload = onload;
+			effect.onerror = onerror;
 
-		if (typeof path === "string") {
-			effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
-			loadBinFile(path, function(buffer) {
+			if (typeof path === "string") {
+				effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
+				loadBinFile(path, function(buffer) {
+					effect._load(buffer);
+				}, effect.onerror);
+			} else if (typeof path === "arraybuffer") {
+				var buffer = path;
 				effect._load(buffer);
-			}, effect.onerror);
-		} else if (typeof path === "arraybuffer") {
-			var buffer = path;
-			effect._load(buffer);
-		}
+			}
+			
+			return effect;
+		},
 		
-		return effect;
-	};
+		/**
+		 * Play the specified effect.
+		 * @param {EffekseerEffect} effect The loaded effect
+		 * @param {number} x X value of location that is emited
+		 * @param {number} y Y value of location that is emited
+		 * @param {number} z Z value of location that is emited
+		 * @returns {EffekseerHandle} The effect handle
+		 */
+		play: function(effect, x, y, z) {
+			if (!effect || !effect.isLoaded) {
+				return null;
+			}
+			if (x === undefined) x = 0;
+			if (y === undefined) y = 0;
+			if (z === undefined) z = 0;
+			var handle = Core.PlayEffect(effect.nativeptr, x, y, z);
+			return (handle >= 0) ? new EffekseerHandle(handle) : null;
+		},
+		
+		/**
+		 * Stop the all effects.
+		 */
+		stopAll: function() {
+			Core.StopAllEffects();
+		},
 	
-	/**
-	 * Play the specified effect
-	 * @param {EffekseerEffect} effect The loaded effect
-	 * @param {number} x X value of location that is emited
-	 * @param {number} y Y value of location that is emited
-	 * @param {number} z Z value of location that is emited
-	 * @returns {EffekseerHandle} The effect handle
-	 */
-	Effekseer.prototype.play = function(effect, x, y, z) {
-		if (!effect || !effect.isLoaded) {
-			return null;
+		/**
+		 * Set the resource loader function.
+		 * @param {function} loader
+		 */
+		setResourceLoader: function(loader) {
+			loadResource = loader;
 		}
-		if (x === undefined) x = 0;
-		if (y === undefined) y = 0;
-		if (z === undefined) z = 0;
-		var handle = Core.PlayEffect(effect.nativeptr, x, y, z);
-		return (handle) ? new EffekseerHandle(handle) : null;
 	};
-	
-	/**
-	 * Play the all effects
-	 */
-	Effekseer.prototype.stopAll = function() {
-		Core.StopAllEffects();
-	};
-	
-	/**
-	 * Set the resource loader function
-	 * @param {function} loader
-	 */
-	Effekseer.prototype.setResourceLoader = function(loader) {
-		loadResource = loader;
-	}
+
 	return new Effekseer();
 })();
 
