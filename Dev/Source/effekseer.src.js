@@ -212,6 +212,7 @@ var effekseer = (function() {
 				onload(image);
 			};
 			image.onerror = onerror;
+			image.crossOrigin = "anonymous";
 			image.src = path;
 		} else {
 			loadBinFile(path, function(buffer) {
