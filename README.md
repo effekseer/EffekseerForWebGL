@@ -59,14 +59,33 @@ git clone https://github.com/effekseer/EffekseerForWebGL
 
 ### Requirements
 
+### Common
+
+- cmake
+- mingw-make
+- Visual Studio 2013 or 2015
+
+### Emscripten(SDK)
+- Emscripten 1.37.21 or later
+
+### Emscripten(Install manually)
+
 - Emscripten 1.37.9 (Add directory to PATH)
-- Visual Studio 2013 or later
 - Java
 - Python2x
 
 ### Build commands
 
+#### Visual Studio 2013
+
 ```
 cd Dev\Build
-Build.bat
+Build_2013.bat
 ```
+#### Visual Studio 2015
+
+```
+cd Dev\Build
+Build_2015.bat
+```
+

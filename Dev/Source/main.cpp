@@ -18,7 +18,8 @@ namespace EfkWebViewer
 		~CustomTextureLoader() = default;
 
 	public:
-		void* Load(const EFK_CHAR* path, TextureType textureType) override {
+		Effekseer::TextureData* Load(const EFK_CHAR* path, TextureType textureType) override
+		{
 			
 			// Request to load image
 			int loaded = EM_ASM_INT({
@@ -43,14 +44,23 @@ namespace EfkWebViewer
 				GLctx.bindTexture(GLctx.TEXTURE_2D, null);
 			}, path, texture);
 			
-			return (void*)texture;
+			Effekseer::TextureData* textureData = new Effekseer::TextureData();
+			textureData->UserID = texture;
+			return textureData;
 		}
 
-		void Unload( void* data ) override {
-			GLuint texture = (GLuint)data;
-			if (texture) {
-				glDeleteTextures(1, &texture);
+		void Unload(Effekseer::TextureData* data ) override
+		{
+			if (data != NULL)
+			{
+				auto textureData = (Effekseer::TextureData*)data;
+				GLuint texture = (GLuint)textureData->UserID;
+				if (texture) {
+					glDeleteTextures(1, &texture);
+				}
+				delete textureData;
 			}
+			
 		}
 	};
 
