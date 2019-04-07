@@ -1,0 +1,1 @@
+powershell -ExecutionPolicy RemoteSigned -File ./Package.ps1
