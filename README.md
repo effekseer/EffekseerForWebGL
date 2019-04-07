@@ -5,7 +5,7 @@
 
 # Demo
 
-Work in progress...
+Release/Sample/
 
 # How to use
 
@@ -63,7 +63,7 @@ git clone https://github.com/effekseer/EffekseerForWebGL
 
 - cmake
 - mingw-make
-- Visual Studio 2013 or 2015
+- Visual Studio 2015
 
 ### Emscripten(SDK)
 - Emscripten 1.37.21 or later
@@ -74,14 +74,44 @@ git clone https://github.com/effekseer/EffekseerForWebGL
 - Java
 - Python2x
 
+### JavaScript
+
+- npm
+- babel-cli
+- babel-preset-es2015
+
 ### Build commands
 
-#### Visual Studio 2013
+### Convert ES6 to ES5
+
+#### Windows
+
+install npm and babel
 
 ```
-cd Dev\Build
-Build_2013.bat
+npm install -g babel-cli
 ```
+
+move directory
+
+```
+cd Dev/Source/
+```
+
+install presets
+
+```
+npm install babel-preset-es2015 --save-dev
+```
+
+call bat
+
+```
+ConvertES6ToES5.bat
+```
+
+### Compile Native
+
 #### Visual Studio 2015
 
 ```
