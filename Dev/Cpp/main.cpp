@@ -6,6 +6,7 @@
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
+#include "glTFglbEffectFactory.h"
 
 namespace EfkWebViewer
 {
@@ -204,6 +205,8 @@ namespace EfkWebViewer
 
 			manager->SetCoordinateSystem( CoordinateSystem::RH );
 			
+			manager->GetSetting()->AddEffectFactory(new glbEffectFactory());
+
 			return true;
 		}
 		

@@ -43,7 +43,7 @@ file(GLOB effekseer_src
 	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/*.cpp
 	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
 	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
-	${PROJECT_SOURCE_DIR}./../Source/*.cpp)
+	${PROJECT_SOURCE_DIR}./../Cpp/*.cpp)
 
 # Exclude unused souce files
 # INTERNAL_LOADER
