@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>EffekseerForWebGL</title>
+  <body>
+    <canvas id="canvas" width="720" height="480" class="screen" oncontextmenu="event.preventDefault()"></canvas>
+    <br>
+    <div id="buttons">
+      <input type="button" onclick="effekseer.play(effects['Laser01'], 0, 0, 0);" value="Laser01"></input>
+      <input type="button" onclick="effekseer.play(effects['Laser02'], 0, 0, 0);" value="Laser02"></input>
+      <input type="button" onclick="effekseer.play(effects['Simple_Ring_Shape1'], 0, 0, 0);" value="Simple_Ring_Shape1"></input>
+      <input type="button" onclick="effekseer.play(effects['block'], 0, 0, 0);" value="block"></input>
+      <input type="button" onclick="effekseer.stopAll();" value="stop"></input>
+    </div>
+    <br>
+    <script src="three.min.js"></script>
+    <script src="../effekseer.min.js"></script>    
+    <script src="renderer.js"></script>
+  </body>
+</html>

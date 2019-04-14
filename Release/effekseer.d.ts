@@ -1,110 +1,28 @@
-export class EffekseerEffect {
-    constructor();
-}
 
-export class EffekseerHandle {
-    constructor(native: any);
-
+declare namespace effekseer {
     /**
-     * Stop this effect instance.
-     */
-    stop();
-
-    /**
-     * Stop the root node of this effect instance.
-     */
-    stopRoot();
-
-    /**
-     * if returned false, this effect is end of playing.
-     */
-    exists(): boolean;
-
-    /**
-     * Set the location of this effect instance.
-     * @param {number} x X value of location
-     * @param {number} y Y value of location
-     * @param {number} z Z value of location
-     */
-    setLocation(x, y, z);
-    /**
-     * Set the rotation of this effect instance.
-     * @param {number} x X value of euler angle
-     * @param {number} y Y value of euler angle
-     * @param {number} z Z value of euler angle
-     */
-    setRotation(x, y, z);
-
-    /**
-     * Set the scale of this effect instance.
-     * @param {number} x X value of scale factor
-     * @param {number} y Y value of scale factor
-     * @param {number} z Z value of scale factor
-     */
-    setScale(x, y, z);
-
-    /**
-     * Set the model matrix of this effect instance.
-     * @param {array} matrixArray An array that is requred 16 elements
-     */
-    setMatrix(matrixArray);
-
-    /**
-     * Set the target location of this effect instance.
-     * @param {number} x X value of target location
-     * @param {number} y Y value of target location
-     * @param {number} z Z value of target location
-     */
-    setTargetLocation(x, y, z);
-
-    /**
-     * Set the paused flag of this effect instance.
-     * if specified true, this effect playing will not advance.
-     * @param {boolean} paused Paused flag
-     */
-    setPaused(paused);
-
-    /**
-     * Set the shown flag of this effect instance.
-     * if specified false, this effect will be invisible.
-     * @param {boolean} shown Shown flag
-     */
-    setShown(shown);
-    /**
-     * Set playing speed of this effect.
-     * @param {number} speed Speed ratio
-     */
-    setSpeed(speed);
-}
-
-/**
-	 * Effekseer Context
-	 * @class
-	 */
-export class Effekseer {
-    /**
-     * Initialize graphics system.
-     * @param {WebGLRenderingContext} webglContext WebGL Context
-     * @param {object} settings Some settings with Effekseer initialization
-     */
-    init(webglContext, settings);
+         * Initialize graphics system.
+         * @param {WebGLRenderingContext} webglContext WebGL Context
+         * @param {object} settings Some settings with Effekseer initialization
+         */
+    export function init(webglContext, settings?: object);
 
     /**
      * Advance frames.
      * @param {number=} deltaFrames number of advance frames
      */
-    update(deltaFrames);
+    export function update(deltaFrames?: number);
 
     /**
      * Main rendering.
      */
-    draw();
+    export function draw();
 
     /**
      * Set camera projection from matrix.
-     * @param {array} matrixArray An array that is requred 16 elements
+     * @param matrixArray An array that is requred 16 elements
      */
-    setProjectionMatrix(matrixArray);
+    export function setProjectionMatrix(matrixArray);
 
     /**
      * Set camera projection from perspective parameters.
@@ -113,7 +31,7 @@ export class Effekseer {
      * @param {number} near Distance of near plane
      * @param {number} aspect Distance of far plane
      */
-    setProjectionPerspective(fov, aspect, near, far);
+    export function setProjectionPerspective(fov, aspect, near, far);
 
     /**
      * Set camera projection from orthographic parameters.
@@ -122,13 +40,13 @@ export class Effekseer {
      * @param {number} near Distance of near plane
      * @param {number} aspect Distance of far plane
      */
-    setProjectionOrthographic(width, height, near, far);
+    export function setProjectionOrthographic(width, height, near, far);
 
     /**
      * Set camera view from matrix.
-     * @param {array} matrixArray An array that is requred 16 elements
+     * @param matrixArray An array that is requred 16 elements
      */
-    setCameraMatrix(matrixArray);
+    export function setCameraMatrix(matrixArray);
 
     /**
      * Set camera view from lookat parameters.
@@ -142,7 +60,7 @@ export class Effekseer {
      * @param {number} upvecY Y value of upper vector
      * @param {number} upvecZ Z value of upper vector
      */
-    setCameraLookAt(
+    export function setCameraLookAt(
         positionX,
         positionY,
         positionZ,
@@ -160,7 +78,7 @@ export class Effekseer {
      * @param {object} target target position
      * @param {object=} upvec upper vector
      */
-    setCameraLookAtFromVector(position, target, upvec);
+    export function setCameraLookAtFromVector(position, target, upvec);
 
     /**
      * Load the effect data file (and resources).
@@ -169,7 +87,7 @@ export class Effekseer {
      * @param {function=} onerror A function that is called at loading error
      * @returns {EffekseerEffect} The effect data
      */
-    loadEffect(path, onload, onerror);
+    export function loadEffect(path: string, onload?, onerror?): EffekseerEffect;
 
     /**
      * Play the specified effect.
@@ -179,16 +97,99 @@ export class Effekseer {
      * @param {number} z Z value of location that is emited
      * @returns {EffekseerHandle} The effect handle
      */
-    play(effect, x, y, z);
+    export function play(effect: EffekseerEffect, x, y, z): EffekseerHandle;
 
     /**
      * Stop the all effects.
      */
-    stopAll();
+    export function stopAll();
 
     /**
      * Set the resource loader function.
      * @param {function} loader
      */
-    setResourceLoader(loader);
+    export function setResourceLoader(loader);
+
+    export class EffekseerEffect {
+        constructor();
+    }
+
+    export class EffekseerHandle {
+        constructor(native: any);
+
+        /**
+         * Stop this effect instance.
+         */
+        stop();
+
+        /**
+         * Stop the root node of this effect instance.
+         */
+        stopRoot();
+
+        /**
+         * if returned false, this effect is end of playing.
+         */
+        exists(): boolean;
+
+        /**
+         * Set the location of this effect instance.
+         * @param {number} x X value of location
+         * @param {number} y Y value of location
+         * @param {number} z Z value of location
+         */
+        setLocation(x, y, z);
+        /**
+         * Set the rotation of this effect instance.
+         * @param {number} x X value of euler angle
+         * @param {number} y Y value of euler angle
+         * @param {number} z Z value of euler angle
+         */
+        setRotation(x, y, z);
+
+        /**
+         * Set the scale of this effect instance.
+         * @param {number} x X value of scale factor
+         * @param {number} y Y value of scale factor
+         * @param {number} z Z value of scale factor
+         */
+        setScale(x, y, z);
+
+        /**
+         * Set the model matrix of this effect instance.
+         * @param {array} matrixArray An array that is requred 16 elements
+         */
+        setMatrix(matrixArray);
+
+        /**
+         * Set the target location of this effect instance.
+         * @param {number} x X value of target location
+         * @param {number} y Y value of target location
+         * @param {number} z Z value of target location
+         */
+        setTargetLocation(x, y, z);
+
+        /**
+         * Set the paused flag of this effect instance.
+         * if specified true, this effect playing will not advance.
+         * @param {boolean} paused Paused flag
+         */
+        setPaused(paused);
+
+        /**
+         * Set the shown flag of this effect instance.
+         * if specified false, this effect will be invisible.
+         * @param {boolean} shown Shown flag
+         */
+        setShown(shown);
+        /**
+         * Set playing speed of this effect.
+         * @param {number} speed Speed ratio
+         */
+        setSpeed(speed);
+    }
+}
+
+declare module "effekseer" {
+    export = effekseer;
 }

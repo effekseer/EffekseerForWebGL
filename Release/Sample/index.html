@@ -37,11 +37,10 @@
         //document.body.appendChild( renderer.domElement );
 
         effekseer.init(renderer.context);
-        effects["Laser01"] = effekseer.loadEffect("Resource/Laser01.efk");
-        effects["Laser02"] = effekseer.loadEffect("Resource/Laser02.efk");
-        effects["Simple_Ring_Shape1"] = effekseer.loadEffect("Resource/Simple_Ring_Shape1.efk");
-        effects["block"] = effekseer.loadEffect("Resource/block.efk");
-        effects["magma"] = effekseer.loadEffect("Resource/001_magma_effect/aqua.efk");
+        effects["Laser01"] = effekseer.loadEffect("../Resources/Laser01.efk");
+        effects["Laser02"] = effekseer.loadEffect("../Resources/Laser02.efk");
+        effects["Simple_Ring_Shape1"] = effekseer.loadEffect("../Resources/Simple_Ring_Shape1.efk");
+        effects["block"] = effekseer.loadEffect("../Resources/block.efk");
 
         var grid = new THREE.GridHelper(20, 10, 0xffffff, 0xffffff);
         scene.add(grid);     
