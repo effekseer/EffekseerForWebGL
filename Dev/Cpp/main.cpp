@@ -8,6 +8,9 @@
 #include "EffekseerSoundAL.h"
 #include "glTFglbEffectFactory.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 namespace EfkWebViewer
 {
 	using namespace Effekseer;
@@ -47,6 +50,43 @@ namespace EfkWebViewer
 			
 			Effekseer::TextureData* textureData = new Effekseer::TextureData();
 			textureData->UserID = texture;
+			return textureData;
+		}
+
+		Effekseer::TextureData* Load(const void* data, int32_t size, TextureType textureType) override
+		{
+			int width;
+			int height;
+			int channel;
+
+			uint8_t* img_ptr = stbi_load_from_memory((const uint8_t*)data, size, &width, &height, &channel, 4);
+
+
+			GLuint texture = 0;
+			glGenTextures(1, &texture);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexImage2D(GL_TEXTURE_2D,
+					 0,
+					 GL_RGBA,
+					 width,
+					 height,
+					 0,
+					 GL_RGBA,
+					 GL_UNSIGNED_BYTE,
+					 img_ptr);
+
+			// Generate mipmap
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+			stbi_image_free(img_ptr);
+
+			auto textureData = new Effekseer::TextureData();
+			textureData->UserPtr = nullptr;
+			textureData->UserID = texture;
+			textureData->TextureFormat = Effekseer::TextureFormatType::ABGR8;
+			textureData->Width = width;
+			textureData->Height = height;
 			return textureData;
 		}
 
