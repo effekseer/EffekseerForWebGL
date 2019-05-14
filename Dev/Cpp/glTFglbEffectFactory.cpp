@@ -3,7 +3,7 @@
 glTFglmEffectFactory::BufferView glTFglmEffectFactory::CreateBufferView(picojson::object& o)
 {
 	BufferView bv;
-	bv.buffer = o["buffer"].get<std::string>();
+	bv.buffer = o["buffer"].get<double>();
 	bv.byteOffset = o["byteOffset"].get<double>();
 	bv.byteLength = o["byteLength"].get<double>();
 	return bv;
@@ -23,14 +23,16 @@ bool glTFglmEffectFactory::glTFData::Load(const void* data, int32_t size)
 
 	picojson::object& root = json.get<picojson::object>();
 	auto& extensions = root["extensions"].get<picojson::object>();
-	auto& buffers = root["buffers"].get<picojson::object>();
+	auto& buffers = root["buffers"].get<picojson::array>();
 	auto& bufferViews = root["bufferViews"].get<picojson::object>();
 
 	auto& effekseer = extensions["Effekseer"].get<picojson::object>();
-	auto& effects = effekseer["effects"].get<picojson::object>();
-	auto& effect1 = effects.begin()->second.get<picojson::object>();
-	auto& body_bufferview_name = effect1["body"].get<std::string>();
-	auto& images_bufferview_name = effect1["images"].get<picojson::object>();
+	auto& effects = effekseer["effects"].get<picojson::array>();
+	auto& effect1 = effects.begin()->get<picojson::object>();
+	auto& body_bufferview_name = effect1["body"].get<picojson::object>()["bufferview"].get<std::string>();
+	auto& images_bufferviews = effect1["images"].get<picojson::array>();
+	auto& normalImages_bufferviews = effect1["normalImages"].get<picojson::array>();
+	auto& distortionImages_bufferviews = effect1["distortionImages"].get<picojson::array>();
 
 	body = CreateBufferView(bufferViews[body_bufferview_name].get<picojson::object>());
 
@@ -40,10 +42,22 @@ bool glTFglmEffectFactory::glTFData::Load(const void* data, int32_t size)
 		//buffers[buffer_.first] = b;
 	}
 
-	for (auto& image : images_bufferview_name)
+	for (auto& image : images_bufferviews)
 	{
-		auto bufferview_name = image.second.get<picojson::object>()["bufferview"].get<std::string>();
-		images[image.first] = CreateBufferView(bufferViews[bufferview_name].get<picojson::object>());
+		auto bufferview_name = image.get<picojson::object>()["bufferview"].get<std::string>();
+		images.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+	}
+
+	for (auto& image : normalImages_bufferviews)
+	{
+		auto bufferview_name = image.get<picojson::object>()["bufferview"].get<std::string>();
+		normalImages.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+	}
+
+	for (auto& image : distortionImages_bufferviews)
+	{
+		auto bufferview_name = image.get<picojson::object>()["bufferview"].get<std::string>();
+		distortionImages.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
 	}
 
 	return true;
@@ -216,9 +230,8 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 		{
 			char path[260];
 			Effekseer::ConvertUtf16ToUtf8((int8_t*)path, 260, (int16_t*)effect->GetColorImagePath(i));
-			auto buf = glbData_.gltf.images[path];
-			auto resource =
-				textureLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength, Effekseer::TextureType::Color);
+			auto buf = glbData_.gltf.images[i];
+			auto resource = textureLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength, Effekseer::TextureType::Color);
 			SetTexture(effect, i, Effekseer::TextureType::Color, resource);
 		}
 
@@ -226,7 +239,7 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 		{
 			char path[260];
 			Effekseer::ConvertUtf16ToUtf8((int8_t*)path, 260, (int16_t*)effect->GetColorImagePath(i));
-			auto buf = glbData_.gltf.images[path];
+			auto buf = glbData_.gltf.normalImages[i];
 			auto resource =
 				textureLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength, Effekseer::TextureType::Normal);
 			SetTexture(effect, i, Effekseer::TextureType::Normal, resource);
@@ -236,7 +249,7 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 		{
 			char path[260];
 			Effekseer::ConvertUtf16ToUtf8((int8_t*)path, 260, (int16_t*)effect->GetColorImagePath(i));
-			auto buf = glbData_.gltf.images[path];
+			auto buf = glbData_.gltf.distortionImages[i];
 			auto resource =
 				textureLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength, Effekseer::TextureType::Distortion);
 			SetTexture(effect, i, Effekseer::TextureType::Distortion, resource);

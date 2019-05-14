@@ -16,7 +16,7 @@ protected:
 
 	struct BufferView
 	{
-		std::string buffer;
+		int buffer = 0;
 		int byteLength = 0;
 		int byteOffset = 0;
 	};
@@ -25,10 +25,12 @@ protected:
 
 	struct glTFData
 	{
-		std::map<std::string, Buffer> buffers;
+		std::vector<Buffer> buffers;
 
 		BufferView body;
-		std::map<std::string, BufferView> images;
+		std::vector<BufferView> images;
+		std::vector<BufferView> normalImages;
+		std::vector<BufferView> distortionImages;
 
 		bool Load(const void* data, int32_t size);
 	};
