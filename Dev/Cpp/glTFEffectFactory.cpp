@@ -32,8 +32,12 @@ bool glTFEffectFactory::OnLoading(
 	Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)glTFData_.buffers[0].uri.c_str());
 
 	
+	EFK_CHAR fullPath[512];
+	PathCombine(fullPath, materialPath, path);
+
+
 	EfkWebViewer::CustomFileInterface fileInterface;
-	auto reader = fileInterface.OpenRead(path);
+	auto reader = fileInterface.OpenRead(fullPath);
 	if (reader->GetLength() == 0)
 	{
 		ES_SAFE_DELETE(reader);
