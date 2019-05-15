@@ -6,8 +6,10 @@
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
-#include "glTFglbEffectFactory.h"
+#include "glTFEffectFactory.h"
+#include "glbEffectFactory.h"
 
+#include "CustomFile.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -148,67 +150,6 @@ namespace EfkWebViewer
 		}
 	};
 
-	class CustomFileReader : public FileReader
-	{
-		uint8_t* fileData;
-		size_t fileSize;
-		int currentPosition;
-	public:
-		CustomFileReader(uint8_t* fileData, size_t fileSize) 
-			: fileData(fileData), fileSize(fileSize), currentPosition(0) {
-		}
-		~CustomFileReader() {
-			free(fileData);
-		}
-		size_t Read( void* buffer, size_t size) {
-			if (currentPosition + size > fileSize) {
-				size = fileSize - currentPosition;
-			}
-			memcpy(buffer, fileData + currentPosition, size);
-			currentPosition += size;
-			return size;
-		}
-		void Seek(int position) {
-			currentPosition = position;
-		}
-		int GetPosition() {
-			return currentPosition;
-		}
-		size_t GetLength() {
-			return fileSize;
-		}
-	};
-
-	class CustomFileInterface : public FileInterface
-	{
-	public:
-		FileReader* OpenRead( const EFK_CHAR* path ) {
-			// Request to load file
-			int loaded = EM_ASM_INT({
-				return Module._loadBinary(UTF16ToString($0)) != null;
-			}, path);
-			if (!loaded) {
-				return nullptr;
-			}
-
-			uint8_t *fileData;
-			int fileSize;
-
-			// Copy data from arraybuffer
-			EM_ASM_INT({
-				var buffer = Module._loadBinary(UTF16ToString($0));
-				var memptr = _malloc(buffer.byteLength);
-				HEAP8.set(new Uint8Array(buffer), memptr);
-				setValue($1, memptr, "i32");
-				setValue($2, buffer.byteLength, "i32");
-			}, path, &fileData, &fileSize);
-
-			return new CustomFileReader(fileData, fileSize);
-		}
-		FileWriter* OpenWrite( const EFK_CHAR* path ) {
-			return nullptr;
-		}
-	};
 
 	class Context
 	{
@@ -246,6 +187,7 @@ namespace EfkWebViewer
 			manager->SetCoordinateSystem( CoordinateSystem::RH );
 			
 			manager->GetSetting()->AddEffectFactory(new glbEffectFactory());
+			manager->GetSetting()->AddEffectFactory(new glTFEffectFactory());
 
 			return true;
 		}
