@@ -7,12 +7,6 @@ glTFglmEffectFactory::BufferView glTFglmEffectFactory::CreateBufferView(picojson
 	bv.byteOffset = o["byteOffset"].get<double>();
 	bv.byteLength = o["byteLength"].get<double>();
 
-	auto it_uri = o.find("uri");
-	if(it_uri != o.end())
-	{			
-		bv.uri = it_uri->second.get<std::string>();
-	}
-
 	return bv;
 }
 
@@ -46,7 +40,7 @@ bool glTFglmEffectFactory::glTFData::Load(const void* data, int32_t size)
 	for (auto& buffer_ : buffers_)
 	{
 		auto& buf = buffer_.get<picojson::object>();
-        auto b = Buffer();
+		auto b = Buffer();
 		b.byteLength = buf["byteLength"].get<double>();
 		b.uri = buf["uri"].get<std::string>();
 		buffers.push_back(b);
@@ -54,20 +48,56 @@ bool glTFglmEffectFactory::glTFData::Load(const void* data, int32_t size)
 
 	for (auto& image : images_bufferviews)
 	{
-		auto bufferview_name = image.get<picojson::object>()["bufferview"].get<std::string>();
-		images.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+		auto bufferview_it = image.get<picojson::object>().find("bufferview");
+		auto uri_it = image.get<picojson::object>().find("uri");
+
+		if (bufferview_it != image.get<picojson::object>().end())
+		{
+			auto bufferview_name = bufferview_it->second.get<std::string>();
+			images.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+		}
+
+		if (uri_it != image.get<picojson::object>().end())
+		{
+			auto path_name = uri_it->second.get<std::string>();
+			imagePathes.push_back(path_name);
+		}
 	}
 
 	for (auto& image : normalImages_bufferviews)
 	{
-		auto bufferview_name = image.get<picojson::object>()["bufferview"].get<std::string>();
-		normalImages.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+		auto bufferview_it = image.get<picojson::object>().find("bufferview");
+		auto uri_it = image.get<picojson::object>().find("uri");
+
+		if (bufferview_it != image.get<picojson::object>().end())
+		{
+			auto bufferview_name = bufferview_it->second.get<std::string>();
+			normalImages.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+		}
+
+		if (uri_it != image.get<picojson::object>().end())
+		{
+			auto path_name = uri_it->second.get<std::string>();
+			normalImagePathes.push_back(path_name);
+		}
 	}
 
 	for (auto& image : distortionImages_bufferviews)
 	{
-		auto bufferview_name = image.get<picojson::object>()["bufferview"].get<std::string>();
-		distortionImages.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+		auto bufferview_it = image.get<picojson::object>().find("bufferview");
+		auto uri_it = image.get<picojson::object>().find("uri");
+
+		if (bufferview_it != image.get<picojson::object>().end())
+		{
+			auto bufferview_name = bufferview_it->second.get<std::string>();
+			distortionImages.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+		}
+
+		if (uri_it != image.get<picojson::object>().end())
+		{
+			auto path_name = uri_it->second.get<std::string>();
+			distortionImagePathes.push_back(path_name);
+		}
 	}
 
 	return true;

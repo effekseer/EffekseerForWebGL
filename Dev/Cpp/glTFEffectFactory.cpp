@@ -64,7 +64,7 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 		for (auto i = 0; i < effect->GetColorImageCount(); i++)
 		{
 			char16_t path[260];
-			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.images[i].uri.c_str());
+			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.imagePathes[i].c_str());
 
 			EFK_CHAR fullPath[512];
 			PathCombine(fullPath, materialPath, path);
@@ -76,7 +76,7 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 		for (auto i = 0; i < effect->GetNormalImageCount(); i++)
 		{
 			char16_t path[260];
-			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.normalImages[i].uri.c_str());
+			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.normalImagePathes[i].c_str());
 
 			EFK_CHAR fullPath[512];
 			PathCombine(fullPath, materialPath, path);
@@ -88,7 +88,7 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 		for (auto i = 0; i < effect->GetDistortionImageCount(); i++)
 		{
 			char16_t path[260];
-			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.distortionImages[i].uri.c_str());
+			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.distortionImagePathes[i].c_str());
 
 			EFK_CHAR fullPath[512];
 			PathCombine(fullPath, materialPath, path);

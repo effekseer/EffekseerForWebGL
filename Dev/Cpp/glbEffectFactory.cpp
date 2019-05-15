@@ -116,17 +116,17 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 
 	if (soundLoader != nullptr)
 	{
-        for (auto i = 0; i < effect->GetWaveCount(); i++)
+		for (auto i = 0; i < effect->GetWaveCount(); i++)
 		{
-	    	// Need to implement
-        }
+			// Need to implement
+		}
 	}
 
 	if (modelLoader != nullptr)
 	{
-        for (auto i = 0; i < effect->GetModelCount(); i++)
+		for (auto i = 0; i < effect->GetModelCount(); i++)
 		{
-	    	// Need to implement
-        }
+			// Need to implement
+		}
 	}
 }

@@ -17,7 +17,6 @@ protected:
 
 	struct BufferView
 	{
-		std::string uri;
 		int buffer = 0;
 		int byteLength = 0;
 		int byteOffset = 0;
@@ -34,6 +33,10 @@ protected:
 		std::vector<BufferView> normalImages;
 		std::vector<BufferView> distortionImages;
 
+		std::vector<std::string> imagePathes;
+		std::vector<std::string> normalImagePathes;
+		std::vector<std::string> distortionImagePathes;
+
 		bool Load(const void* data, int32_t size);
 	};
 
@@ -43,5 +46,5 @@ public:
 
 	bool OnCheckIsReloadSupported() override;
 
-    void OnUnloadingResource(Effekseer::Effect* effect) override;
+	void OnUnloadingResource(Effekseer::Effect* effect) override;
 };
