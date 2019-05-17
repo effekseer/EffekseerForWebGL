@@ -163,6 +163,12 @@ namespace EfkWebViewer
 
 		CustomFileInterface fileInterface;
 			
+		glbEffectFactory* glbEffectFactory = nullptr;
+		glTFEffectFactory* glTFEffectFactory = nullptr;
+
+		//! pass strings
+		std::string tempStr;
+
 	public:
 		Context() = default;
 		~Context() = default;
@@ -186,8 +192,11 @@ namespace EfkWebViewer
 
 			manager->SetCoordinateSystem( CoordinateSystem::RH );
 			
-			manager->GetSetting()->AddEffectFactory(new glbEffectFactory());
-			manager->GetSetting()->AddEffectFactory(new glTFEffectFactory());
+			glbEffectFactory = new glbEffectFactory();
+			glTFEffectFactory new glTFEffectFactory();
+
+			manager->GetSetting()->AddEffectFactory(glbEffectFactory);
+			manager->GetSetting()->AddEffectFactory(glTFEffectFactory);
 
 			return true;
 		}
@@ -371,4 +380,14 @@ extern "C" {
 		viewer.manager->SetSpeed(handle, speed);
 	}
 
+	int EXPORT EffekseerIsBinaryglTF(void* data, int32_t size)
+	{
+		return viewer.glTFEffectFactory->OnCheckIsBinarySupported(data, size) ? 1 : 0;
+	}
+
+	int EXPORT EffekseerGetglTFBodyURI(void* data, int32_t size)
+	{
+		viewer.tempStr = viewer.glTFEffectFactory->GetBodyURI(data, size);
+		return viewer.tempStr.c_str();
+	}
 }

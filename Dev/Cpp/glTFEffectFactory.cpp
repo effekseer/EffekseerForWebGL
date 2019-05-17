@@ -31,16 +31,14 @@ bool glTFEffectFactory::OnLoading(
 	char16_t path[260];
 	Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)glTFData_.buffers[0].uri.c_str());
 
-	
-	EFK_CHAR fullPath[512];
-	PathCombine(fullPath, materialPath, path);
-
+	// javascript connects a path
+	// EFK_CHAR fullPath[512];
+	// PathCombine(fullPath, materialPath, path);
 
 	EfkWebViewer::CustomFileInterface fileInterface;
-	auto reader = fileInterface.OpenRead(fullPath);
-	if (reader->GetLength() == 0)
+	auto reader = fileInterface.OpenRead(path);
+	if (reader == nullptr)
 	{
-		ES_SAFE_DELETE(reader);
 		return false;
 	}
 
@@ -48,8 +46,10 @@ bool glTFEffectFactory::OnLoading(
 	data_.resize(reader->GetLength());
 	reader->Read(data_.data(), data_.size());
 
+
 	auto ret = LoadBody(effect, data_.data() + glTFData_.body.byteOffset, glTFData_.body.byteLength, magnification, materialPath);
 	ES_SAFE_DELETE(reader);
+
 	return ret;
 }
 
@@ -70,10 +70,11 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 			char16_t path[260];
 			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.imagePathes[i].c_str());
 
-			EFK_CHAR fullPath[512];
-			PathCombine(fullPath, materialPath, path);
+			// javascript connects a path
+			//EFK_CHAR fullPath[512];
+			//PathCombine(fullPath, materialPath, path);
 
-			auto resource = textureLoader->Load(fullPath, Effekseer::TextureType::Color);
+			auto resource = textureLoader->Load(path, Effekseer::TextureType::Color);
 			SetTexture(effect, i, Effekseer::TextureType::Color, resource);
 		}
 
@@ -82,10 +83,11 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 			char16_t path[260];
 			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.normalImagePathes[i].c_str());
 
-			EFK_CHAR fullPath[512];
-			PathCombine(fullPath, materialPath, path);
+			// javascript connects a path
+			//EFK_CHAR fullPath[512];
+			//PathCombine(fullPath, materialPath, path);
 
-			auto resource = textureLoader->Load(fullPath, Effekseer::TextureType::Normal);
+			auto resource = textureLoader->Load(path, Effekseer::TextureType::Normal);
 			SetTexture(effect, i, Effekseer::TextureType::Normal, resource);
 		}
 
@@ -94,10 +96,11 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 			char16_t path[260];
 			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.distortionImagePathes[i].c_str());
 
-			EFK_CHAR fullPath[512];
-			PathCombine(fullPath, materialPath, path);
+			// javascript connects a path
+			//EFK_CHAR fullPath[512];
+			//PathCombine(fullPath, materialPath, path);
 
-			auto resource = textureLoader->Load(fullPath, Effekseer::TextureType::Distortion);
+			auto resource = textureLoader->Load(path, Effekseer::TextureType::Distortion);
 			SetTexture(effect, i, Effekseer::TextureType::Distortion, resource);
 		}
 	}
@@ -138,4 +141,13 @@ bool glTFEffectFactory::OnCheckIsBinarySupported(const void* data, int32_t size)
 		return false;
 	}
 	return true;
+}
+
+std::string glTFEffectFactory::GetBodyURI(const void* data, int32_t size)
+{
+	glTFData glTFData_;
+	if (!glTFData_.Load(data, size))
+		return "";
+
+	return glTFData_.buffers[0].uri;
 }

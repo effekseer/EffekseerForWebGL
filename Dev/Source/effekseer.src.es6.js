@@ -29,6 +29,8 @@ const effekseer = (() => {
 		SetPause: Module.cwrap("EffekseerSetPause", "void", ["number", "number"]),
 		SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number"]),
 		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"]),
+		IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number"]),
+		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"]),
 	};
 
     /**
@@ -204,6 +206,7 @@ const effekseer = (() => {
 		}
 		xhr.send(null);
 	};
+
     let loadResource = (path, onload, onerror) => {
 		const extindex = path.lastIndexOf(".");
 		let ext = (extindex >= 0) ? ext = path.slice(extindex) : "";
@@ -221,6 +224,7 @@ const effekseer = (() => {
 			}, onerror);
 		}
 	};
+
     const loadEfkBuffer = buffer => {
 		loadingEffect = effect;
 		const memptr = Module._malloc(buffer.byteLength);
@@ -268,6 +272,25 @@ const effekseer = (() => {
 		}, effect.onerror);
 		return null;
 	};
+
+	_isBinaryglTF = buffer => {
+		loadingEffect = effect;
+		const memptr = Module._malloc(buffer.byteLength);
+		Module.HEAP8.set(new Uint8Array(buffer), memptr);
+		ret = Core.IsBinaryglTF(memptr, buffer.byteLength);
+		Module._free(memptr);
+		return ret > 0;
+	}
+
+	_getglTFBodyURI = buffer => {
+		loadingEffect = effect;
+		const memptr = Module._malloc(buffer.byteLength);
+		Module.HEAP8.set(new Uint8Array(buffer), memptr);
+		ptr = Core.GetglTFBodyURI(memptr, buffer.byteLength);
+		str = Pointer_stringify(ptr);
+		Module._free(memptr);
+		return str;
+	}
 
     /**
 	 * Effekseer Context
@@ -423,7 +446,21 @@ const effekseer = (() => {
 			if (typeof path === "string") {
 				effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
 				loadBinFile(path, buffer => {
-					effect._load(buffer);
+
+					if (_isBinaryglTF(buffer))
+					{
+						// glTF
+						bodyPath = _getglTFBodyURI(buffer);
+
+						loadBinFile(effect.baseDir + path, bufferBody => {
+							effect._load(buffer);
+						}, effect.onerror);
+					}
+					else
+					{
+						effect._load(buffer);
+					}
+
 				}, effect.onerror);
 			} else if (typeof path === "arraybuffer") {
 				const buffer = path;

@@ -35,7 +35,9 @@ var effekseer = function () {
 		SetTargetLocation: Module.cwrap("EffekseerSetTargetLocation", "void", ["number", "number", "number", "number"]),
 		SetPause: Module.cwrap("EffekseerSetPause", "void", ["number", "number"]),
 		SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number"]),
-		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"])
+		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"]),
+		IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number"]),
+		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"])
 	};
 
 	/**
@@ -262,6 +264,7 @@ var effekseer = function () {
 		};
 		xhr.send(null);
 	};
+
 	var loadResource = function loadResource(path, onload, onerror) {
 		var extindex = path.lastIndexOf(".");
 		var ext = extindex >= 0 ? ext = path.slice(extindex) : "";
@@ -279,6 +282,7 @@ var effekseer = function () {
 			}, onerror);
 		}
 	};
+
 	var loadEfkBuffer = function loadEfkBuffer(buffer) {
 		loadingEffect = effect;
 		var memptr = Module._malloc(buffer.byteLength);
@@ -329,6 +333,25 @@ var effekseer = function () {
 			effect._update();
 		}, effect.onerror);
 		return null;
+	};
+
+	_isBinaryglTF = function _isBinaryglTF(buffer) {
+		loadingEffect = effect;
+		var memptr = Module._malloc(buffer.byteLength);
+		Module.HEAP8.set(new Uint8Array(buffer), memptr);
+		ret = Core.IsBinaryglTF(memptr, buffer.byteLength);
+		Module._free(memptr);
+		return ret > 0;
+	};
+
+	_getglTFBodyURI = function _getglTFBodyURI(buffer) {
+		loadingEffect = effect;
+		var memptr = Module._malloc(buffer.byteLength);
+		Module.HEAP8.set(new Uint8Array(buffer), memptr);
+		ptr = Core.GetglTFBodyURI(memptr, buffer.byteLength);
+		str = Pointer_stringify(ptr);
+		Module._free(memptr);
+		return str;
 	};
 
 	/**
@@ -510,7 +533,17 @@ var effekseer = function () {
 				if (typeof path === "string") {
 					effect.baseDir = dirIndex >= 0 ? path.slice(0, dirIndex + 1) : "";
 					loadBinFile(path, function (buffer) {
-						effect._load(buffer);
+
+						if (_isBinaryglTF(buffer)) {
+							// glTF
+							bodyPath = _getglTFBodyURI(buffer);
+
+							loadBinFile(effect.baseDir + path, function (bufferBody) {
+								effect._load(buffer);
+							}, effect.onerror);
+						} else {
+							effect._load(buffer);
+						}
 					}, effect.onerror);
 				} else if (typeof path === "arraybuffer") {
 					var buffer = path;
