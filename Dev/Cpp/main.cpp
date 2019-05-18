@@ -308,9 +308,9 @@ extern "C" {
 		effect->Release();
 	}
 	
-	void EXPORT EffekseerReloadResources(Effect* effect)
+	void EXPORT EffekseerReloadResources(Effect* effect, void* data, int32_t size)
 	{
-		effect->ReloadResources();
+		effect->ReloadResources(data, size);
 	}
 
 	void EXPORT EffekseerStopAllEffects()

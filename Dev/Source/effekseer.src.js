@@ -53,12 +53,14 @@ var effekseer = function () {
 			this.baseDir = "";
 			this.isLoaded = false;
 			this.resources = [];
+			this.main_buffer = null;
 		}
 
 		_createClass(EffekseerEffect, [{
 			key: "_load",
 			value: function _load(buffer) {
 				loadingEffect = this;
+				this.main_buffer = buffer;
 				var memptr = Module._malloc(buffer.byteLength);
 				Module.HEAP8.set(new Uint8Array(buffer), memptr);
 				this.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
@@ -70,7 +72,11 @@ var effekseer = function () {
 			key: "_reload",
 			value: function _reload() {
 				loadingEffect = this;
-				Core.ReloadResources(this.nativeptr);
+				buffer = this.main_buffer;
+				var memptr = Module._malloc(buffer.byteLength);
+				Module.HEAP8.set(new Uint8Array(buffer), memptr);
+				Core.ReloadResources(this.nativeptr, memptr, buffer.byteLength);
+				Module._free(memptr);
 				loadingEffect = null;
 			}
 		}, {
@@ -555,8 +561,8 @@ var effekseer = function () {
 						}
 					}, effect.onerror);
 				} else if (typeof path === "arraybuffer") {
-					var buffer = path;
-					effect._load(buffer);
+					var _buffer = path;
+					effect._load(_buffer);
 				}
 
 				return effect;

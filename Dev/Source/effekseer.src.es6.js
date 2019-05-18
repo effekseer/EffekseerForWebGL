@@ -43,10 +43,12 @@ const effekseer = (() => {
             this.baseDir = "";
             this.isLoaded = false;
             this.resources = [];
+			this.main_buffer = null;
         }
 
         _load(buffer) {
 			loadingEffect = this;
+			this.main_buffer = buffer;
 			const memptr = Module._malloc(buffer.byteLength);
 			Module.HEAP8.set(new Uint8Array(buffer), memptr);
 			this.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
@@ -57,7 +59,11 @@ const effekseer = (() => {
 
         _reload() {
 			loadingEffect = this;
-			Core.ReloadResources(this.nativeptr);
+			buffer = this.main_buffer;
+			const memptr = Module._malloc(buffer.byteLength);
+			Module.HEAP8.set(new Uint8Array(buffer), memptr);
+			Core.ReloadResources(this.nativeptr, memptr, buffer.byteLength);
+			Module._free(memptr);
 			loadingEffect = null;
 		}
 
