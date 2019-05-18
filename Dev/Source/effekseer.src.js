@@ -35,7 +35,9 @@ var effekseer = function () {
 		SetTargetLocation: Module.cwrap("EffekseerSetTargetLocation", "void", ["number", "number", "number", "number"]),
 		SetPause: Module.cwrap("EffekseerSetPause", "void", ["number", "number"]),
 		SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number"]),
-		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"])
+		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"]),
+		IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number"]),
+		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"])
 	};
 
 	/**
@@ -51,12 +53,14 @@ var effekseer = function () {
 			this.baseDir = "";
 			this.isLoaded = false;
 			this.resources = [];
+			this.main_buffer = null;
 		}
 
 		_createClass(EffekseerEffect, [{
 			key: "_load",
 			value: function _load(buffer) {
 				loadingEffect = this;
+				this.main_buffer = buffer;
 				var memptr = Module._malloc(buffer.byteLength);
 				Module.HEAP8.set(new Uint8Array(buffer), memptr);
 				this.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
@@ -68,7 +72,11 @@ var effekseer = function () {
 			key: "_reload",
 			value: function _reload() {
 				loadingEffect = this;
-				Core.ReloadResources(this.nativeptr);
+				buffer = this.main_buffer;
+				var memptr = Module._malloc(buffer.byteLength);
+				Module.HEAP8.set(new Uint8Array(buffer), memptr);
+				Core.ReloadResources(this.nativeptr, memptr, buffer.byteLength);
+				Module._free(memptr);
 				loadingEffect = null;
 			}
 		}, {
@@ -262,6 +270,7 @@ var effekseer = function () {
 		};
 		xhr.send(null);
 	};
+
 	var loadResource = function loadResource(path, onload, onerror) {
 		var extindex = path.lastIndexOf(".");
 		var ext = extindex >= 0 ? ext = path.slice(extindex) : "";
@@ -278,15 +287,6 @@ var effekseer = function () {
 				onload(buffer);
 			}, onerror);
 		}
-	};
-	var loadEfkBuffer = function loadEfkBuffer(buffer) {
-		loadingEffect = effect;
-		var memptr = Module._malloc(buffer.byteLength);
-		Module.HEAP8.set(new Uint8Array(buffer), memptr);
-		effect.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
-		Module._free(memptr);
-		loadingEffect = null;
-		effect._update();
 	};
 
 	Module._isPowerOfTwo = function (img) {
@@ -311,6 +311,7 @@ var effekseer = function () {
 		}, effect.onerror);
 		return null;
 	};
+
 	Module._loadBinary = function (path) {
 		var effect = loadingEffect;
 		var res = effect.resources.find(function (res) {
@@ -329,6 +330,43 @@ var effekseer = function () {
 			effect._update();
 		}, effect.onerror);
 		return null;
+	};
+
+	_loadBinary_with_effect_cache = function _loadBinary_with_effect_cache(path, effect, onload, onerror) {
+		var res = effect.resources.find(function (res) {
+			return res.path == path;
+		});
+		if (res) {
+			onload();
+			return res.isLoaded ? res.buffer : null;
+		}
+
+		var res = { path: path, isLoaded: false, buffer: null };
+		effect.resources.push(res);
+
+		loadBinFile(effect.baseDir + path, function (buffer) {
+			res.buffer = buffer;
+			res.isLoaded = true;
+			onload(buffer);
+		}, onerror);
+		return null;
+	};
+
+	_isBinaryglTF = function _isBinaryglTF(buffer) {
+		var memptr = Module._malloc(buffer.byteLength);
+		Module.HEAP8.set(new Uint8Array(buffer), memptr);
+		ret = Core.IsBinaryglTF(memptr, buffer.byteLength);
+		Module._free(memptr);
+		return ret > 0;
+	};
+
+	_getglTFBodyURI = function _getglTFBodyURI(buffer) {
+		var memptr = Module._malloc(buffer.byteLength);
+		Module.HEAP8.set(new Uint8Array(buffer), memptr);
+		ptr = Core.GetglTFBodyURI(memptr, buffer.byteLength);
+		str = Module.Pointer_stringify(ptr);
+		Module._free(memptr);
+		return str;
 	};
 
 	/**
@@ -510,11 +548,21 @@ var effekseer = function () {
 				if (typeof path === "string") {
 					effect.baseDir = dirIndex >= 0 ? path.slice(0, dirIndex + 1) : "";
 					loadBinFile(path, function (buffer) {
-						effect._load(buffer);
+
+						if (_isBinaryglTF(buffer)) {
+							// glTF
+							bodyPath = _getglTFBodyURI(buffer);
+
+							_loadBinary_with_effect_cache(bodyPath, effect, function (bufferBody) {
+								effect._load(buffer);
+							}, effect.onerror);
+						} else {
+							effect._load(buffer);
+						}
 					}, effect.onerror);
 				} else if (typeof path === "arraybuffer") {
-					var buffer = path;
-					effect._load(buffer);
+					var _buffer = path;
+					effect._load(_buffer);
 				}
 
 				return effect;

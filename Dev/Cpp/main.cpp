@@ -163,6 +163,12 @@ namespace EfkWebViewer
 
 		CustomFileInterface fileInterface;
 			
+		glbEffectFactory* glbEffectFactory_ = nullptr;
+		glTFEffectFactory* glTFEffectFactory_ = nullptr;
+
+		//! pass strings
+		std::string tempStr;
+
 	public:
 		Context() = default;
 		~Context() = default;
@@ -186,8 +192,11 @@ namespace EfkWebViewer
 
 			manager->SetCoordinateSystem( CoordinateSystem::RH );
 			
-			manager->GetSetting()->AddEffectFactory(new glbEffectFactory());
-			manager->GetSetting()->AddEffectFactory(new glTFEffectFactory());
+			glbEffectFactory_ = new glbEffectFactory();
+			glTFEffectFactory_ = new glTFEffectFactory();
+
+			manager->GetSetting()->AddEffectFactory(glbEffectFactory_);
+			manager->GetSetting()->AddEffectFactory(glTFEffectFactory_);
 
 			return true;
 		}
@@ -299,9 +308,9 @@ extern "C" {
 		effect->Release();
 	}
 	
-	void EXPORT EffekseerReloadResources(Effect* effect)
+	void EXPORT EffekseerReloadResources(Effect* effect, void* data, int32_t size)
 	{
-		effect->ReloadResources();
+		effect->ReloadResources(data, size);
 	}
 
 	void EXPORT EffekseerStopAllEffects()
@@ -371,4 +380,14 @@ extern "C" {
 		viewer.manager->SetSpeed(handle, speed);
 	}
 
+	int EXPORT EffekseerIsBinaryglTF(void* data, int32_t size)
+	{
+		return viewer.glTFEffectFactory_->OnCheckIsBinarySupported(data, size) ? 1 : 0;
+	}
+
+	const char* EXPORT EffekseerGetglTFBodyURI(void* data, int32_t size)
+	{
+		viewer.tempStr = viewer.glTFEffectFactory_->GetBodyURI(data, size);
+		return viewer.tempStr.c_str();
+	}
 }

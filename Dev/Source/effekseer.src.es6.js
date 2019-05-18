@@ -29,6 +29,8 @@ const effekseer = (() => {
 		SetPause: Module.cwrap("EffekseerSetPause", "void", ["number", "number"]),
 		SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number"]),
 		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"]),
+		IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number"]),
+		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"]),
 	};
 
     /**
@@ -41,10 +43,12 @@ const effekseer = (() => {
             this.baseDir = "";
             this.isLoaded = false;
             this.resources = [];
+			this.main_buffer = null;
         }
 
         _load(buffer) {
 			loadingEffect = this;
+			this.main_buffer = buffer;
 			const memptr = Module._malloc(buffer.byteLength);
 			Module.HEAP8.set(new Uint8Array(buffer), memptr);
 			this.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
@@ -55,7 +59,11 @@ const effekseer = (() => {
 
         _reload() {
 			loadingEffect = this;
-			Core.ReloadResources(this.nativeptr);
+			buffer = this.main_buffer;
+			const memptr = Module._malloc(buffer.byteLength);
+			Module.HEAP8.set(new Uint8Array(buffer), memptr);
+			Core.ReloadResources(this.nativeptr, memptr, buffer.byteLength);
+			Module._free(memptr);
 			loadingEffect = null;
 		}
 
@@ -204,6 +212,7 @@ const effekseer = (() => {
 		}
 		xhr.send(null);
 	};
+
     let loadResource = (path, onload, onerror) => {
 		const extindex = path.lastIndexOf(".");
 		let ext = (extindex >= 0) ? ext = path.slice(extindex) : "";
@@ -220,15 +229,6 @@ const effekseer = (() => {
 				onload(buffer);
 			}, onerror);
 		}
-	};
-    const loadEfkBuffer = buffer => {
-		loadingEffect = effect;
-		const memptr = Module._malloc(buffer.byteLength);
-		Module.HEAP8.set(new Uint8Array(buffer), memptr);
-		effect.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
-		Module._free(memptr);
-		loadingEffect = null;
-		effect._update();
 	};
 
     Module._isPowerOfTwo = img => {
@@ -251,6 +251,7 @@ const effekseer = (() => {
 		}, effect.onerror);
 		return null;
 	};
+
     Module._loadBinary = path => {
 		const effect = loadingEffect;
 		var res = effect.resources.find(res => {return res.path == path});
@@ -268,6 +269,41 @@ const effekseer = (() => {
 		}, effect.onerror);
 		return null;
 	};
+
+    _loadBinary_with_effect_cache = (path, effect, onload, onerror) => {
+		var res = effect.resources.find(res => {return res.path == path});
+		if (res) {
+			onload();
+			return (res.isLoaded) ? res.buffer : null;
+		}
+
+		var res = {path: path, isLoaded: false, buffer: null};
+		effect.resources.push(res);
+		
+		loadBinFile(effect.baseDir + path, buffer => {
+			res.buffer = buffer;
+			res.isLoaded = true;
+			onload(buffer);
+		}, onerror);
+		return null;
+	};
+
+	_isBinaryglTF = buffer => {
+		const memptr = Module._malloc(buffer.byteLength);
+		Module.HEAP8.set(new Uint8Array(buffer), memptr);
+		ret = Core.IsBinaryglTF(memptr, buffer.byteLength);
+		Module._free(memptr);
+		return ret > 0;
+	}
+
+	_getglTFBodyURI = buffer => {
+		const memptr = Module._malloc(buffer.byteLength);
+		Module.HEAP8.set(new Uint8Array(buffer), memptr);
+		ptr = Core.GetglTFBodyURI(memptr, buffer.byteLength);
+		str = Module.Pointer_stringify(ptr);
+		Module._free(memptr);
+		return str;
+	}
 
     /**
 	 * Effekseer Context
@@ -423,7 +459,21 @@ const effekseer = (() => {
 			if (typeof path === "string") {
 				effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
 				loadBinFile(path, buffer => {
-					effect._load(buffer);
+
+					if (_isBinaryglTF(buffer))
+					{
+						// glTF
+						bodyPath = _getglTFBodyURI(buffer);
+
+						_loadBinary_with_effect_cache(bodyPath, effect, bufferBody => {
+							effect._load(buffer);
+						}, effect.onerror);
+					}
+					else
+					{
+						effect._load(buffer);
+					}
+
 				}, effect.onerror);
 			} else if (typeof path === "arraybuffer") {
 				const buffer = path;
