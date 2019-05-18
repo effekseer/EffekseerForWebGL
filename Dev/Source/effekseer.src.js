@@ -283,16 +283,6 @@ var effekseer = function () {
 		}
 	};
 
-	var loadEfkBuffer = function loadEfkBuffer(buffer) {
-		loadingEffect = effect;
-		var memptr = Module._malloc(buffer.byteLength);
-		Module.HEAP8.set(new Uint8Array(buffer), memptr);
-		effect.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
-		Module._free(memptr);
-		loadingEffect = null;
-		effect._update();
-	};
-
 	Module._isPowerOfTwo = function (img) {
 		return !(img.width & img.width - 1) && !(img.height & img.height - 1);
 	};
@@ -315,6 +305,7 @@ var effekseer = function () {
 		}, effect.onerror);
 		return null;
 	};
+
 	Module._loadBinary = function (path) {
 		var effect = loadingEffect;
 		var res = effect.resources.find(function (res) {
@@ -335,8 +326,27 @@ var effekseer = function () {
 		return null;
 	};
 
+	_loadBinary_with_effect_cache = function _loadBinary_with_effect_cache(path, effect, onload, onerror) {
+		var res = effect.resources.find(function (res) {
+			return res.path == path;
+		});
+		if (res) {
+			onload();
+			return res.isLoaded ? res.buffer : null;
+		}
+
+		var res = { path: path, isLoaded: false, buffer: null };
+		effect.resources.push(res);
+
+		loadBinFile(effect.baseDir + path, function (buffer) {
+			res.buffer = buffer;
+			res.isLoaded = true;
+			onload(buffer);
+		}, onerror);
+		return null;
+	};
+
 	_isBinaryglTF = function _isBinaryglTF(buffer) {
-		loadingEffect = effect;
 		var memptr = Module._malloc(buffer.byteLength);
 		Module.HEAP8.set(new Uint8Array(buffer), memptr);
 		ret = Core.IsBinaryglTF(memptr, buffer.byteLength);
@@ -345,11 +355,10 @@ var effekseer = function () {
 	};
 
 	_getglTFBodyURI = function _getglTFBodyURI(buffer) {
-		loadingEffect = effect;
 		var memptr = Module._malloc(buffer.byteLength);
 		Module.HEAP8.set(new Uint8Array(buffer), memptr);
 		ptr = Core.GetglTFBodyURI(memptr, buffer.byteLength);
-		str = Pointer_stringify(ptr);
+		str = Module.Pointer_stringify(ptr);
 		Module._free(memptr);
 		return str;
 	};
@@ -538,7 +547,7 @@ var effekseer = function () {
 							// glTF
 							bodyPath = _getglTFBodyURI(buffer);
 
-							loadBinFile(effect.baseDir + path, function (bufferBody) {
+							_loadBinary_with_effect_cache(bodyPath, effect, function (bufferBody) {
 								effect._load(buffer);
 							}, effect.onerror);
 						} else {

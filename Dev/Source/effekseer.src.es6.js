@@ -225,16 +225,6 @@ const effekseer = (() => {
 		}
 	};
 
-    const loadEfkBuffer = buffer => {
-		loadingEffect = effect;
-		const memptr = Module._malloc(buffer.byteLength);
-		Module.HEAP8.set(new Uint8Array(buffer), memptr);
-		effect.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
-		Module._free(memptr);
-		loadingEffect = null;
-		effect._update();
-	};
-
     Module._isPowerOfTwo = img => {
 		return !(img.width & (img.width-1)) && !(img.height & (img.height-1));
 	};
@@ -255,6 +245,7 @@ const effekseer = (() => {
 		}, effect.onerror);
 		return null;
 	};
+
     Module._loadBinary = path => {
 		const effect = loadingEffect;
 		var res = effect.resources.find(res => {return res.path == path});
@@ -273,8 +264,25 @@ const effekseer = (() => {
 		return null;
 	};
 
+    _loadBinary_with_effect_cache = (path, effect, onload, onerror) => {
+		var res = effect.resources.find(res => {return res.path == path});
+		if (res) {
+			onload();
+			return (res.isLoaded) ? res.buffer : null;
+		}
+
+		var res = {path: path, isLoaded: false, buffer: null};
+		effect.resources.push(res);
+		
+		loadBinFile(effect.baseDir + path, buffer => {
+			res.buffer = buffer;
+			res.isLoaded = true;
+			onload(buffer);
+		}, onerror);
+		return null;
+	};
+
 	_isBinaryglTF = buffer => {
-		loadingEffect = effect;
 		const memptr = Module._malloc(buffer.byteLength);
 		Module.HEAP8.set(new Uint8Array(buffer), memptr);
 		ret = Core.IsBinaryglTF(memptr, buffer.byteLength);
@@ -283,11 +291,10 @@ const effekseer = (() => {
 	}
 
 	_getglTFBodyURI = buffer => {
-		loadingEffect = effect;
 		const memptr = Module._malloc(buffer.byteLength);
 		Module.HEAP8.set(new Uint8Array(buffer), memptr);
 		ptr = Core.GetglTFBodyURI(memptr, buffer.byteLength);
-		str = Pointer_stringify(ptr);
+		str = Module.Pointer_stringify(ptr);
 		Module._free(memptr);
 		return str;
 	}
@@ -452,7 +459,7 @@ const effekseer = (() => {
 						// glTF
 						bodyPath = _getglTFBodyURI(buffer);
 
-						loadBinFile(effect.baseDir + path, bufferBody => {
+						_loadBinary_with_effect_cache(bodyPath, effect, bufferBody => {
 							effect._load(buffer);
 						}, effect.onerror);
 					}
