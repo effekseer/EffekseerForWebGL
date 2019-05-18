@@ -119,3 +119,10 @@ cd Dev\Build
 Build_2015.bat
 ```
 
+### Packaging
+
+```
+cd Dev\Build
+Package.bat
+```
+
