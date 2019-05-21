@@ -17,6 +17,7 @@ set(CMAKE_EXE_LINKER_FLAGS "\
 	-s NO_FILESYSTEM=1 \
 	-s DISABLE_EXCEPTION_CATCHING=1 \
 	-s NO_EXIT_RUNTIME=1 \
+	-s TOTAL_MEMORY=33554432 \
 	-s EXPORT_NAME=\"'effekseer'\" \
 	--post-js ../Source/post.js \
 	" ${CMAKE_EXE_LINKER_FLAGS})

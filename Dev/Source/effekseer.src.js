@@ -398,8 +398,8 @@ var effekseer = function () {
 
 				if (!settings) {
 					settings = {
-						instanceMaxCount: 2000,
-						squareMaxCount: 8000
+						instanceMaxCount: 4000,
+						squareMaxCount: 10000
 					};
 				}
 
