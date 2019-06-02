@@ -109,7 +109,11 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 	{
         for (auto i = 0; i < effect->GetWaveCount(); i++)
 		{
-	    	// Need to implement
+			char16_t path[260];
+			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.soundPathes[i].c_str());
+
+			auto resource = soundLoader->Load(path);
+			SetSound(effect, i,resource);
         }
 	}
 
@@ -117,7 +121,11 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 	{
         for (auto i = 0; i < effect->GetModelCount(); i++)
 		{
-	    	// Need to implement
+			char16_t path[260];
+			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.modelPathes[i].c_str());
+
+			auto resource = modelLoader->Load(path);
+			SetModel(effect, i,resource);
         }
 	}
 }

@@ -34,6 +34,8 @@ bool glTFglmEffectFactory::glTFData::Load(const void* data, int32_t size)
 	auto& images_bufferviews = effect1["images"].get<picojson::array>();
 	auto& normalImages_bufferviews = effect1["normalImages"].get<picojson::array>();
 	auto& distortionImages_bufferviews = effect1["distortionImages"].get<picojson::array>();
+	auto& sounds_bufferviews = effect1["sounds"].get<picojson::array>();
+	auto& models_bufferviews = effect1["models"].get<picojson::array>();
 
 	body = CreateBufferView(bufferViews[body_bufferview_name].get<picojson::object>());
 
@@ -97,6 +99,42 @@ bool glTFglmEffectFactory::glTFData::Load(const void* data, int32_t size)
 		{
 			auto path_name = uri_it->second.get<std::string>();
 			distortionImagePathes.push_back(path_name);
+		}
+	}
+
+	for (auto& image : sounds_bufferviews)
+	{
+		auto bufferview_it = image.get<picojson::object>().find("bufferview");
+		auto uri_it = image.get<picojson::object>().find("uri");
+
+		if (bufferview_it != image.get<picojson::object>().end())
+		{
+			auto bufferview_name = bufferview_it->second.get<std::string>();
+			sounds.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+		}
+
+		if (uri_it != image.get<picojson::object>().end())
+		{
+			auto path_name = uri_it->second.get<std::string>();
+			soundPathes.push_back(path_name);
+		}
+	}
+
+	for (auto& image : models_bufferviews)
+	{
+		auto bufferview_it = image.get<picojson::object>().find("bufferview");
+		auto uri_it = image.get<picojson::object>().find("uri");
+
+		if (bufferview_it != image.get<picojson::object>().end())
+		{
+			auto bufferview_name = bufferview_it->second.get<std::string>();
+			models.push_back(CreateBufferView(bufferViews[bufferview_name].get<picojson::object>()));
+		}
+
+		if (uri_it != image.get<picojson::object>().end())
+		{
+			auto path_name = uri_it->second.get<std::string>();
+			modelPathes.push_back(path_name);
 		}
 	}
 

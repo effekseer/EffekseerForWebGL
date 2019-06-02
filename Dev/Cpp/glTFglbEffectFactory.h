@@ -32,10 +32,14 @@ protected:
 		std::vector<BufferView> images;
 		std::vector<BufferView> normalImages;
 		std::vector<BufferView> distortionImages;
+		std::vector<BufferView> sounds;
+		std::vector<BufferView> models;
 
 		std::vector<std::string> imagePathes;
 		std::vector<std::string> normalImagePathes;
 		std::vector<std::string> distortionImagePathes;
+		std::vector<std::string> soundPathes;
+		std::vector<std::string> modelPathes;
 
 		bool Load(const void* data, int32_t size);
 	};
