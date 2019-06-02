@@ -119,7 +119,7 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 		for (auto i = 0; i < effect->GetWaveCount(); i++)
 		{
 			char path[260];
-			Effekseer::ConvertUtf16ToUtf8((int8_t*)path, 260, (int16_t*)effect->GetSoundPath(i));
+			Effekseer::ConvertUtf16ToUtf8((int8_t*)path, 260, (int16_t*)effect->GetWavePath(i));
 			auto buf = glbData_.gltf.sounds[i];
 			auto resource =
 				soundLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength);
@@ -136,7 +136,7 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 			auto buf = glbData_.gltf.models[i];
 			auto resource =
 				modelLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength);
-			Setmodel(effect, i, resource);
+			SetModel(effect, i, resource);
 		}
 	}
 }
