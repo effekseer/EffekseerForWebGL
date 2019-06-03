@@ -140,6 +140,12 @@ namespace EfkWebViewer
 			return NULL;
 		}
 
+		void* Load(const void* data, int32_t size) override
+		{
+			Model* model = new EffekseerRendererGL::Model((void*)data, size);
+			return (void*)model;
+		}
+
 		void Unload( void* data )
 		{
 			if( data != NULL )
