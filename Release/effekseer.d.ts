@@ -110,6 +110,11 @@ declare namespace effekseer {
      */
     export function setResourceLoader(loader);
 
+    /**
+    * Get whether VAO is supported
+    */
+    export function isVertexArrayObjectSupported();
+
     export class EffekseerEffect {
         constructor();
     }

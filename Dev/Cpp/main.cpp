@@ -41,13 +41,15 @@ namespace EfkWebViewer
 
 			// Load texture from image
 			EM_ASM_INT({
+				var binding = GLctx.getParameter(GLctx.TEXTURE_BINDING_2D);
+
 				var img = Module._loadImage(UTF16ToString($0));
 				GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[$1]);
 				GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, img);
 				if (Module._isPowerOfTwo(img)) {
 					GLctx.generateMipmap(GLctx.TEXTURE_2D);
 				}
-				GLctx.bindTexture(GLctx.TEXTURE_2D, null);
+				GLctx.bindTexture(GLctx.TEXTURE_2D, binding);
 			}, path, texture);
 			
 			Effekseer::TextureData* textureData = new Effekseer::TextureData();
@@ -63,6 +65,9 @@ namespace EfkWebViewer
 
 			uint8_t* img_ptr = stbi_load_from_memory((const uint8_t*)data, size, &width, &height, &channel, 4);
 
+			GLint binding = 0;
+
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &binding);
 
 			GLuint texture = 0;
 			glGenTextures(1, &texture);
@@ -80,7 +85,7 @@ namespace EfkWebViewer
 			// Generate mipmap
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(GL_TEXTURE_2D, binding);
 			stbi_image_free(img_ptr);
 
 			auto textureData = new Effekseer::TextureData();
@@ -161,7 +166,7 @@ namespace EfkWebViewer
 	{
 	public:
 		Manager* manager = NULL;
-		EffekseerRenderer::Renderer* renderer = NULL;
+		EffekseerRendererGL::Renderer* renderer = NULL;
 		EffekseerSound::Sound* sound = NULL;
 
 		Matrix44 projectionMatrix;
@@ -396,4 +401,13 @@ extern "C" {
 		viewer.tempStr = viewer.glTFEffectFactory_->GetBodyURI(data, size);
 		return viewer.tempStr.c_str();
 	}
+
+	int EXPORT EffekseerIsVertexArrayObjectSupported()
+	{
+		if (viewer.renderer == nullptr)
+			return 0;
+
+		return viewer.renderer->IsVertexArrayObjectSupported() ? 1 : 0;
+	}
+
 }

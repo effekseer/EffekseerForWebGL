@@ -37,7 +37,9 @@ var effekseer = function () {
 		SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number"]),
 		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"]),
 		IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number"]),
-		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"])
+		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"]),
+		IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", [])
+
 	};
 
 	/**
@@ -609,6 +611,16 @@ var effekseer = function () {
 			key: "setResourceLoader",
 			value: function setResourceLoader(loader) {
 				loadResource = loader;
+			}
+
+			/**
+    * Get whether VAO is supported
+    */
+
+		}, {
+			key: "isVertexArrayObjectSupported",
+			value: function isVertexArrayObjectSupported() {
+				return Core.IsVertexArrayObjectSupported();
 			}
 		}]);
 

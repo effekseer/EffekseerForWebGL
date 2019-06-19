@@ -31,6 +31,8 @@ const effekseer = (() => {
 		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"]),
 		IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number"]),
 		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"]),
+		IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", []),
+
 	};
 
     /**
@@ -515,7 +517,14 @@ const effekseer = (() => {
 		 */
         setResourceLoader(loader) {
 			loadResource = loader;
-		}
+        }
+
+        /**
+         * Get whether VAO is supported
+         */
+        isVertexArrayObjectSupported() {
+            return Core.IsVertexArrayObjectSupported();
+        }
     }
 
     return new Effekseer();
