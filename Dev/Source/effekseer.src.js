@@ -260,6 +260,41 @@ var effekseer = function () {
 	var gl = null;
 	var loadingEffect = null;
 
+	var isImagePowerOfTwo = function isImagePowerOfTwo(image) {
+		return !(image.width & image.width - 1) && !(image.height & image.height - 1);
+	};
+
+	var calcNextPowerOfTwo = function calcNextPowerOfTwo(v) {
+		var sizes = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048];
+
+		var foundInd = -1;
+		for (var i = 0; i < sizes.length; i++) {
+			if (sizes[i] >= v) {
+				return sizes[i];
+			}
+		}
+
+		for (var i = sizes.length - 1; i >= 0; i--) {
+			if (sizes[i] <= v) {
+				return sizes[i];
+			}
+		}
+		return 1;
+	};
+
+	var convertPowerOfTwoImage = function convertPowerOfTwoImage(image) {
+		if (!isImagePowerOfTwo(image)) {
+			var canvas = document.createElement("canvas");
+			canvas.width = calcNextPowerOfTwo(image.width);
+			canvas.height = calcNextPowerOfTwo(image.height);
+			var context2d = canvas.getContext("2d");
+			context2d.drawImage(image, 0, 0, image.width, image.height);
+			image = canvas;
+		}
+
+		return image;
+	};
+
 	var loadBinFile = function loadBinFile(url, onload, onerror) {
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url, true);
@@ -279,7 +314,8 @@ var effekseer = function () {
 		if (ext == ".png" || ext == ".jpg") {
 			var image = new Image();
 			image.onload = function () {
-				onload(image);
+				converted_image = convertPowerOfTwoImage(image);
+				onload(converted_image);
 			};
 			image.onerror = onerror;
 			image.crossOrigin = "anonymous";
@@ -292,7 +328,7 @@ var effekseer = function () {
 	};
 
 	Module._isPowerOfTwo = function (img) {
-		return !(img.width & img.width - 1) && !(img.height & img.height - 1);
+		return isImagePowerOfTwo(img);
 	};
 	Module._loadImage = function (path) {
 		var effect = loadingEffect;

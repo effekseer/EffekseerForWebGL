@@ -202,6 +202,49 @@ const effekseer = (() => {
     let gl = null;
     var loadingEffect = null;
 
+	let isImagePowerOfTwo = (image) =>
+	{
+		return !(image.width & (image.width-1)) && !(image.height & (image.height-1));
+	};
+
+	let calcNextPowerOfTwo = (v) =>
+	{
+		var sizes = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048];
+
+		var foundInd = -1;
+		for(var i = 0; i < sizes.length; i++)
+		{
+			if(sizes[i] >= v)
+			{
+				return sizes[i];
+			}
+		}
+
+		for(var i = sizes.length - 1; i >= 0; i--)
+		{
+			if(sizes[i] <= v)
+			{
+				return sizes[i];
+			}
+		}
+		return 1;
+	}
+
+	let convertPowerOfTwoImage = (image) =>
+	{
+		if(!isImagePowerOfTwo(image))
+		{
+        	var canvas = document.createElement("canvas");
+        	canvas.width = calcNextPowerOfTwo(image.width);
+        	canvas.height = calcNextPowerOfTwo(image.height);
+        	var context2d = canvas.getContext("2d");
+        	context2d.drawImage(image, 0, 0, image.width, image.height);
+        	image = canvas;
+		}
+		
+		return image;
+	};
+
     const loadBinFile = (url, onload, onerror) => {
 		const xhr = new XMLHttpRequest();
 		xhr.open('GET', url, true);
@@ -221,7 +264,8 @@ const effekseer = (() => {
 		if (ext == ".png" || ext == ".jpg") {
 			const image = new Image();
 			image.onload = () => {
-				onload(image);
+				converted_image = convertPowerOfTwoImage(image);
+				onload(converted_image);
 			};
 			image.onerror = onerror;
 			image.crossOrigin = "anonymous";
@@ -234,7 +278,7 @@ const effekseer = (() => {
 	};
 
     Module._isPowerOfTwo = img => {
-		return !(img.width & (img.width-1)) && !(img.height & (img.height-1));
+		return isImagePowerOfTwo(img);
 	};
     Module._loadImage = path => {
 		const effect = loadingEffect;
