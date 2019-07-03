@@ -135,7 +135,7 @@ declare namespace effekseer {
         /**
          * if returned false, this effect is end of playing.
          */
-        exists(): boolean;
+        readonly exists: boolean;
 
         /**
          * Set the location of this effect instance.

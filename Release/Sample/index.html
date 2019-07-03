@@ -8,15 +8,32 @@
     <canvas id="canvas" width="720" height="480" class="screen" oncontextmenu="event.preventDefault()"></canvas>
     <br>
     <div id="buttons">
-      <input type="button" onclick="effekseer.play(effects['Laser01'], 0, 0, 0);" value="Laser01"></input>
-      <input type="button" onclick="effekseer.play(effects['Laser02'], 0, 0, 0);" value="Laser02"></input>
-      <input type="button" onclick="effekseer.play(effects['Simple_Ring_Shape1'], 0, 0, 0);" value="Simple_Ring_Shape1"></input>
-      <input type="button" onclick="effekseer.play(effects['block'], 0, 0, 0);" value="block"></input>
-      <input type="button" onclick="effekseer.stopAll();" value="stop"></input>
+      <input type="button" onclick="latestHandle = effekseer.play(effects['Laser01'], 0, 0, 0);" value="Laser01"></input>
+      <input type="button" onclick="latestHandle = effekseer.play(effects['Laser02'], 0, 0, 0);" value="Laser02"></input>
+      <input type="button" onclick="latestHandle = effekseer.play(effects['Simple_Ring_Shape1'], 0, 0, 0);" value="Simple_Ring_Shape1"></input>
+      <input type="button" onclick="latestHandle = effekseer.play(effects['block'], 0, 0, 0);" value="block"></input>
+      <input type="button" onclick="effekseer.stopAll(); latestHandle = null;" value="stop"></input>
+      <input type="button" onclick="callExists();" value="exists?"></input>
+      
     </div>
     <br>
     <script type='text/javascript'>
+      var latestHandle = null;
       var effects = {};
+
+      // whether does effect exists?
+      var callExists = function() {
+        if(latestHandle == null) return;
+
+        if(latestHandle.exists) {
+          console.log("an effect exists.");
+        }
+        else
+        {
+          console.log("an effect doesn't exists.");
+        }
+      }
+
       var main = function () {
         var canvas = document.getElementById("canvas");
 
