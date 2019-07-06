@@ -33,6 +33,7 @@ const effekseer = (() => {
 		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"]),
 		IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", []),
 
+		EstimateBoundingBox: Module.cwrap("EstimateBoundingBox", "number", ["number,number,number,number,number,number,number"]),
 	};
 
     /**
@@ -568,7 +569,22 @@ const effekseer = (() => {
          */
         isVertexArrayObjectSupported() {
             return Core.IsVertexArrayObjectSupported();
-        }
+		}
+
+		estimateBoundingBox(effect, cameraMat, projMat, screenWidth, screenHeight, time, rate)
+		{
+			const stack = Runtime.stackSave();
+			const cameraMat_ = Runtime.stackAlloc(4 * 16);
+			const projMat_ = Runtime.stackAlloc(4 * 16);
+
+			Module.HEAPF32.set(cameraMat_, cameraMat>>2);
+			Module.HEAPF32.set(projMat_, cameraMat>>2);
+			
+			// ret
+			Module.estimateBoundingBox(effect.nativeptr, cameraMat_, projMat_, screenWidth, screenHeight, time, rate);
+			
+			Runtime.stackRestore(stack);
+		}
     }
 
     return new Effekseer();
