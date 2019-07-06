@@ -530,6 +530,31 @@ const effekseer = (() => {
 			return effect;
 		}
 
+		/**
+		 * Release the specified effect. Don't touch the instance of effect after released.
+		 * @param {EffekseerEffect} effect The loaded effect
+		 */
+		releaseEffect(effect) {
+
+			if(effect == null) {
+				console.warn("the effect is null.")
+				return;
+			}
+
+			if(!effect.isLoaded) {
+				console.warn("the effect has not be loaded yet.")
+				return;
+			}
+
+			if(effect.nativeptr == null) {
+				console.warn("the effect has been released.")
+				return;
+			}
+
+			Core.releaseEffect(effect.nativeptr);
+			effect.nativeptr = null;
+		}
+
         /**
 		 * Play the specified effect.
 		 * @param {EffekseerEffect} effect The loaded effect
