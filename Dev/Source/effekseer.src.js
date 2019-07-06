@@ -38,14 +38,24 @@ var effekseer = function () {
 		SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number"]),
 		IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number"]),
 		GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number"]),
-		IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", [])
+		IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", []),
+		EstimateBoundingBox: Module.cwrap("EffekseerEstimateBoundingBox", "void", ["number", "number", "number", "number", "number", "number", "number", "number"])
+	};
 
+	var EffekseerBoundingBox = function EffekseerBoundingBox() {
+		_classCallCheck(this, EffekseerBoundingBox);
+
+		this.top = 0;
+		this.left = 0;
+		this.right = 0;
+		this.bottom = 0;
 	};
 
 	/**
  * A loaded effect data
  * @class
  */
+
 
 	var EffekseerEffect = function () {
 		function EffekseerEffect() {
@@ -685,6 +695,28 @@ var effekseer = function () {
 			key: "isVertexArrayObjectSupported",
 			value: function isVertexArrayObjectSupported() {
 				return Core.IsVertexArrayObjectSupported();
+			}
+		}, {
+			key: "estimateBoundingBox",
+			value: function estimateBoundingBox(effect, cameraMat, projMat, screenWidth, screenHeight, time, rate) {
+				var stack = Runtime.stackSave();
+				var ret_ = Runtime.stackAlloc(4 * 4);
+				var cameraMat_ = Runtime.stackAlloc(4 * 16);
+				var projMat_ = Runtime.stackAlloc(4 * 16);
+
+				Module.HEAPF32.set(cameraMat, cameraMat_ >> 2);
+				Module.HEAPF32.set(projMat, projMat_ >> 2);
+
+				Core.EstimateBoundingBox(ret_, effect.nativeptr, cameraMat_, projMat_, screenWidth, screenHeight, time, rate);
+
+				var ret = new EffekseerBoundingBox();
+				ret.left = Module.HEAP32[(ret_ >> 2) + 0];
+				ret.top = Module.HEAP32[(ret_ >> 2) + 1];
+				ret.right = Module.HEAP32[(ret_ >> 2) + 2];
+				ret.bottom = Module.HEAP32[(ret_ >> 2) + 3];
+
+				Runtime.stackRestore(stack);
+				return ret;
 			}
 		}]);
 

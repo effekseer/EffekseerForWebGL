@@ -236,50 +236,55 @@ static EfkWebViewer::Context viewer;
 
 #define EXPORT EMSCRIPTEN_KEEPALIVE
 
+static void ArrayToMatrix44(const float* array, Effekseer::Matrix44& matrix) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			matrix.Values[i][j] = array[i * 4 + j];
+		}
+	}
+}
+
+static void ArrayToMatrix43(const float* array, Effekseer::Matrix43& matrix) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 3; j++) {
+			matrix.Value[i][j] = array[i * 4 + j];
+		}
+	}
+}
+
+
 int main(int argc, char *argv[])
 {
 	return 0;
 }
 
-struct BoundingBox
-{
-	int Top = 0;
-	int Left = 0;
-	int Right = 0;
-	int Bottom = 0;
-};
 
 
 extern "C" {
 	using namespace Effekseer;
 
-	static void ArrayToMatrix44(const float* array, Matrix44& matrix) {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				matrix.Values[i][j] = array[i * 4 + j];
-			}
-		}
-	}
+	struct BoundingBox
+	{
+		int Left;
+		int Top;
+		int Right;
+		int Bottom;
+	};
 
-	static void ArrayToMatrix43(const float* array, Matrix43& matrix) {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 3; j++) {
-				matrix.Value[i][j] = array[i * 4 + j];
-			}
-		}
-	}
-
-	static EffekseerRendererArea::BoundingBox
-	EstimateBoundingBox(Effekseer::Effect* effect, float* cameraMat, float* projMat, int screenWidth, int screenHeight, int32_t time, float rate)
+	void EXPORT EffekseerEstimateBoundingBox(::BoundingBox* ret, Effekseer::Effect* effect, float* cameraMat, float* projMat, int screenWidth, int screenHeight, int32_t time, float rate)
 	{
 		Effekseer::Matrix44 cameraMat_;
 		Effekseer::Matrix44 projMat_;
-
-		ArrayToMatrix44(cameraMat_, cameraMat);
-		ArrayToMatrix44(projMat_, projMat);
+		ArrayToMatrix44(cameraMat, cameraMat_);
+		ArrayToMatrix44(projMat, projMat_);
 
 		EffekseerRendererArea::BoundingBoxEstimator estimator;
-		return estimator.Estimate(effect, cameraMat_, projMat_, screenWidth, screenHeight, time, rate);
+		auto bb = estimator.Estimate(effect, cameraMat_, projMat_, screenWidth, screenHeight, time, rate, -1.0f, 1.0f);
+
+		ret->Top = bb.Top;
+		ret->Left = bb.Left;
+		ret->Right = bb.Right;
+		ret->Bottom = bb.Bottom;
 	}
 
 	int EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount)
