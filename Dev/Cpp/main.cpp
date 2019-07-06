@@ -2,10 +2,13 @@
 #include <math.h>
 #include <algorithm>
 #include <emscripten.h>
+#include <emscripten/bind.h>
 #include <AL/alc.h>
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
+#include <EffekseerRenderer/EffekseerRendererArea.Renderer.h>
+
 #include "glTFEffectFactory.h"
 #include "glbEffectFactory.h"
 
@@ -238,6 +241,15 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+struct BoundingBox
+{
+	int Top = 0;
+	int Left = 0;
+	int Right = 0;
+	int Bottom = 0;
+};
+
+
 extern "C" {
 	using namespace Effekseer;
 
@@ -255,6 +267,19 @@ extern "C" {
 				matrix.Value[i][j] = array[i * 4 + j];
 			}
 		}
+	}
+
+	static EffekseerRendererArea::BoundingBox
+	EstimateBoundingBox(Effekseer::Effect* effect, float* cameraMat, float* projMat, int screenWidth, int screenHeight, int32_t time, float rate)
+	{
+		Effekseer::Matrix44 cameraMat_;
+		Effekseer::Matrix44 projMat_;
+
+		ArrayToMatrix44(cameraMat_, cameraMat);
+		ArrayToMatrix44(projMat_, projMat);
+
+		EffekseerRendererArea::BoundingBoxEstimator estimator;
+		return estimator.Estimate(effect, cameraMat_, projMat_, screenWidth, screenHeight, time, rate);
 	}
 
 	int EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount)

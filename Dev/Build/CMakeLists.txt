@@ -28,6 +28,7 @@ set(INCLUDE_DIR
 	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/Effekseer/Culling"
 	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererCommon"
 	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererGL"
+	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererArea"
 	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerSoundAL")
 	
 include_directories (${INCLUDE_DIR}) 
@@ -43,6 +44,7 @@ file(GLOB effekseer_src
 	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/Effekseer/Effekseer/Culling/*.cpp
 	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/*.cpp
 	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
+	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererArea/EffekseerRenderer/*.cpp
 	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
 	${PROJECT_SOURCE_DIR}./../Cpp/*.cpp)
 
