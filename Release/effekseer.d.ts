@@ -90,6 +90,12 @@ declare namespace effekseer {
     export function loadEffect(path: string, onload?, onerror?): EffekseerEffect;
 
     /**
+    * Release the specified effect. Don't touch the instance of effect after released.
+    * @param {EffekseerEffect} effect The loaded effect
+    */
+    export function releaseEffect(effect: EffekseerEffect);
+
+    /**
      * Play the specified effect.
      * @param {EffekseerEffect} effect The loaded effect
      * @param {number} x X value of location that is emited

@@ -339,9 +339,9 @@ extern "C" {
 			Vector3D(atX, atY, atZ), Vector3D(upX, upY, upZ));
 	}
 
-	Effect* EXPORT EffekseerLoadEffect(void* data, int32_t size)
+	Effect* EXPORT EffekseerLoadEffect(void* data, int32_t size, float magnification)
 	{
-		return Effect::Create(viewer.manager, data, size);
+		return Effect::Create(viewer.manager, data, size, magnification);
 	}
 
 	void EXPORT EffekseerReleaseEffect(Effect* effect)

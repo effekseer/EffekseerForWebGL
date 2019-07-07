@@ -20,7 +20,7 @@ var effekseer = function () {
 		SetProjectionOrthographic: Module.cwrap("EffekseerSetProjectionOrthographic", "void", ["number", "number", "number", "number"]),
 		SetCameraMatrix: Module.cwrap("EffekseerSetCameraMatrix", "void", ["number"]),
 		SetCameraLookAt: Module.cwrap("EffekseerSetCameraLookAt", "void", ["number", "number", "number", "number", "number", "number", "number", "number", "number"]),
-		LoadEffect: Module.cwrap("EffekseerLoadEffect", "number", ["number", "number", "string"]),
+		LoadEffect: Module.cwrap("EffekseerLoadEffect", "number", ["number", "number", "number", "number"]),
 		ReleaseEffect: Module.cwrap("EffekseerReleaseEffect", "void", ["number"]),
 		ReloadResources: Module.cwrap("EffekseerReloadResources", "void", ["number"]),
 		StopAllEffects: Module.cwrap("EffekseerStopAllEffects", "void", []),
@@ -64,6 +64,7 @@ var effekseer = function () {
 			this.nativeptr = 0;
 			this.baseDir = "";
 			this.isLoaded = false;
+			this.scale = 1.0;
 			this.resources = [];
 			this.main_buffer = null;
 		}
@@ -75,7 +76,7 @@ var effekseer = function () {
 				this.main_buffer = buffer;
 				var memptr = Module._malloc(buffer.byteLength);
 				Module.HEAP8.set(new Uint8Array(buffer), memptr);
-				this.nativeptr = Core.LoadEffect(memptr, buffer.byteLength);
+				this.nativeptr = Core.LoadEffect(memptr, buffer.byteLength, this.scale);
 				Module._free(memptr);
 				loadingEffect = null;
 				this._update();

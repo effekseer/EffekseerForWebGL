@@ -14,12 +14,14 @@
       <input type="button" onclick="latestHandle = effekseer.play(effects['block'], 0, 0, 0);" value="block"></input>
       <input type="button" onclick="effekseer.stopAll(); latestHandle = null;" value="stop"></input>
       <input type="button" onclick="callExists();" value="exists?"></input>
+      <input type="button" onclick="callEstimateBoundingBox();" value="callEstimateBoundingBox"></input>
       
     </div>
     <br>
     <script type='text/javascript'>
       var latestHandle = null;
       var effects = {};
+      var three_camera = null;
 
       // whether does effect exists?
       var callExists = function() {
@@ -32,6 +34,20 @@
         {
           console.log("an effect doesn't exists.");
         }
+      }
+
+      var callEstimateBoundingBox = function() {
+        var canvas = document.getElementById("canvas");
+        var width  = canvas.width;
+        var height = canvas.height;
+        effekseer.estimateBoundingBox(
+          effects['Simple_Ring_Shape1'], 
+          three_camera.matrixWorldInverse.elements, 
+          three_camera.projectionMatrix.elements, 
+          width, 
+          height,
+          100.0,
+          1.0);
       }
 
       var main = function () {
@@ -48,6 +64,7 @@
         var target = new THREE.Vector3(0, 0, 0);
         camera.position.set( 20, 20, 20 );
         camera.lookAt(target);
+        three_camera = camera;
 
         var renderer = new THREE.WebGLRenderer({canvas: canvas});
         renderer.setSize( width, height );
@@ -91,6 +108,6 @@
       window.addEventListener( 'DOMContentLoaded', main, false );
     </script>
     <script src="three.min.js"></script>
-    <script src="../effekseer.min.js"></script>
+    <script src="../effekseer.js"></script>
   </body>
 </html>
