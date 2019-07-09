@@ -24,12 +24,12 @@ set(CMAKE_EXE_LINKER_FLAGS "\
 
 # Set include directories
 set(INCLUDE_DIR
-	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/Effekseer"
-	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/Effekseer/Culling"
-	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererCommon"
-	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererGL"
-	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererArea"
-	"${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerSoundAL")
+	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer"
+	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer/Culling"
+	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererCommon"
+	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererGL"
+	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererArea"
+	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerSoundAL")
 	
 include_directories (${INCLUDE_DIR}) 
 
@@ -39,19 +39,19 @@ add_definitions(-DNDEBUG)
 
 # Set souce files
 file(GLOB effekseer_src
-	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/Effekseer/*.cpp
-	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/Effekseer/Effekseer/*.cpp
-	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/Effekseer/Effekseer/Culling/*.cpp
-	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/*.cpp
-	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
-	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererArea/EffekseerRenderer/*.cpp
-	${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
-	${PROJECT_SOURCE_DIR}./../Cpp/*.cpp)
+	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer/*.cpp
+	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer/Effekseer/*.cpp
+	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer/Effekseer/Culling/*.cpp
+	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/*.cpp
+	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
+	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererArea/EffekseerRenderer/*.cpp
+	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
+	${PROJECT_SOURCE_DIR}/../Cpp/*.cpp)
 
 # Exclude unused souce files
 # INTERNAL_LOADER
-list(REMOVE_ITEM effekseer_src "${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/EffekseerRenderer.DXTK.DDSTextureLoader.cpp")
-list(REMOVE_ITEM effekseer_src "${PROJECT_SOURCE_DIR}./../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/EffekseerRenderer.PngTextureLoader.cpp")
+list(REMOVE_ITEM effekseer_src "${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/EffekseerRenderer.DXTK.DDSTextureLoader.cpp")
+list(REMOVE_ITEM effekseer_src "${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/EffekseerRenderer.PngTextureLoader.cpp")
 
 # Set output file extension
 set(CMAKE_EXECUTABLE_SUFFIX ".js")
