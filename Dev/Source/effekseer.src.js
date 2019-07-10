@@ -8,7 +8,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var effekseer = function () {
 	var Module = effekseer();
-	var Runtime = Module.Runtime;
 
 	// C++ functions
 	var Core = {
@@ -204,11 +203,11 @@ var effekseer = function () {
 		}, {
 			key: "setMatrix",
 			value: function setMatrix(matrixArray) {
-				var stack = Runtime.stackSave();
-				var arrmem = Runtime.stackAlloc(4 * 16);
+				var stack = Module.stackSave();
+				var arrmem = Module.stackAlloc(4 * 16);
 				Module.HEAPF32.set(matrixArray, arrmem >> 2);
 				Core.SetMatrix(this.native, arrmem);
-				Runtime.stackRestore(stack);
+				Module.stackRestore(stack);
 			}
 
 			/**
@@ -494,11 +493,11 @@ var effekseer = function () {
 		}, {
 			key: "setProjectionMatrix",
 			value: function setProjectionMatrix(matrixArray) {
-				var stack = Runtime.stackSave();
-				var arrmem = Runtime.stackAlloc(4 * 16);
+				var stack = Module.stackSave();
+				var arrmem = Module.stackAlloc(4 * 16);
 				Module.HEAPF32.set(matrixArray, arrmem >> 2);
 				Core.SetProjectionMatrix(arrmem);
-				Runtime.stackRestore(stack);
+				Module.stackRestore(stack);
 			}
 
 			/**
@@ -537,11 +536,11 @@ var effekseer = function () {
 		}, {
 			key: "setCameraMatrix",
 			value: function setCameraMatrix(matrixArray) {
-				var stack = Runtime.stackSave();
-				var arrmem = Runtime.stackAlloc(4 * 16);
+				var stack = Module.stackSave();
+				var arrmem = Module.stackAlloc(4 * 16);
 				Module.HEAPF32.set(matrixArray, arrmem >> 2);
 				Core.SetCameraMatrix(arrmem);
-				Runtime.stackRestore(stack);
+				Module.stackRestore(stack);
 			}
 
 			/**
@@ -700,10 +699,10 @@ var effekseer = function () {
 		}, {
 			key: "estimateBoundingBox",
 			value: function estimateBoundingBox(effect, cameraMat, projMat, screenWidth, screenHeight, time, rate) {
-				var stack = Runtime.stackSave();
-				var ret_ = Runtime.stackAlloc(4 * 4);
-				var cameraMat_ = Runtime.stackAlloc(4 * 16);
-				var projMat_ = Runtime.stackAlloc(4 * 16);
+				var stack = Module.stackSave();
+				var ret_ = Module.stackAlloc(4 * 4);
+				var cameraMat_ = Module.stackAlloc(4 * 16);
+				var projMat_ = Module.stackAlloc(4 * 16);
 
 				Module.HEAPF32.set(cameraMat, cameraMat_ >> 2);
 				Module.HEAPF32.set(projMat, projMat_ >> 2);
@@ -716,7 +715,7 @@ var effekseer = function () {
 				ret.right = Module.HEAP32[(ret_ >> 2) + 2];
 				ret.bottom = Module.HEAP32[(ret_ >> 2) + 3];
 
-				Runtime.stackRestore(stack);
+				Module.stackRestore(stack);
 				return ret;
 			}
 		}]);
