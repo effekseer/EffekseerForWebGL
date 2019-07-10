@@ -1,7 +1,6 @@
 
 const effekseer = (() => {
     const Module = effekseer();
-    const Runtime = Module.Runtime;
 
     // C++ functions
     const Core = {
@@ -166,11 +165,11 @@ const effekseer = (() => {
 		 * @param {array} matrixArray An array that is requred 16 elements
 		 */
         setMatrix(matrixArray) {
-			const stack = Runtime.stackSave();
-			const arrmem = Runtime.stackAlloc(4 * 16);
+			const stack = Module.stackSave();
+			const arrmem = Module.stackAlloc(4 * 16);
 			Module.HEAPF32.set(matrixArray, arrmem>>2);
 			Core.SetMatrix(this.native, arrmem);
-			Runtime.stackRestore(stack);
+			Module.stackRestore(stack);
 		}
 
         /**
@@ -421,11 +420,11 @@ const effekseer = (() => {
 		 * @param {array} matrixArray An array that is requred 16 elements
 		 */
         setProjectionMatrix(matrixArray) {
-			const stack = Runtime.stackSave();
-			const arrmem = Runtime.stackAlloc(4 * 16);
+			const stack = Module.stackSave();
+			const arrmem = Module.stackAlloc(4 * 16);
 			Module.HEAPF32.set(matrixArray, arrmem>>2);
 			Core.SetProjectionMatrix(arrmem);
-			Runtime.stackRestore(stack);
+			Module.stackRestore(stack);
 		}
 
         /**
@@ -455,11 +454,11 @@ const effekseer = (() => {
 		 * @param {array} matrixArray An array that is requred 16 elements
 		 */
         setCameraMatrix(matrixArray) {
-			const stack = Runtime.stackSave();
-			const arrmem = Runtime.stackAlloc(4 * 16);
+			const stack = Module.stackSave();
+			const arrmem = Module.stackAlloc(4 * 16);
 			Module.HEAPF32.set(matrixArray, arrmem>>2);
 			Core.SetCameraMatrix(arrmem);
-			Runtime.stackRestore(stack);
+			Module.stackRestore(stack);
 		}
 
         /**
@@ -608,10 +607,10 @@ const effekseer = (() => {
 
 		estimateBoundingBox(effect, cameraMat, projMat, screenWidth, screenHeight, time, rate)
 		{
-			const stack = Runtime.stackSave();
-			const ret_ = Runtime.stackAlloc(4 * 4);
-			const cameraMat_ = Runtime.stackAlloc(4 * 16);
-			const projMat_ = Runtime.stackAlloc(4 * 16);
+			const stack = Module.stackSave();
+			const ret_ = Module.stackAlloc(4 * 4);
+			const cameraMat_ = Module.stackAlloc(4 * 16);
+			const projMat_ = Module.stackAlloc(4 * 16);
 
 			Module.HEAPF32.set(cameraMat, cameraMat_ >> 2);
 			Module.HEAPF32.set(projMat, projMat_ >> 2);
@@ -624,7 +623,7 @@ const effekseer = (() => {
 			ret.right = Module.HEAP32[(ret_ >> 2) + 2];
 			ret.bottom = Module.HEAP32[(ret_ >> 2) + 3];
 
-			Runtime.stackRestore(stack);			
+			Module.stackRestore(stack);			
 			return ret;
 		}
     }

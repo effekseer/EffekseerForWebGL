@@ -13,12 +13,14 @@ set(CMAKE_CXX_FLAGS "\
 	" ${CMAKE_CXX_FLAGS})
 
 set(CMAKE_EXE_LINKER_FLAGS "\
+	-s WASM=0 \
 	-s MODULARIZE=1 \
 	-s NO_FILESYSTEM=1 \
 	-s DISABLE_EXCEPTION_CATCHING=1 \
 	-s NO_EXIT_RUNTIME=1 \
 	-s TOTAL_MEMORY=33554432 \
 	-s EXPORT_NAME=\"'effekseer'\" \
+	-s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"Pointer_stringify\"]' \
 	--post-js ../Source/post.js \
 	" ${CMAKE_EXE_LINKER_FLAGS})
 

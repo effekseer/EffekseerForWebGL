@@ -66,11 +66,8 @@ git clone https://github.com/effekseer/EffekseerForWebGL
 - Visual Studio 2015
 
 ### Emscripten(SDK)
-- Emscripten 1.37.21 or later
 
-### Emscripten(Install manually)
-
-- Emscripten 1.37.9 (Add directory to PATH)
+- Emscripten 1.38.38 (Add directory to PATH)
 - Java
 - Python2x
 
