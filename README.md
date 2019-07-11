@@ -5,7 +5,7 @@
 
 # Demo
 
-- [Demo](https://effekseer.github.io/EffekseerForWebGL/docs/Sample/index.html)
+- [Demo](https://effekseer.github.io/EffekseerForWebGL/Sample/index.html)
 
 # Download
 
