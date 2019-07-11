@@ -2,61 +2,66 @@
 project(effekseer.core)
 
 # CMake version check
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.4)
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "\
-	-Oz -std=c++11 \
-	-Wno-inconsistent-missing-override \
-	--llvm-lto 1 \
-	--memory-init-file 0 \
-	" ${CMAKE_CXX_FLAGS})
+string(APPEND CMAKE_CXX_FLAGS
+	" -Oz -std=c++11"
+	" -Wno-inconsistent-missing-override"
+	" --llvm-lto 1"
+	" --memory-init-file 0"
+)
 
-set(CMAKE_EXE_LINKER_FLAGS "\
-	-s WASM=0 \
-	-s MODULARIZE=1 \
-	-s NO_FILESYSTEM=1 \
-	-s DISABLE_EXCEPTION_CATCHING=1 \
-	-s NO_EXIT_RUNTIME=1 \
-	-s TOTAL_MEMORY=33554432 \
-	-s EXPORT_NAME=\"'effekseer'\" \
-	-s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"Pointer_stringify\"]' \
-	--post-js ../Source/post.js \
-	" ${CMAKE_EXE_LINKER_FLAGS})
+# Set linker flags
+string(APPEND CMAKE_EXE_LINKER_FLAGS
+	" -s WASM=0"
+	" -s MODULARIZE=1"
+	" -s NO_FILESYSTEM=1"
+	" -s DISABLE_EXCEPTION_CATCHING=1"
+	" -s NO_EXIT_RUNTIME=1"
+	" -s TOTAL_MEMORY=33554432"
+	" -s EXPORT_NAME=\"'effekseer'\""
+	" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"Pointer_stringify\"]'"
+	" --post-js ../Source/post.js"
+)
+
+# Assume Effekseer directory
+set(EFFEKSEER_DIR "${PROJECT_SOURCE_DIR}/../../../Effekseer")
 
 # Set include directories
-set(INCLUDE_DIR
-	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer"
-	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer/Culling"
-	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererCommon"
-	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererGL"
-	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererArea"
-	"${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerSoundAL")
-	
-include_directories (${INCLUDE_DIR}) 
+include_directories(
+	${EFFEKSEER_DIR}/Dev/Cpp/Effekseer
+	${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Culling
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererArea
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL
+)
 
 # Enable OpenGL ES 2.0 mode
 add_definitions(-D__EFFEKSEER_RENDERER_GLES2__)
 add_definitions(-DNDEBUG)
 
-# Set souce files
+# Set source files
 file(GLOB effekseer_src
-	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer/*.cpp
-	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer/Effekseer/*.cpp
-	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/Effekseer/Effekseer/Culling/*.cpp
-	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/*.cpp
-	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
-	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererArea/EffekseerRenderer/*.cpp
-	${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
-	${PROJECT_SOURCE_DIR}/../Cpp/*.cpp)
+	${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/*.cpp
+	${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/*.cpp
+	${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Culling/*.cpp
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/*.cpp
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererArea/EffekseerRenderer/*.cpp
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
+	${PROJECT_SOURCE_DIR}/../Cpp/*.cpp
+)
 
-# Exclude unused souce files
-# INTERNAL_LOADER
-list(REMOVE_ITEM effekseer_src "${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/EffekseerRenderer.DXTK.DDSTextureLoader.cpp")
-list(REMOVE_ITEM effekseer_src "${PROJECT_SOURCE_DIR}/../../../Effekseer/Dev/Cpp/EffekseerRendererCommon/EffekseerRenderer.PngTextureLoader.cpp")
+# Exclude unused source files
+list(REMOVE_ITEM effekseer_src
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/EffekseerRenderer.DXTK.DDSTextureLoader.cpp
+	${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/EffekseerRenderer.PngTextureLoader.cpp
+)
 
 # Set output file extension
 set(CMAKE_EXECUTABLE_SUFFIX ".js")
 
 # Add build settings
-add_executable(effekseer.core ${effekseer_src} )
+add_executable(effekseer.core ${effekseer_src})
