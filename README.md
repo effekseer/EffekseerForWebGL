@@ -5,7 +5,11 @@
 
 # Demo
 
-Release/Sample/
+- [Demo](https://effekseer.github.io/EffekseerForWebGL/docs/Sample/index.html)
+
+# Download
+
+- [1.43](https://github.com/effekseer/EffekseerForWebGL/releases/download/143/EffekseerForWebGL143.zip)
 
 # How to use
 
