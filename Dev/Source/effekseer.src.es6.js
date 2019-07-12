@@ -560,7 +560,7 @@ const effekseer = (() => {
 				return;
 			}
 
-			Core.releaseEffect(effect.nativeptr);
+			Core.ReleaseEffect(effect.nativeptr);
 			effect.nativeptr = null;
 		}
 
