@@ -356,7 +356,7 @@ const effekseer = (() => {
 		const memptr = Module._malloc(buffer.byteLength);
 		Module.HEAP8.set(new Uint8Array(buffer), memptr);
 		ptr = Core.GetglTFBodyURI(memptr, buffer.byteLength);
-		str = Module.Pointer_stringify(ptr);
+		str = Module.UTF8ToString(ptr);
 		Module._free(memptr);
 		return str;
 	}
