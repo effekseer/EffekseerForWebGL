@@ -21,7 +21,7 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS
 	" -s NO_EXIT_RUNTIME=1"
 	" -s TOTAL_MEMORY=33554432"
 	" -s EXPORT_NAME=\"'effekseer'\""
-	" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"Pointer_stringify\"]'"
+	" -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"UTF8ToString\"]'"
 	" --post-js ../Source/post.js"
 )
 
