@@ -1,5 +1,18 @@
 
 declare namespace effekseer {
+
+    /**
+ * Create a context to render in multiple scenes
+ * @returns {EffekseerContext} context
+ */
+    export function createContext(): EffekseerContext;
+
+    /**
+    * Release specified context. After that, don't touch a context
+    * @param {EffekseerContext} context context
+    */
+    export function releaseContext(context: EffekseerContext);
+
     /**
          * Initialize graphics system.
          * @param {WebGLRenderingContext} webglContext WebGL Context
@@ -88,7 +101,7 @@ declare namespace effekseer {
      * @param {function=} onerror A function that is called at loading error
      * @returns {EffekseerEffect} The effect data
      */
-    export function loadEffect(path: string, scale? : number, onload?, onerror?): EffekseerEffect;
+    export function loadEffect(path: string, scale?: number, onload?, onerror?): EffekseerEffect;
 
     /**
     * Release the specified effect. Don't touch the instance of effect after released.
@@ -121,6 +134,130 @@ declare namespace effekseer {
     * Get whether VAO is supported
     */
     export function isVertexArrayObjectSupported();
+
+    export class EffekseerContext {
+        /**
+             * Initialize graphics system.
+             * @param {WebGLRenderingContext} webglContext WebGL Context
+             * @param {object} settings Some settings with Effekseer initialization
+             */
+        init(webglContext, settings?: object);
+
+        /**
+         * Advance frames.
+         * @param {number=} deltaFrames number of advance frames
+         */
+        update(deltaFrames?: number);
+
+        /**
+         * Main rendering.
+         */
+        draw();
+
+        /**
+         * Set camera projection from matrix.
+         * @param matrixArray An array that is requred 16 elements
+         */
+        setProjectionMatrix(matrixArray);
+
+        /**
+         * Set camera projection from perspective parameters.
+         * @param {number} fov Field of view in degree
+         * @param {number} aspect Aspect ratio
+         * @param {number} near Distance of near plane
+         * @param {number} aspect Distance of far plane
+         */
+        setProjectionPerspective(fov, aspect, near, far);
+
+        /**
+         * Set camera projection from orthographic parameters.
+         * @param {number} width Width coordinate of the view plane
+         * @param {number} height Height coordinate of the view plane
+         * @param {number} near Distance of near plane
+         * @param {number} aspect Distance of far plane
+         */
+        setProjectionOrthographic(width, height, near, far);
+
+        /**
+         * Set camera view from matrix.
+         * @param matrixArray An array that is requred 16 elements
+         */
+        setCameraMatrix(matrixArray);
+
+        /**
+         * Set camera view from lookat parameters.
+         * @param {number} positionX X value of camera position
+         * @param {number} positionY Y value of camera position
+         * @param {number} positionZ Z value of camera position
+         * @param {number} targetX X value of target position
+         * @param {number} targetY Y value of target position
+         * @param {number} targetZ Z value of target position
+         * @param {number} upvecX X value of upper vector
+         * @param {number} upvecY Y value of upper vector
+         * @param {number} upvecZ Z value of upper vector
+         */
+        setCameraLookAt(
+            positionX,
+            positionY,
+            positionZ,
+            targetX,
+            targetY,
+            targetZ,
+            upvecX,
+            upvecY,
+            upvecZ
+        );
+
+        /**
+         * Set camera view from lookat vector parameters.
+         * @param {object} position camera position
+         * @param {object} target target position
+         * @param {object=} upvec upper vector
+         */
+        setCameraLookAtFromVector(position, target, upvec);
+
+        /**
+         * Load the effect data file (and resources).
+         * @param {string} path A URL of effect file (*.efk)
+         * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
+         * @param {function=} onload A function that is called at loading complete
+         * @param {function=} onerror A function that is called at loading error
+         * @returns {EffekseerEffect} The effect data
+         */
+        loadEffect(path: string, scale?: number, onload?, onerror?): EffekseerEffect;
+
+        /**
+        * Release the specified effect. Don't touch the instance of effect after released.
+        * @param {EffekseerEffect} effect The loaded effect
+        */
+        releaseEffect(effect: EffekseerEffect);
+
+        /**
+         * Play the specified effect.
+         * @param {EffekseerEffect} effect The loaded effect
+         * @param {number} x X value of location that is emited
+         * @param {number} y Y value of location that is emited
+         * @param {number} z Z value of location that is emited
+         * @returns {EffekseerHandle} The effect handle
+         */
+        play(effect: EffekseerEffect, x, y, z): EffekseerHandle;
+
+        /**
+         * Stop the all effects.
+         */
+        stopAll();
+
+        /**
+         * Set the resource loader function.
+         * @param {function} loader
+         */
+        setResourceLoader(loader);
+
+        /**
+        * Get whether VAO is supported
+        */
+        isVertexArrayObjectSupported();
+    }
 
     export class EffekseerEffect {
         constructor();

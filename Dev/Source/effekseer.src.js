@@ -429,12 +429,12 @@ var effekseer = function () {
     return ContextStates;
   }();
 
-  var Context = function () {
-    function Context() {
-      _classCallCheck(this, Context);
+  var EffekseerContext = function () {
+    function EffekseerContext() {
+      _classCallCheck(this, EffekseerContext);
     }
 
-    _createClass(Context, [{
+    _createClass(EffekseerContext, [{
       key: "_loadBinary_with_effect_cache",
       value: function _loadBinary_with_effect_cache(path, effect, onload, onerror) {
         var res = effect.resources.find(function (res) {
@@ -543,7 +543,7 @@ var effekseer = function () {
         this.contextStates.restore();
 
         // Restore WebGL states
-        gl.useProgram(program);
+        this.gl.useProgram(program);
       }
 
       /**
@@ -778,7 +778,7 @@ var effekseer = function () {
       }
     }]);
 
-    return Context;
+    return EffekseerContext;
   }();
 
   /**
@@ -793,15 +793,42 @@ var effekseer = function () {
     }
 
     _createClass(Effekseer, [{
-      key: "init",
+      key: "createContext",
+
+
+      /**
+       * Create a context to render in multiple scenes
+       * @returns {EffekseerContext} context
+       */
+      value: function createContext() {
+        return new EffekseerContext();
+      }
+
+      /**
+      * Release specified context. After that, don't touch a context
+      * @param {EffekseerContext} context context
+      */
+
+    }, {
+      key: "releaseContext",
+      value: function releaseContext(context) {
+        if (context.nativeptr == null) {
+          return;
+        }
+        Core.Terminate(context.nativeptr);
+        context.nativeptr = null;
+      }
 
       /**
        * Initialize graphics system.
        * @param {WebGLRenderingContext} webglContext WebGL Context
        * @param {object} settings Some settings with Effekseer initialization
        */
+
+    }, {
+      key: "init",
       value: function init(webglContext, settings) {
-        this.defaultContext = new Context();
+        this.defaultContext = new EffekseerContext();
         this.defaultContext.init(webglContext, settings);
       }
 

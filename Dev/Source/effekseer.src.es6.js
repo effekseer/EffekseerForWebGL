@@ -358,7 +358,7 @@ const effekseer = (() => {
     }
   }
 
-  class Context {
+  class EffekseerContext {
 
     _loadBinary_with_effect_cache(path, effect, onload, onerror) {
       var res = effect.resources.find(res => { return res.path == path });
@@ -453,7 +453,7 @@ const effekseer = (() => {
       this.contextStates.restore();
 
       // Restore WebGL states
-      gl.useProgram(program);
+      this.gl.useProgram(program);
     }
 
     /**
@@ -663,13 +663,34 @@ const effekseer = (() => {
    * @class
    */
   class Effekseer {
+
+    /**
+     * Create a context to render in multiple scenes
+     * @returns {EffekseerContext} context
+     */
+    createContext() {
+      return new EffekseerContext();
+    }
+
+    /**
+    * Release specified context. After that, don't touch a context
+    * @param {EffekseerContext} context context
+    */
+    releaseContext(context) {
+      if (context.nativeptr == null) {
+        return;
+      }
+      Core.Terminate(context.nativeptr);
+      context.nativeptr = null;
+    }
+
     /**
      * Initialize graphics system.
      * @param {WebGLRenderingContext} webglContext WebGL Context
      * @param {object} settings Some settings with Effekseer initialization
      */
     init(webglContext, settings) {
-      this.defaultContext = new Context();
+      this.defaultContext = new EffekseerContext();
       this.defaultContext.init(webglContext, settings);
     }
 
