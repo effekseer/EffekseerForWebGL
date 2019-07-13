@@ -269,6 +269,29 @@ var effekseer = function () {
 
 	var gl = null;
 	var loadingEffect = null;
+	var ext_vao = null;
+	var effekseer_vao = null;
+	var current_vao = null;
+	var current_vbo = null;
+	var current_ibo = null;
+
+	var startVao = function startVao() {
+		current_vbo = gl.getParameter(gl.ARRAY_BUFFER_BINDING);
+		current_ibo = gl.getParameter(gl.ELEMENT_ARRAY_BUFFER_BINDING);
+		if (ext_vao != null) {
+			current_vao = gl.getParameter(ext_vao.VERTEX_ARRAY_BINDING_OES);
+			ext_vao.bindVertexArrayOES(effekseer_vao);
+		}
+	};
+
+	var endVao = function endVao() {
+		if (ext_vao != null) {
+			ext_vao.bindVertexArrayOES(current_vao);
+		}
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, current_vbo);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, current_ibo);
+	};
 
 	var isImagePowerOfTwo = function isImagePowerOfTwo(image) {
 		return !(image.width & image.width - 1) && !(image.height & image.height - 1);
@@ -437,6 +460,11 @@ var effekseer = function () {
    */
 			value: function init(webglContext, settings) {
 				gl = webglContext;
+				ext_vao = gl.getExtension('OES_vertex_array_object');
+				if (ext_vao != null) {
+					effekseer_vao = ext_vao.createVertexArrayOES();
+				}
+
 				window.gl = gl;
 				// Setup native OpenGL context
 				var ctx = Module.GL.registerContext(webglContext, {
@@ -452,7 +480,9 @@ var effekseer = function () {
 				}
 
 				// Initializes Effekseer core.
+				startVao();
 				Core.Init(settings.instanceMaxCount, settings.squareMaxCount);
+				endVao();
 			}
 
 			/**
@@ -479,7 +509,9 @@ var effekseer = function () {
 				var program = gl.getParameter(gl.CURRENT_PROGRAM);
 
 				// Draw the effekseer core
+				startVao();
 				Core.Draw();
+				endVao();
 
 				// Restore WebGL states
 				gl.useProgram(program);
