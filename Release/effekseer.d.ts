@@ -83,11 +83,12 @@ declare namespace effekseer {
     /**
      * Load the effect data file (and resources).
      * @param {string} path A URL of effect file (*.efk)
+     * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error
      * @returns {EffekseerEffect} The effect data
      */
-    export function loadEffect(path: string, onload?, onerror?): EffekseerEffect;
+    export function loadEffect(path: string, scale? : number, onload?, onerror?): EffekseerEffect;
 
     /**
     * Release the specified effect. Don't touch the instance of effect after released.

@@ -1,0 +1,5 @@
+# 1.5x
+
+## Broken change
+
+A scale parameter is added in loadEffect's arguments. 

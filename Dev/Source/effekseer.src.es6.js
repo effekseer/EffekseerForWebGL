@@ -525,16 +525,28 @@ const effekseer = (() => {
     /**
      * Load the effect data file (and resources).
      * @param {string} path A URL of effect file (*.efk)
+     * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error
      * @returns {EffekseerEffect} The effect data
      */
-    loadEffect(path, onload, onerror) {
+    loadEffect(path, scale = 1.0, onload, onerror) {
       const effect = new EffekseerEffect();
       const dirIndex = path.lastIndexOf("/");
 
-      effect.onload = onload;
-      effect.onerror = onerror;
+      if (typeof(scale) === "function")
+      {
+        console.log("Error : second arguments is number from version 1.5");
+        effect.scale = 1.0;
+        effect.onload = scale;
+        effect.onerror = onload;
+      }
+      else
+      {
+        effect.scale = scale;
+        effect.onload = onload;
+        effect.onerror = onerror;  
+      }
 
       if (typeof path === "string") {
         effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
