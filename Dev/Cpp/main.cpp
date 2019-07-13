@@ -16,6 +16,22 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+static void ArrayToMatrix44(const float* array, Effekseer::Matrix44& matrix) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			matrix.Values[i][j] = array[i * 4 + j];
+		}
+	}
+}
+
+static void ArrayToMatrix43(const float* array, Effekseer::Matrix43& matrix) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 3; j++) {
+			matrix.Value[i][j] = array[i * 4 + j];
+		}
+	}
+}
+
 namespace EfkWebViewer
 {
 	using namespace Effekseer;
@@ -180,6 +196,9 @@ namespace EfkWebViewer
 		glbEffectFactory* glbEffectFactory_ = nullptr;
 		glTFEffectFactory* glTFEffectFactory_ = nullptr;
 
+		ALCdevice* alcDevice = nullptr;
+		ALCcontext* alcContext = nullptr;
+
 		//! pass strings
 		std::string tempStr;
 
@@ -215,6 +234,12 @@ namespace EfkWebViewer
 			return true;
 		}
 		
+		void Terminate() {
+			manager->Destroy();
+			renderer->Destroy();
+			sound->Destroy();
+		}
+
 		void Update(float deltaFrames) {
 			manager->Update(deltaFrames);
 		}
@@ -230,35 +255,12 @@ namespace EfkWebViewer
 	};
 }
 
-static ALCdevice* alcDevice;
-static ALCcontext* alcContext;
-static EfkWebViewer::Context viewer;
-
 #define EXPORT EMSCRIPTEN_KEEPALIVE
-
-static void ArrayToMatrix44(const float* array, Effekseer::Matrix44& matrix) {
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			matrix.Values[i][j] = array[i * 4 + j];
-		}
-	}
-}
-
-static void ArrayToMatrix43(const float* array, Effekseer::Matrix43& matrix) {
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 3; j++) {
-			matrix.Value[i][j] = array[i * 4 + j];
-		}
-	}
-}
-
 
 int main(int argc, char *argv[])
 {
 	return 0;
 }
-
-
 
 extern "C" {
 	using namespace Effekseer;
@@ -287,157 +289,165 @@ extern "C" {
 		ret->Bottom = bb.Bottom;
 	}
 
-	int EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount)
+	EfkWebViewer::Context* EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount)
 	{
+		auto context = new EfkWebViewer::Context();
 		// Initialize OpenAL
-		alcDevice = alcOpenDevice(NULL);
-		alcContext = alcCreateContext(alcDevice, NULL);
-		alcMakeContextCurrent(alcContext);
+		context->alcDevice = alcOpenDevice(NULL);
+		context->alcContext = alcCreateContext(context->alcDevice, NULL);
+		alcMakeContextCurrent(context->alcContext);
 
 		// Initialize viewer
-		if (!viewer.Init(instanceMaxCount, squareMaxCount)) {
-		  return 0;
+		if (!context->Init(instanceMaxCount, squareMaxCount)) {
+			delete context;
+			return nullptr;
 		}
 
-		return 1;
+		return context;
 	}
 
-	void EXPORT EffekseerUpdate(float deltaFrames)
+	void EXPORT EffekseerTerminate(EfkWebViewer::Context* context)
 	{
-		viewer.Update(deltaFrames);
+		context->Terminate();
+		delete context;
 	}
 
-	void EXPORT EffekseerDraw()
+	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames)
 	{
-		viewer.Draw();
+		context->Update(deltaFrames);
 	}
 
-	void EXPORT EffekseerSetProjectionMatrix(const float* matrixElements)
+	void EXPORT EffekseerDraw(EfkWebViewer::Context* context)
 	{
-		ArrayToMatrix44(matrixElements, viewer.projectionMatrix);
+		context->Draw();
 	}
 
-	void EXPORT EffekseerSetProjectionPerspective(float fov, float aspect, float near, float far)
+	void EXPORT EffekseerSetProjectionMatrix(EfkWebViewer::Context* context, const float* matrixElements)
 	{
-		viewer.projectionMatrix.PerspectiveFovRH_OpenGL(fov * 3.1415926f / 180.0f, aspect, near, far);
+		ArrayToMatrix44(matrixElements, context->projectionMatrix);
 	}
 
-	void EXPORT EffekseerSetProjectionOrthographic(float width, float height, float near, float far)
+	void EXPORT EffekseerSetProjectionPerspective(EfkWebViewer::Context* context, float fov, float aspect, float near, float far)
 	{
-		viewer.projectionMatrix.OrthographicRH(width, height, near, far);
+		context->projectionMatrix.PerspectiveFovRH_OpenGL(fov * 3.1415926f / 180.0f, aspect, near, far);
 	}
 
-	void EXPORT EffekseerSetCameraMatrix(const float* matrixElements)
+	void EXPORT EffekseerSetProjectionOrthographic(EfkWebViewer::Context* context, float width, float height, float near, float far)
 	{
-		ArrayToMatrix44(matrixElements, viewer.cameraMatrix);
+		context->projectionMatrix.OrthographicRH(width, height, near, far);
 	}
 
-	void EXPORT EffekseerSetCameraLookAt(float eyeX, float eyeY, float eyeZ, 
+	void EXPORT EffekseerSetCameraMatrix(EfkWebViewer::Context* context, const float* matrixElements)
+	{
+		ArrayToMatrix44(matrixElements, context->cameraMatrix);
+	}
+
+	void EXPORT EffekseerSetCameraLookAt(EfkWebViewer::Context* context, float eyeX, float eyeY, float eyeZ, 
 		float atX, float atY, float atZ, float upX, float upY, float upZ)
 	{
-		viewer.cameraMatrix.LookAtRH(Vector3D(eyeX, eyeY, eyeZ), 
+		context->cameraMatrix.LookAtRH(Vector3D(eyeX, eyeY, eyeZ), 
 			Vector3D(atX, atY, atZ), Vector3D(upX, upY, upZ));
 	}
 
-	Effect* EXPORT EffekseerLoadEffect(void* data, int32_t size, float magnification)
+	Effect* EXPORT EffekseerLoadEffect(EfkWebViewer::Context* context, void* data, int32_t size, float magnification)
 	{
-		return Effect::Create(viewer.manager, data, size, magnification);
+		return Effect::Create(context->manager, data, size, magnification);
 	}
 
-	void EXPORT EffekseerReleaseEffect(Effect* effect)
+	void EXPORT EffekseerReleaseEffect(EfkWebViewer::Context* context, Effect* effect)
 	{
 		effect->Release();
 	}
 	
-	void EXPORT EffekseerReloadResources(Effect* effect, void* data, int32_t size)
+	void EXPORT EffekseerReloadResources(EfkWebViewer::Context* context, Effect* effect, void* data, int32_t size)
 	{
 		effect->ReloadResources(data, size);
 	}
 
-	void EXPORT EffekseerStopAllEffects()
+	void EXPORT EffekseerStopAllEffects(EfkWebViewer::Context* context)
 	{
-		viewer.manager->StopAllEffects();
+		context->manager->StopAllEffects();
 	}
 
-	int EXPORT EffekseerPlayEffect(Effect* effect, float x, float y, float z)
+	int EXPORT EffekseerPlayEffect(EfkWebViewer::Context* context, Effect* effect, float x, float y, float z)
 	{
-		return viewer.manager->Play(effect, x, y, z);
+		return context->manager->Play(effect, x, y, z);
 	}
 
-	void EXPORT EffekseerStopEffect(int handle)
+	void EXPORT EffekseerStopEffect(EfkWebViewer::Context* context,int handle)
 	{
-		viewer.manager->StopEffect(handle);
+		context->manager->StopEffect(handle);
 	}
 
-	void EXPORT EffekseerStopRoot(int handle)
+	void EXPORT EffekseerStopRoot(EfkWebViewer::Context* context,int handle)
 	{
-		viewer.manager->StopRoot(handle);
+		context->manager->StopRoot(handle);
 	}
 
-	int EXPORT EffekseerExists(int handle)
+	int EXPORT EffekseerExists(EfkWebViewer::Context* context, int handle)
 	{
-		return viewer.manager->Exists(handle) ? 1 : 0;
+		return context->manager->Exists(handle) ? 1 : 0;
 	}
 
-	void EXPORT EffekseerSetLocation(int handle, float x, float y, float z)
+	void EXPORT EffekseerSetLocation(EfkWebViewer::Context* context, int handle, float x, float y, float z)
 	{
-		viewer.manager->SetLocation(handle, x, y, z);
+		context->manager->SetLocation(handle, x, y, z);
 	}
 
-	void EXPORT EffekseerSetRotation(int handle, float x, float y, float z)
+	void EXPORT EffekseerSetRotation(EfkWebViewer::Context* context, int handle, float x, float y, float z)
 	{
-		viewer.manager->SetRotation(handle, x, y, z);
+		context->manager->SetRotation(handle, x, y, z);
 	}
 
-	void EXPORT EffekseerSetScale(int handle, float x, float y, float z)
+	void EXPORT EffekseerSetScale(EfkWebViewer::Context* context, int handle, float x, float y, float z)
 	{
-		viewer.manager->SetScale(handle, x, y, z);
+		context->manager->SetScale(handle, x, y, z);
 	}
 
-	void EXPORT EffekseerSetMatrix(int handle, const float* matrixElements)
+	void EXPORT EffekseerSetMatrix(EfkWebViewer::Context* context, int handle, const float* matrixElements)
 	{
 		Matrix43 matrix43;
 		ArrayToMatrix43(matrixElements, matrix43);
-		viewer.manager->SetMatrix(handle, matrix43);
+		context->manager->SetMatrix(handle, matrix43);
 	}
 
-	void EXPORT EffekseerSetTargetLocation(int handle, float x, float y, float z)
+	void EXPORT EffekseerSetTargetLocation(EfkWebViewer::Context* context, int handle, float x, float y, float z)
 	{
-		viewer.manager->SetTargetLocation(handle, x, y, z);
+		context->manager->SetTargetLocation(handle, x, y, z);
 	}
 
-	void EXPORT EffekseerSetPause(int handle, int paused)
+	void EXPORT EffekseerSetPaused(EfkWebViewer::Context* context, int handle, int paused)
 	{
-		viewer.manager->SetPaused(handle, paused != 0);
+		context->manager->SetPaused(handle, paused != 0);
 	}
 
-	void EXPORT EffekseerSetShown(int handle, int shown)
+	void EXPORT EffekseerSetShown(EfkWebViewer::Context* context, int handle, int shown)
 	{
-		viewer.manager->SetShown(handle, shown != 0);
+		context->manager->SetShown(handle, shown != 0);
 	}
 
-	void EXPORT EffekseerSetSpeed(int handle, float speed)
+	void EXPORT EffekseerSetSpeed(EfkWebViewer::Context* context, int handle, float speed)
 	{
-		viewer.manager->SetSpeed(handle, speed);
+		context->manager->SetSpeed(handle, speed);
 	}
 
-	int EXPORT EffekseerIsBinaryglTF(void* data, int32_t size)
+	int EXPORT EffekseerIsBinaryglTF(EfkWebViewer::Context* context, void* data, int32_t size)
 	{
-		return viewer.glTFEffectFactory_->OnCheckIsBinarySupported(data, size) ? 1 : 0;
+		return context->glTFEffectFactory_->OnCheckIsBinarySupported(data, size) ? 1 : 0;
 	}
 
-	const char* EXPORT EffekseerGetglTFBodyURI(void* data, int32_t size)
+	const char* EXPORT EffekseerGetglTFBodyURI(EfkWebViewer::Context* context, void* data, int32_t size)
 	{
-		viewer.tempStr = viewer.glTFEffectFactory_->GetBodyURI(data, size);
-		return viewer.tempStr.c_str();
+		context->tempStr = context->glTFEffectFactory_->GetBodyURI(data, size);
+		return context->tempStr.c_str();
 	}
 
-	int EXPORT EffekseerIsVertexArrayObjectSupported()
+	int EXPORT EffekseerIsVertexArrayObjectSupported(EfkWebViewer::Context* context)
 	{
-		if (viewer.renderer == nullptr)
+		if (context->renderer == nullptr)
 			return 0;
 
-		return viewer.renderer->IsVertexArrayObjectSupported() ? 1 : 0;
+		return context->renderer->IsVertexArrayObjectSupported() ? 1 : 0;
 	}
 
 }

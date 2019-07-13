@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>EffekseerForWebGL</title>
+
+  <body>
+    <canvas id="canvas" width="720" height="480" class="screen" oncontextmenu="event.preventDefault()"></canvas>
+    <br>
+    <div id="buttons">
+      <input type="button" onclick="playEffect('Laser01');" value="Laser01"></input>
+      <input type="button" onclick="playEffect('Laser02');" value="Laser02"></input>
+      <input type="button" onclick="playEffect('Simple_Ring_Shape1');" value="Simple_Ring_Shape1"></input>
+      <input type="button" onclick="playEffect('block');" value="block"></input>
+      <input type="button" onclick="stopAll();" value="stop"></input>
+      <input type="button" onclick="callExists();" value="exists?"></input>
+      <input type="button" onclick="callEstimateBoundingBox();" value="callEstimateBoundingBox"></input>
+    </div>
+
+    <div>
+      <input type="button" onclick="showEffect();" value="Show"></input>
+      <input type="button" onclick="hideEffect();" value="Hide"></input>
+      <input type="button" onclick="pauseEffect();" value="Pause"></input>
+      <input type="button" onclick="resumeEffect();" value="Resume"></input>
+    </div>
+
+    <div>
+      <input type="button" onclick="setLocation();" value="setLocation"></input>
+      <input type="button" onclick="setRotation();" value="setRotation"></input>
+      <input type="button" onclick="setScale();" value="setScale"></input>      
+    </div>
+
+    <div>
+      <input type="text" id="x" value="1.0" maxlength="5">
+      <input type="text" id="y" value="2.0" maxlength="5">
+      <input type="text" id="z" value="3.0" maxlength="5">
+    </div>
+
+    <script src="../../Release/Sample/three.min.js"></script>
+    <script src="../Source/effekseer.core.js"></script>
+    <script src="../Source/effekseer.src.js"></script>
+    <script src="basic.js"></script>
+  </body>
+
+</html>
