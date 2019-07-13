@@ -317,9 +317,39 @@ extern "C" {
 		context->Update(deltaFrames);
 	}
 
+	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context)
+	{
+		context->manager->BeginUpdate();
+	}
+
+	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context)
+	{
+		context->manager->EndUpdate();
+	}
+
+	void EXPORT EffekseerUpdateHandle(EfkWebViewer::Context* context, int handle, float deltaFrame)
+	{
+		context->manager->UpdateHandle(handle, deltaFrame);
+	}
+
 	void EXPORT EffekseerDraw(EfkWebViewer::Context* context)
 	{
 		context->Draw();
+	}
+
+	void EXPORT EffekseerBeginDraw(EfkWebViewer::Context* context)
+	{
+		context->renderer->BeginRendering();
+	}
+
+	void EXPORT EffekseerEndDraw(EfkWebViewer::Context* context)
+	{
+		context->renderer->EndRendering();
+	}
+
+	void EXPORT EffekseerDrawHandle(EfkWebViewer::Context* context, int handle)
+	{
+		context->manager->DrawHandle(handle);
 	}
 
 	void EXPORT EffekseerSetProjectionMatrix(EfkWebViewer::Context* context, const float* matrixElements)

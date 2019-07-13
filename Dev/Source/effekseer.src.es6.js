@@ -7,7 +7,13 @@ const effekseer = (() => {
     Init: Module.cwrap("EffekseerInit", "number", ["number", "number"]),
     Terminate: Module.cwrap("EffekseerTerminate", "void", ["number"]),
     Update: Module.cwrap("EffekseerUpdate", "void", ["number", "number"]),
+    BeginUpdate: Module.cwrap("EffekseerBeginUpdate", "void", ["number"]),
+    EndUpdate: Module.cwrap("EffekseerEndUpdate", "void", ["number"]),
+    UpdateHandle: Module.cwrap("EffekseerUpdateHandle", "void", ["number", "number", "number"]),
     Draw: Module.cwrap("EffekseerDraw", "void", ["number"]),
+    BeginDraw: Module.cwrap("EffekseerBeginDraw", "void", ["number"]),
+    EndDraw: Module.cwrap("EffekseerEndDraw", "void", ["number"]),
+    DrawHandle: Module.cwrap("EffekseerDrawHandle", "void", ["number", "number"]),
     SetProjectionMatrix: Module.cwrap("EffekseerSetProjectionMatrix", "void", ["number", "number"]),
     SetProjectionPerspective: Module.cwrap("EffekseerSetProjectionPerspective", "void", ["number", "number", "number", "number", "number"]),
     SetProjectionOrthographic: Module.cwrap("EffekseerSetProjectionOrthographic", "void", ["number", "number", "number", "number", "number"]),
@@ -438,6 +444,18 @@ const effekseer = (() => {
       Core.Update(this.nativeptr, deltaFrames);
     }
 
+    beginUpdate() {
+      Core.BeginUpdate(this.nativeptr);
+    }
+
+    endUpdate() {
+      Core.EndUpdate(this.nativeptr);
+    }
+
+    updateHandle(handle, deltaFrames) {
+      Core.UpdateHandle(this.nativeptr, handle.native, deltaFrames);
+    }
+
     /**
      * Main rendering.
      */
@@ -454,6 +472,18 @@ const effekseer = (() => {
 
       // Restore WebGL states
       this.gl.useProgram(program);
+    }
+
+    beginDraw() {
+      Core.BeginDraw(this.nativeptr);
+    }
+
+    endDraw() {
+      Core.EndDraw(this.nativeptr);
+    }
+
+    drawHandle(handle) {
+      Core.DrawHandle(this.nativeptr, handle.native);
     }
 
     /**
@@ -702,11 +732,35 @@ const effekseer = (() => {
       this.defaultContext.update(deltaFrames);
     }
 
+    beginUpdate() {
+      this.defaultContext.beginUpdate();
+    }
+
+    endUpdate() {
+      this.defaultContext.endUpdate();
+    }
+
+    updateHandle(handle, deltaFrames) {
+      this.defaultContext.updateHandle(handle, deltaFrames);
+    }
+
     /**
      * Main rendering.
      */
     draw() {
       this.defaultContext.draw();
+    }
+
+    beginDraw() {
+      this.defaultContext.beginDraw();
+    }
+
+    endDraw() {
+      this.defaultContext.endDraw();
+    }
+
+    drawHandle(handle) {
+      this.defaultContext.drawHandle(handle);
     }
 
     /**

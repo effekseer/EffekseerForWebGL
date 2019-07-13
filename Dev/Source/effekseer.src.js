@@ -14,7 +14,13 @@ var effekseer = function () {
     Init: Module.cwrap("EffekseerInit", "number", ["number", "number"]),
     Terminate: Module.cwrap("EffekseerTerminate", "void", ["number"]),
     Update: Module.cwrap("EffekseerUpdate", "void", ["number", "number"]),
+    BeginUpdate: Module.cwrap("EffekseerBeginUpdate", "void", ["number"]),
+    EndUpdate: Module.cwrap("EffekseerEndUpdate", "void", ["number"]),
+    UpdateHandle: Module.cwrap("EffekseerUpdateHandle", "void", ["number", "number", "number"]),
     Draw: Module.cwrap("EffekseerDraw", "void", ["number"]),
+    BeginDraw: Module.cwrap("EffekseerBeginDraw", "void", ["number"]),
+    EndDraw: Module.cwrap("EffekseerEndDraw", "void", ["number"]),
+    DrawHandle: Module.cwrap("EffekseerDrawHandle", "void", ["number", "number"]),
     SetProjectionMatrix: Module.cwrap("EffekseerSetProjectionMatrix", "void", ["number", "number"]),
     SetProjectionPerspective: Module.cwrap("EffekseerSetProjectionPerspective", "void", ["number", "number", "number", "number", "number"]),
     SetProjectionOrthographic: Module.cwrap("EffekseerSetProjectionOrthographic", "void", ["number", "number", "number", "number", "number"]),
@@ -524,6 +530,21 @@ var effekseer = function () {
         // Update frame
         Core.Update(this.nativeptr, deltaFrames);
       }
+    }, {
+      key: "beginUpdate",
+      value: function beginUpdate() {
+        Core.BeginUpdate(this.nativeptr);
+      }
+    }, {
+      key: "endUpdate",
+      value: function endUpdate() {
+        Core.EndUpdate(this.nativeptr);
+      }
+    }, {
+      key: "updateHandle",
+      value: function updateHandle(handle, deltaFrames) {
+        Core.UpdateHandle(this.nativeptr, handle.native, deltaFrames);
+      }
 
       /**
        * Main rendering.
@@ -544,6 +565,21 @@ var effekseer = function () {
 
         // Restore WebGL states
         this.gl.useProgram(program);
+      }
+    }, {
+      key: "beginDraw",
+      value: function beginDraw() {
+        Core.BeginDraw(this.nativeptr);
+      }
+    }, {
+      key: "endDraw",
+      value: function endDraw() {
+        Core.EndDraw(this.nativeptr);
+      }
+    }, {
+      key: "drawHandle",
+      value: function drawHandle(handle) {
+        Core.DrawHandle(this.nativeptr, handle.native);
       }
 
       /**
@@ -842,6 +878,21 @@ var effekseer = function () {
       value: function update(deltaFrames) {
         this.defaultContext.update(deltaFrames);
       }
+    }, {
+      key: "beginUpdate",
+      value: function beginUpdate() {
+        this.defaultContext.beginUpdate();
+      }
+    }, {
+      key: "endUpdate",
+      value: function endUpdate() {
+        this.defaultContext.endUpdate();
+      }
+    }, {
+      key: "updateHandle",
+      value: function updateHandle(handle, deltaFrames) {
+        this.defaultContext.updateHandle(handle, deltaFrames);
+      }
 
       /**
        * Main rendering.
@@ -851,6 +902,21 @@ var effekseer = function () {
       key: "draw",
       value: function draw() {
         this.defaultContext.draw();
+      }
+    }, {
+      key: "beginDraw",
+      value: function beginDraw() {
+        this.defaultContext.beginDraw();
+      }
+    }, {
+      key: "endDraw",
+      value: function endDraw() {
+        this.defaultContext.endDraw();
+      }
+    }, {
+      key: "drawHandle",
+      value: function drawHandle(handle) {
+        this.defaultContext.drawHandle(handle);
       }
 
       /**
