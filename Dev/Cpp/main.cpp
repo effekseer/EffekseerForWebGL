@@ -339,6 +339,8 @@ extern "C" {
 
 	void EXPORT EffekseerBeginDraw(EfkWebViewer::Context* context)
 	{
+		context->renderer->SetProjectionMatrix(context->projectionMatrix);
+		context->renderer->SetCameraMatrix(context->cameraMatrix);
 		context->renderer->BeginRendering();
 	}
 
