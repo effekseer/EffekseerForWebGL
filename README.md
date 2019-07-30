@@ -33,17 +33,17 @@ var effect = effekseer.loadEffect("Laser01.efk", function(){
 
 (function renderLoop() {
   requestAnimationFrame( renderLoop );
-  
+
   // Effekseer Update
   effekseer.update();
-  
+
   // Three.js Rendering
   renderer.render(scene, camera);
 
   // Rendering Settings
   effekseer.setProjectionMatrix(camera.projectionMatrix.elements);
   effekseer.setCameraMatrix(camera.matrixWorldInverse.elements);
-  
+
   // Effekseer Rendering
   effekseer.draw();
 })();
@@ -52,28 +52,21 @@ var effect = effekseer.loadEffect("Laser01.efk", function(){
 
 # How to develop
 
-## Clone the repository
+## Clone the repositories
 
 ```
 git clone https://github.com/effekseer/Effekseer
 git clone https://github.com/effekseer/EffekseerForWebGL
 ```
 
-## Building (Windows)
-
-### Requirements
+## Requirements
 
 ### Common
 
+- python
 - cmake
-- mingw-make
-- Visual Studio 2015
-
-### Emscripten(SDK)
-
+- mingw-make (Windows only)
 - Emscripten 1.38.38 (Add directory to PATH)
-- Java
-- Python2x
 
 ### JavaScript
 
@@ -81,49 +74,20 @@ git clone https://github.com/effekseer/EffekseerForWebGL
 - babel-cli
 - babel-preset-es2015
 
-### Build commands
+## Build
 
 ### Convert ES6 to ES5
 
-#### Windows
-
-install npm and babel
-
 ```
 npm install -g babel-cli
-```
-
-move directory
-
-```
 cd Dev/Source/
-```
-
-install presets
-
-```
 npm install babel-preset-es2015 --save-dev
-```
-
-call bat
-
-```
-ConvertES6ToES5.bat
+babel effekseer.src.es6.js -o effekseer.src.js
 ```
 
 ### Compile Native
 
-#### Visual Studio 2015
-
 ```
-cd Dev\Build
-Build_2015.bat
+pip install jsmin
+python build.py
 ```
-
-### Packaging
-
-```
-cd Dev\Build
-Package.bat
-```
-
