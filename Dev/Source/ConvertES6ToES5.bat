@@ -1,1 +1,0 @@
- babel .\effekseer.src.es6.js -o .\effekseer.src.js

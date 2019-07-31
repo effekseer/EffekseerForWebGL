@@ -61,33 +61,14 @@ git clone https://github.com/effekseer/EffekseerForWebGL
 
 ## Requirements
 
-### Common
-
 - python
 - cmake
 - mingw-make (Windows only)
 - Emscripten 1.38.38 (Add directory to PATH)
 
-### JavaScript
-
-- npm
-- babel-cli
-- babel-preset-es2015
-
 ## Build
 
-### Convert ES6 to ES5
-
 ```
-npm install -g babel-cli
-cd Dev/Source/
-npm install babel-preset-es2015 --save-dev
-babel effekseer.src.es6.js -o effekseer.src.js
-```
-
-### Compile Native
-
-```
-pip install jsmin
+pip install dukpy jsmin
 python build.py
 ```

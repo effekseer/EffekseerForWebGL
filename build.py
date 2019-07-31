@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import platform
+import dukpy
 import jsmin
 
 if not os.path.exists("build"):
@@ -31,5 +32,6 @@ with open(effekseer_core_js) as infile:
     outfile_min_js.write(data)
 with open(effekseer_src_js) as infile:
     data = infile.read()
-    outfile_js.write(data)
-    outfile_min_js.write(jsmin.jsmin(data))
+    data_es5 = dukpy.babel_compile(data)["code"]
+    outfile_js.write(data_es5)
+    outfile_min_js.write(jsmin.jsmin(data_es5))
