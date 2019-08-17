@@ -34,7 +34,6 @@ include_directories(
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Culling
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL
-  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererArea
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL
 )
 
@@ -49,7 +48,6 @@ file(GLOB effekseer_src
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Culling/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
-  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererArea/EffekseerRenderer/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
   ${PROJECT_SOURCE_DIR}/Dev/Cpp/*.cpp
 )

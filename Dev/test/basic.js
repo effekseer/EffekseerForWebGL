@@ -16,24 +16,6 @@ var callExists = function () {
   }
 }
 
-var callEstimateBoundingBox = function () {
-  if (latestEffect == null) {
-    console.log("an effect is not played.");
-  }
-
-  var canvas = document.getElementById("canvas");
-  var width = canvas.width;
-  var height = canvas.height;
-  effekseer.estimateBoundingBox(
-    latestEffect,
-    three_camera.matrixWorldInverse.elements,
-    three_camera.projectionMatrix.elements,
-    width,
-    height,
-    100.0,
-    1.0);
-}
-
 var playEffect = function (name) {
   latestEffect = effects[name];
   latestHandle = effekseer.play(effects[name], 0, 0, 0);

@@ -38,17 +38,7 @@ const effekseer = (() => {
     IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number", "number"]),
     GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number", "number"]),
     IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
-    EstimateBoundingBox: Module.cwrap("EffekseerEstimateBoundingBox", "void", ["number", "number", "number", "number", "number", "number", "number", "number"]),
   };
-
-  class EffekseerBoundingBox {
-    constructor() {
-      this.top = 0;
-      this.left = 0;
-      this.right = 0;
-      this.bottom = 0;
-    }
-  }
 
   /**
    * A loaded effect data
@@ -889,27 +879,6 @@ const effekseer = (() => {
      */
     isVertexArrayObjectSupported() {
       return this.defaultContext.isVertexArrayObjectSupported();
-    }
-
-    estimateBoundingBox(effect, cameraMat, projMat, screenWidth, screenHeight, time, rate) {
-      const stack = Module.stackSave();
-      const ret_ = Module.stackAlloc(4 * 4);
-      const cameraMat_ = Module.stackAlloc(4 * 16);
-      const projMat_ = Module.stackAlloc(4 * 16);
-
-      Module.HEAPF32.set(cameraMat, cameraMat_ >> 2);
-      Module.HEAPF32.set(projMat, projMat_ >> 2);
-
-      Core.EstimateBoundingBox(ret_, effect.nativeptr, cameraMat_, projMat_, screenWidth, screenHeight, time, rate);
-
-      var ret = new EffekseerBoundingBox();
-      ret.left = Module.HEAP32[(ret_ >> 2) + 0];
-      ret.top = Module.HEAP32[(ret_ >> 2) + 1];
-      ret.right = Module.HEAP32[(ret_ >> 2) + 2];
-      ret.bottom = Module.HEAP32[(ret_ >> 2) + 3];
-
-      Module.stackRestore(stack);
-      return ret;
     }
   }
 

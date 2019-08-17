@@ -7,7 +7,6 @@
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
-#include <EffekseerRenderer/EffekseerRendererArea.Renderer.h>
 
 #include "glTFEffectFactory.h"
 #include "glbEffectFactory.h"
@@ -264,30 +263,6 @@ int main(int argc, char *argv[])
 
 extern "C" {
 	using namespace Effekseer;
-
-	struct BoundingBox
-	{
-		int Left;
-		int Top;
-		int Right;
-		int Bottom;
-	};
-
-	void EXPORT EffekseerEstimateBoundingBox(::BoundingBox* ret, Effekseer::Effect* effect, float* cameraMat, float* projMat, int screenWidth, int screenHeight, int32_t time, float rate)
-	{
-		Effekseer::Matrix44 cameraMat_;
-		Effekseer::Matrix44 projMat_;
-		ArrayToMatrix44(cameraMat, cameraMat_);
-		ArrayToMatrix44(projMat, projMat_);
-
-		EffekseerRendererArea::BoundingBoxEstimator estimator;
-		auto bb = estimator.Estimate(effect, cameraMat_, projMat_, screenWidth, screenHeight, time, rate, -1.0f, 1.0f);
-
-		ret->Top = bb.Top;
-		ret->Left = bb.Left;
-		ret->Right = bb.Right;
-		ret->Bottom = bb.Bottom;
-	}
 
 	EfkWebViewer::Context* EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount)
 	{
