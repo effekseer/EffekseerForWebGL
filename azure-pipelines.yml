@@ -33,7 +33,7 @@ steps:
       import jsmin
 
       os.chdir("build")
-      
+
       effekseer_core_js = os.path.join(".", "effekseer.core.js")
       effekseer_src_js = os.path.join("..", "Dev", "Source", "effekseer.src.js")
       effekseer_js = os.path.join("..", "Release", "effekseer.js")
@@ -52,3 +52,8 @@ steps:
           outfile_min_js.write(jsmin.jsmin(data_es5))
 
 
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'Release'
+    ArtifactName: 'Release'
+    publishLocation: 'Container'
