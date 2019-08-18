@@ -50,10 +50,22 @@ steps:
           data_es5 = dukpy.babel_compile(data)["code"]
           outfile_js.write(data_es5)
           outfile_min_js.write(jsmin.jsmin(data_es5))
-
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      pip install selenium chromedriver-binary==75.0.3770.140.0
+      cd tests
+      python test.py
 
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: 'Release'
     ArtifactName: 'Release'
+    publishLocation: 'Container'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'tests/screenshots'
+    ArtifactName: 'screenshots'
     publishLocation: 'Container'
