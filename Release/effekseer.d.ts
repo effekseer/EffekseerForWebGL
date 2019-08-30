@@ -98,7 +98,7 @@ declare namespace effekseer {
      * @param {string} path A URL of effect file (*.efk)
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
-     * @param {function=} onerror A function that is called at loading error
+     * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
      * @returns {EffekseerEffect} The effect data
      */
     export function loadEffect(path: string, scale?: number, onload?, onerror?): EffekseerEffect;
@@ -221,7 +221,7 @@ declare namespace effekseer {
          * @param {string} path A URL of effect file (*.efk)
          * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
          * @param {function=} onload A function that is called at loading complete
-         * @param {function=} onerror A function that is called at loading error
+         * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
          * @returns {EffekseerEffect} The effect data
          */
         loadEffect(path: string, scale?: number, onload?, onerror?): EffekseerEffect;

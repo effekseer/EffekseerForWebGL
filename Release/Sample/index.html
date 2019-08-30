@@ -14,7 +14,6 @@
       <input type="button" onclick="latestHandle = effekseer.play(effects['block'], 0, 0, 0);" value="block"></input>
       <input type="button" onclick="effekseer.stopAll(); latestHandle = null;" value="stop"></input>
       <input type="button" onclick="callExists();" value="exists?"></input>
-      <input type="button" onclick="callEstimateBoundingBox();" value="callEstimateBoundingBox"></input>
       
     </div>
     <br>
@@ -34,20 +33,6 @@
         {
           console.log("an effect doesn't exists.");
         }
-      }
-
-      var callEstimateBoundingBox = function() {
-        var canvas = document.getElementById("canvas");
-        var width  = canvas.width;
-        var height = canvas.height;
-        effekseer.estimateBoundingBox(
-          effects['Simple_Ring_Shape1'], 
-          three_camera.matrixWorldInverse.elements, 
-          three_camera.projectionMatrix.elements, 
-          width, 
-          height,
-          100.0,
-          1.0);
       }
 
       var main = function () {
@@ -71,7 +56,19 @@
         //document.body.appendChild( renderer.domElement );
 
         effekseer.init(renderer.context);
-        effects["Laser01"] = effekseer.loadEffect("../Resources/Laser01.efk");
+        effects["Laser01"] = effekseer.loadEffect(
+          "../Resources/Laser01.efk", 
+          1.0,
+          () => {
+            // called when loading is finished.
+          },
+          (m, url) =>
+          {
+            // called when error causes.
+            console.log(m + " " + url);
+          }
+        );
+
         effects["Laser02"] = effekseer.loadEffect("../Resources/Laser02.efk");
         effects["Simple_Ring_Shape1"] = effekseer.loadEffect("../Resources/Simple_Ring_Shape1.efk");
         effects["block"] = effekseer.loadEffect("../Resources/block.efk");

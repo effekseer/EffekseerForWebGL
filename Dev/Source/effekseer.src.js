@@ -250,7 +250,7 @@ const effekseer = (() => {
       onload(xhr.response);
     };
     xhr.onerror = () => {
-      if (onerror) onerror();
+      if (onerror) onerror('not found', url);
     };
     xhr.send(null);
   };
@@ -264,7 +264,10 @@ const effekseer = (() => {
         let converted_image = _convertPowerOfTwoImage(image);
         onload(converted_image);
       };
-      image.onerror = onerror;
+      image.onerror = () => { 
+        onerror('not found', path); 
+      };
+
       image.crossOrigin = "anonymous";
       image.src = path;
     } else {
@@ -564,7 +567,7 @@ const effekseer = (() => {
      * @param {string} path A URL of effect file (*.efk)
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
-     * @param {function=} onerror A function that is called at loading error
+     * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
      * @returns {EffekseerEffect} The effect data
      */
     loadEffect(path, scale = 1.0, onload, onerror) {
@@ -832,7 +835,7 @@ const effekseer = (() => {
      * @param {string} path A URL of effect file (*.efk)
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
-     * @param {function=} onerror A function that is called at loading error
+     * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
      * @returns {EffekseerEffect} The effect data
      */
     loadEffect(path, scale = 1.0, onload, onerror) {

@@ -2,4 +2,5 @@
 
 ## Broken change
 
-A scale parameter is added in loadEffect's arguments. 
+- A scale parameter is added in loadEffect's arguments. 
+- Arguments are added in onerror callback.
