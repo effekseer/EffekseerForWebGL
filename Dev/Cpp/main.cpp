@@ -252,6 +252,9 @@ namespace EfkWebViewer
 			renderer->EndRendering();
 		}
 	};
+
+	//! pass strings
+	std::string tempStr;
 }
 
 #define EXPORT EMSCRIPTEN_KEEPALIVE
@@ -457,4 +460,17 @@ extern "C" {
 		return context->renderer->IsVertexArrayObjectSupported() ? 1 : 0;
 	}
 
+	int32_t EXPORT EffekseerEffectGetColorImageCount(Effect* effect)
+	{
+		return effect->GetColorImageCount();
+	}
+
+	const char* EXPORT EffekseerEffectGetColorImagePath(Effect* effect, int index)
+	{
+		auto path = effect->GetColorImagePath();
+		char dst[260];
+		Effekseer::ConvertUtf16ToUtf8(dst, 260, (int16_t*)path);
+		EfkWebViewer::tempStr = dst;
+		return EfkWebViewer::tempStr.c_str();
+	}
 }

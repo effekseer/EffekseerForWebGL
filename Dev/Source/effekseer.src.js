@@ -38,6 +38,8 @@ const effekseer = (() => {
     IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number", "number"]),
     GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number", "number"]),
     IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
+    EffectGetColorImageCount: Module.cwrap("EffekseerEffectGetColorImageCount", "number", ["number"]),
+    EffectGetColorImagePath: Module.cwrap("EffekseerEffectGetColorImageCount", "number", ["number","number"]),
   };
 
   /**
@@ -93,6 +95,22 @@ const effekseer = (() => {
         this.isLoaded = true;
         if (this.onload) this.onload();
       }
+    }
+
+    /**
+     * get paths to color images
+     * @returns {array[string]} paths to color images
+     */
+    getColorImagePaths() {
+      var arr = [];
+      let count = Core.EffectGetColorImageCount(this.nativeptr);
+      for(var i = 0; i < count; i++)
+      {
+        let ptr = Core.EffectGetColorImagePath(i);
+        str = Module.UTF8ToString(ptr);
+        arr.push(str);
+      }
+      return arr;
     }
   }
 
@@ -380,7 +398,7 @@ const effekseer = (() => {
     _getglTFBodyURI(buffer) {
       const memptr = Module._malloc(buffer.byteLength);
       Module.HEAP8.set(new Uint8Array(buffer), memptr);
-      ptr = Core.GetglTFBodyURI(memptr, buffer.byteLength);
+      ptr = Core.GetglTFBodyURI(context.nativeptr, memptr, buffer.byteLength);
       str = Module.UTF8ToString(ptr);
       Module._free(memptr);
       return str;

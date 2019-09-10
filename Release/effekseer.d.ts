@@ -261,6 +261,12 @@ declare namespace effekseer {
 
     export class EffekseerEffect {
         constructor();
+
+        /**
+         * get paths to color images
+         * @returns {Array<string>} paths to color images
+         */
+        getColorImagePaths() : Array<string>;
     }
 
     export class EffekseerHandle {
