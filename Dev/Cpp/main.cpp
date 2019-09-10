@@ -467,9 +467,9 @@ extern "C" {
 
 	const char* EXPORT EffekseerEffectGetColorImagePath(Effect* effect, int index)
 	{
-		auto path = effect->GetColorImagePath();
+		auto path = effect->GetColorImagePath(index);
 		char dst[260];
-		Effekseer::ConvertUtf16ToUtf8(dst, 260, (int16_t*)path);
+		Effekseer::ConvertUtf16ToUtf8((int8_t*)dst, 260, (int16_t*)path);
 		EfkWebViewer::tempStr = dst;
 		return EfkWebViewer::tempStr.c_str();
 	}

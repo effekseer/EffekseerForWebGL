@@ -39,7 +39,7 @@ const effekseer = (() => {
     GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number", "number"]),
     IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
     EffectGetColorImageCount: Module.cwrap("EffekseerEffectGetColorImageCount", "number", ["number"]),
-    EffectGetColorImagePath: Module.cwrap("EffekseerEffectGetColorImageCount", "number", ["number","number"]),
+    EffectGetColorImagePath: Module.cwrap("EffekseerEffectGetColorImagePath", "number", ["number","number"]),
   };
 
   /**
@@ -106,7 +106,7 @@ const effekseer = (() => {
       let count = Core.EffectGetColorImageCount(this.nativeptr);
       for(var i = 0; i < count; i++)
       {
-        let ptr = Core.EffectGetColorImagePath(i);
+        let ptr = Core.EffectGetColorImagePath(this.nativeptr, i);
         str = Module.UTF8ToString(ptr);
         arr.push(str);
       }

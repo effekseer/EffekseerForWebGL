@@ -14,6 +14,7 @@
       <input type="button" onclick="latestHandle = effekseer.play(effects['block'], 0, 0, 0);" value="block"></input>
       <input type="button" onclick="effekseer.stopAll(); latestHandle = null;" value="stop"></input>
       <input type="button" onclick="callExists();" value="exists?"></input>
+      <input type="button" onclick="callInfo();" value="info"></input>
       
     </div>
     <br>
@@ -33,6 +34,11 @@
         {
           console.log("an effect doesn't exists.");
         }
+      }
+
+      var callInfo = function() {
+        var paths = effects["Laser01"].getColorImagePaths();
+        console.log(paths);
       }
 
       var main = function () {
