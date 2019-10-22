@@ -54,7 +54,8 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      pip install selenium chromedriver-binary==75.0.3770.140.0
+      python -m pip install --upgrade pip
+      pip install selenium chromedriver-binary==76.0.3809.68.0
       cd tests
       python test.py
 
