@@ -15,7 +15,7 @@ class DisplayTest(unittest.TestCase):
         options.add_argument('--disable-web-security')
         options.add_argument('--disable-features=CrossSiteDocumentBlockingIfIsolatin')
         options.add_argument('--enable-webgl')
-        
+        options.add_argument('--enable-asm-webassembly')
 
         self.browser = webdriver.Chrome(options=options)
         self.browser.set_window_size(736, 640);
@@ -24,7 +24,9 @@ class DisplayTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
     def test_laser01_display(self):
+        time.sleep(2)
         self.browser.find_element_by_id('Laser01').click()
+        time.sleep(2)
         self.browser.find_element_by_id('step').click()
         time.sleep(2)
         self.browser.save_screenshot('screenshots/Laser01.png')
@@ -32,7 +34,9 @@ class DisplayTest(unittest.TestCase):
         self.assertTrue(filecmp.cmp('original/Laser01.png', 'screenshots/Laser01.png'), 'Laser 01 is not equal')
 
     def test_laser02_display(self):
+        time.sleep(2)
         self.browser.find_element_by_id('Laser02').click()
+        time.sleep(2)
         self.browser.find_element_by_id('step').click()
         time.sleep(2)
         self.browser.save_screenshot('screenshots/Laser02.png')
@@ -40,7 +44,9 @@ class DisplayTest(unittest.TestCase):
         self.assertTrue(filecmp.cmp('original/Laser02.png', 'screenshots/Laser02.png'), 'Laser 02 is not equal')
 
     def test_ring_display(self):
+        time.sleep(2)
         self.browser.find_element_by_id('Simple_Ring_Shape1').click()
+        time.sleep(2)
         self.browser.find_element_by_id('step').click()
         time.sleep(2)
         self.browser.save_screenshot('screenshots/Ring.png')
@@ -48,7 +54,9 @@ class DisplayTest(unittest.TestCase):
         self.assertTrue(filecmp.cmp('original/Ring.png', 'screenshots/Ring.png'), 'ring is not equal')
 
     def test_block_display(self):
+        time.sleep(2)
         self.browser.find_element_by_id('block').click()
+        time.sleep(2)
         self.browser.find_element_by_id('step').click()
         time.sleep(2)
         self.browser.save_screenshot('screenshots/block.png')

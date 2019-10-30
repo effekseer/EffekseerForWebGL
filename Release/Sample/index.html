@@ -1,116 +1,104 @@
 <!doctype html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>EffekseerForWebGL</title>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>EffekseerForWebGL</title>
+
   <body>
     <canvas id="canvas" width="720" height="480" class="screen" oncontextmenu="event.preventDefault()"></canvas>
     <br>
     <div id="buttons">
-      <input type="button" onclick="latestHandle = effekseer.play(effects['Laser01'], 0, 0, 0);" value="Laser01"></input>
-      <input type="button" onclick="latestHandle = effekseer.play(effects['Laser02'], 0, 0, 0);" value="Laser02"></input>
-      <input type="button" onclick="latestHandle = effekseer.play(effects['Simple_Ring_Shape1'], 0, 0, 0);" value="Simple_Ring_Shape1"></input>
-      <input type="button" onclick="latestHandle = effekseer.play(effects['block'], 0, 0, 0);" value="block"></input>
-      <input type="button" onclick="effekseer.stopAll(); latestHandle = null;" value="stop"></input>
-      <input type="button" onclick="callExists();" value="exists?"></input>
-      <input type="button" onclick="callInfo();" value="info"></input>
-      
+      <input type="button" onclick="context.play(effects['Laser01'], 0, 0, 0);" value="Laser01"></input>
+      <input type="button" onclick="context.play(effects['Laser02'], 0, 0, 0);" value="Laser02"></input>
+      <input type="button" onclick="context.play(effects['Simple_Ring_Shape1'], 0, 0, 0);" value="Simple_Ring_Shape1"></input>
+      <input type="button" onclick="context.play(effects['block'], 0, 0, 0);" value="block"></input>
+      <input type="button" onclick="context.stopAll();" value="stop"></input>
     </div>
     <br>
     <script type='text/javascript'>
-      var latestHandle = null;
       var effects = {};
       var three_camera = null;
-
-      // whether does effect exists?
-      var callExists = function() {
-        if(latestHandle == null) return;
-
-        if(latestHandle.exists) {
-          console.log("an effect exists.");
-        }
-        else
-        {
-          console.log("an effect doesn't exists.");
-        }
-      }
-
-      var callInfo = function() {
-        var paths = effects["Laser01"].getColorImagePaths();
-        console.log(paths);
-      }
+      var context = null;
 
       var main = function () {
         var canvas = document.getElementById("canvas");
 
         var scene = new THREE.Scene();
-        var width  = canvas.width;
+        var width = canvas.width;
         var height = canvas.height;
-        var fov    = 30;
+        var fov = 30;
         var aspect = width / height;
-        var near   = 1;
-        var far    = 1000;
-        var camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
+        var near = 1;
+        var far = 1000;
+        var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
         var target = new THREE.Vector3(0, 0, 0);
-        camera.position.set( 20, 20, 20 );
+        camera.position.set(20, 20, 20);
         camera.lookAt(target);
         three_camera = camera;
 
-        var renderer = new THREE.WebGLRenderer({canvas: canvas});
-        renderer.setSize( width, height );
+        var renderer = new THREE.WebGLRenderer({ canvas: canvas });
+        renderer.setSize(width, height);
         //document.body.appendChild( renderer.domElement );
 
-        effekseer.init(renderer.context);
-        effects["Laser01"] = effekseer.loadEffect(
-          "../Resources/Laser01.efk", 
-          1.0,
-          () => {
-            // called when loading is finished.
-          },
-          (m, url) =>
-          {
-            // called when error causes.
-            console.log(m + " " + url);
-          }
-        );
+        effekseer.initRuntime('../effekseer.wasm', () => {
+          context = effekseer.createContext();
 
-        effects["Laser02"] = effekseer.loadEffect("../Resources/Laser02.efk");
-        effects["Simple_Ring_Shape1"] = effekseer.loadEffect("../Resources/Simple_Ring_Shape1.efk");
-        effects["block"] = effekseer.loadEffect("../Resources/block.efk");
-
-        var grid = new THREE.GridHelper(20, 10, 0xffffff, 0xffffff);
-        scene.add(grid);     
-
-        var directionalLight = new THREE.DirectionalLight( 0xffffff );
-        directionalLight.position.set( 0, 0.7, 0.7 );
-        scene.add( directionalLight );
-
-        var geometry = new THREE.CubeGeometry( 2, 2, 2 );
-        var material = new THREE.MeshPhongMaterial( { color: 0xff0000 } );
-        var mesh = new THREE.Mesh( geometry, material );
-        scene.add( mesh );
-
-        ( function renderLoop () {
-          requestAnimationFrame( renderLoop );
-          mesh.rotation.set(
-            0,
-            mesh.rotation.y + .01,
-            mesh.rotation.z + .01
+          context.init(renderer.context);
+          effects["Laser01"] = context.loadEffect(
+            "../Resources/Laser01.efk",
+            1.0,
+            () => {
+              // called when loading is finished.
+            },
+            (m, url) => {
+              // called when error causes.
+              console.log(m + " " + url);
+            }
           );
-          
-          effekseer.update();
-          
-          renderer.render( scene, camera );
-          effekseer.setProjectionMatrix(camera.projectionMatrix.elements);
-          effekseer.setCameraMatrix(camera.matrixWorldInverse.elements);
-          effekseer.draw();
-        
-        } )();
+
+          effects["Laser02"] = context.loadEffect("../Resources/Laser02.efk");
+          effects["Simple_Ring_Shape1"] = context.loadEffect("../Resources/Simple_Ring_Shape1.efk");
+          effects["block"] = context.loadEffect("../Resources/block.efk");
+
+          var grid = new THREE.GridHelper(20, 10, 0xffffff, 0xffffff);
+          scene.add(grid);
+
+          var directionalLight = new THREE.DirectionalLight(0xffffff);
+          directionalLight.position.set(0, 0.7, 0.7);
+          scene.add(directionalLight);
+
+          var geometry = new THREE.CubeGeometry(2, 2, 2);
+          var material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+          var mesh = new THREE.Mesh(geometry, material);
+          scene.add(mesh);
+
+          (function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            mesh.rotation.set(
+              0,
+              mesh.rotation.y + .01,
+              mesh.rotation.z + .01
+            );
+
+            context.update();
+
+            renderer.render(scene, camera);
+            context.setProjectionMatrix(camera.projectionMatrix.elements);
+            context.setCameraMatrix(camera.matrixWorldInverse.elements);
+            context.draw();
+
+          })();
+
+        }, () => { });
       };
-      window.addEventListener( 'DOMContentLoaded', main, false );
+      window.addEventListener('DOMContentLoaded', main, false);
+
     </script>
     <script src="three.min.js"></script>
     <script src="../effekseer.js"></script>
+    <!-- <script src="../effekseer_asmjs.js"></script> -->
   </body>
+
 </html>

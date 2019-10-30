@@ -1,46 +1,121 @@
 
 const effekseer = (() => {
-  const Module = effekseer();
+  let Module = {};
+  let Core = {};
+  let _onloadAssembly = () => { }
+  let _onerrorAssembly = () => { }
+  let _is_runtime_initialized = false;
+  let _onRuntimeInitialized = () => {
+    // C++ functions
+    Core = {
+      Init: Module.cwrap("EffekseerInit", "number", ["number", "number"]),
+      Terminate: Module.cwrap("EffekseerTerminate", "void", ["number"]),
+      Update: Module.cwrap("EffekseerUpdate", "void", ["number", "number"]),
+      BeginUpdate: Module.cwrap("EffekseerBeginUpdate", "void", ["number"]),
+      EndUpdate: Module.cwrap("EffekseerEndUpdate", "void", ["number"]),
+      UpdateHandle: Module.cwrap("EffekseerUpdateHandle", "void", ["number", "number", "number"]),
+      Draw: Module.cwrap("EffekseerDraw", "void", ["number"]),
+      BeginDraw: Module.cwrap("EffekseerBeginDraw", "void", ["number"]),
+      EndDraw: Module.cwrap("EffekseerEndDraw", "void", ["number"]),
+      DrawHandle: Module.cwrap("EffekseerDrawHandle", "void", ["number", "number"]),
+      SetProjectionMatrix: Module.cwrap("EffekseerSetProjectionMatrix", "void", ["number", "number"]),
+      SetProjectionPerspective: Module.cwrap("EffekseerSetProjectionPerspective", "void", ["number", "number", "number", "number", "number"]),
+      SetProjectionOrthographic: Module.cwrap("EffekseerSetProjectionOrthographic", "void", ["number", "number", "number", "number", "number"]),
+      SetCameraMatrix: Module.cwrap("EffekseerSetCameraMatrix", "void", ["number", "number"]),
+      SetCameraLookAt: Module.cwrap("EffekseerSetCameraLookAt", "void", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]),
+      LoadEffect: Module.cwrap("EffekseerLoadEffect", "number", ["number", "number", "number", "number", "number"]),
+      ReleaseEffect: Module.cwrap("EffekseerReleaseEffect", "void", ["number", "number"]),
+      ReloadResources: Module.cwrap("EffekseerReloadResources", "void", ["number", "number"]),
+      StopAllEffects: Module.cwrap("EffekseerStopAllEffects", "void", ["number"]),
+      PlayEffect: Module.cwrap("EffekseerPlayEffect", "number", ["number", "number", "number", "number", "number"]),
+      StopEffect: Module.cwrap("EffekseerStopEffect", "void", ["number", "number"]),
+      StopRoot: Module.cwrap("EffekseerStopRoot", "void", ["number", "number"]),
+      Exists: Module.cwrap("EffekseerExists", "number", ["number", "number"]),
+      SetLocation: Module.cwrap("EffekseerSetLocation", "void", ["number", "number", "number", "number", "number"]),
+      SetRotation: Module.cwrap("EffekseerSetRotation", "void", ["number", "number", "number", "number", "number"]),
+      SetScale: Module.cwrap("EffekseerSetScale", "void", ["number", "number", "number", "number", "number"]),
+      SetMatrix: Module.cwrap("EffekseerSetMatrix", "void", ["number", "number", "number"]),
+      SetTargetLocation: Module.cwrap("EffekseerSetTargetLocation", "void", ["number", "number", "number", "number", "number"]),
+      SetPaused: Module.cwrap("EffekseerSetPaused", "void", ["number", "number", "number"]),
+      SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
+      SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
+      IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number", "number"]),
+      GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number", "number"]),
+      IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
+      EffectGetColorImageCount: Module.cwrap("EffekseerEffectGetColorImageCount", "number", ["number"]),
+      EffectGetColorImagePath: Module.cwrap("EffekseerEffectGetColorImagePath", "number", ["number", "number"]),
+    };
 
-  // C++ functions
-  const Core = {
-    Init: Module.cwrap("EffekseerInit", "number", ["number", "number"]),
-    Terminate: Module.cwrap("EffekseerTerminate", "void", ["number"]),
-    Update: Module.cwrap("EffekseerUpdate", "void", ["number", "number"]),
-    BeginUpdate: Module.cwrap("EffekseerBeginUpdate", "void", ["number"]),
-    EndUpdate: Module.cwrap("EffekseerEndUpdate", "void", ["number"]),
-    UpdateHandle: Module.cwrap("EffekseerUpdateHandle", "void", ["number", "number", "number"]),
-    Draw: Module.cwrap("EffekseerDraw", "void", ["number"]),
-    BeginDraw: Module.cwrap("EffekseerBeginDraw", "void", ["number"]),
-    EndDraw: Module.cwrap("EffekseerEndDraw", "void", ["number"]),
-    DrawHandle: Module.cwrap("EffekseerDrawHandle", "void", ["number", "number"]),
-    SetProjectionMatrix: Module.cwrap("EffekseerSetProjectionMatrix", "void", ["number", "number"]),
-    SetProjectionPerspective: Module.cwrap("EffekseerSetProjectionPerspective", "void", ["number", "number", "number", "number", "number"]),
-    SetProjectionOrthographic: Module.cwrap("EffekseerSetProjectionOrthographic", "void", ["number", "number", "number", "number", "number"]),
-    SetCameraMatrix: Module.cwrap("EffekseerSetCameraMatrix", "void", ["number", "number"]),
-    SetCameraLookAt: Module.cwrap("EffekseerSetCameraLookAt", "void", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]),
-    LoadEffect: Module.cwrap("EffekseerLoadEffect", "number", ["number", "number", "number", "number", "number"]),
-    ReleaseEffect: Module.cwrap("EffekseerReleaseEffect", "void", ["number", "number"]),
-    ReloadResources: Module.cwrap("EffekseerReloadResources", "void", ["number", "number"]),
-    StopAllEffects: Module.cwrap("EffekseerStopAllEffects", "void", ["number"]),
-    PlayEffect: Module.cwrap("EffekseerPlayEffect", "number", ["number", "number", "number", "number", "number"]),
-    StopEffect: Module.cwrap("EffekseerStopEffect", "void", ["number", "number"]),
-    StopRoot: Module.cwrap("EffekseerStopRoot", "void", ["number", "number"]),
-    Exists: Module.cwrap("EffekseerExists", "number", ["number", "number"]),
-    SetLocation: Module.cwrap("EffekseerSetLocation", "void", ["number", "number", "number", "number", "number"]),
-    SetRotation: Module.cwrap("EffekseerSetRotation", "void", ["number", "number", "number", "number", "number"]),
-    SetScale: Module.cwrap("EffekseerSetScale", "void", ["number", "number", "number", "number", "number"]),
-    SetMatrix: Module.cwrap("EffekseerSetMatrix", "void", ["number", "number", "number"]),
-    SetTargetLocation: Module.cwrap("EffekseerSetTargetLocation", "void", ["number", "number", "number", "number", "number"]),
-    SetPaused: Module.cwrap("EffekseerSetPaused", "void", ["number", "number", "number"]),
-    SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
-    SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
-    IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number", "number"]),
-    GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number", "number"]),
-    IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
-    EffectGetColorImageCount: Module.cwrap("EffekseerEffectGetColorImageCount", "number", ["number"]),
-    EffectGetColorImagePath: Module.cwrap("EffekseerEffectGetColorImagePath", "number", ["number","number"]),
+
+    Module._isPowerOfTwo = img => {
+      return _isImagePowerOfTwo(img);
+    };
+
+    Module._loadImage = path => {
+      const effect = loadingEffect;
+      effect.context._makeContextCurrent();
+
+      var res = effect.resources.find(res => { return res.path == path });
+      if (res) {
+        return (res.isLoaded) ? res.image : null;
+      }
+
+      var res = { path: path, isLoaded: false, image: null };
+      effect.resources.push(res);
+
+      _loadResource(effect.baseDir + path, image => {
+        res.image = image
+        res.isLoaded = true;
+        effect._update();
+      }, effect.onerror);
+      return null;
+    };
+
+    Module._loadBinary = path => {
+      const effect = loadingEffect;
+      effect.context._makeContextCurrent();
+
+      var res = effect.resources.find(res => { return res.path == path });
+      if (res) {
+        return (res.isLoaded) ? res.buffer : null;
+      }
+
+      var res = { path: path, isLoaded: false, buffer: null };
+      effect.resources.push(res);
+
+      _loadResource(effect.baseDir + path, buffer => {
+        res.buffer = buffer;
+        res.isLoaded = true;
+        effect._update();
+      }, effect.onerror);
+      return null;
+    };
+
+    _is_runtime_initialized = true;
+    _onloadAssembly();
   };
+
+  const _initalize_wasm = (url) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = "arraybuffer";
+    xhr.onload = () => {
+      var params = {};
+      params.wasmBinary = xhr.response;
+      params.onRuntimeInitialized = _onRuntimeInitialized;
+      Module = effekseer_native(params);
+    };
+    xhr.onerror = () => {
+      _onerrorAssembly();
+    };
+    xhr.send(null);
+  };
+
+  if(typeof effekseer_native === "undefined")
+  {
+    Module = effekseer();
+    _onRuntimeInitialized();
+  }
 
   /**
    * A loaded effect data
@@ -104,8 +179,7 @@ const effekseer = (() => {
     getColorImagePaths() {
       var arr = [];
       let count = Core.EffectGetColorImageCount(this.nativeptr);
-      for(var i = 0; i < count; i++)
-      {
+      for (var i = 0; i < count; i++) {
         let ptr = Core.EffectGetColorImagePath(this.nativeptr, i);
         str = Module.UTF8ToString(ptr);
         arr.push(str);
@@ -282,8 +356,8 @@ const effekseer = (() => {
         let converted_image = _convertPowerOfTwoImage(image);
         onload(converted_image);
       };
-      image.onerror = () => { 
-        onerror('not found', path); 
+      image.onerror = () => {
+        onerror('not found', path);
       };
 
       image.crossOrigin = "anonymous";
@@ -296,50 +370,6 @@ const effekseer = (() => {
   };
 
   var loadingEffect = null;
-
-  Module._isPowerOfTwo = img => {
-    return _isImagePowerOfTwo(img);
-  };
-
-  Module._loadImage = path => {
-    const effect = loadingEffect;
-    effect.context._makeContextCurrent();
-
-    var res = effect.resources.find(res => { return res.path == path });
-    if (res) {
-      return (res.isLoaded) ? res.image : null;
-    }
-
-    var res = { path: path, isLoaded: false, image: null };
-    effect.resources.push(res);
-
-    _loadResource(effect.baseDir + path, image => {
-      res.image = image
-      res.isLoaded = true;
-      effect._update();
-    }, effect.onerror);
-    return null;
-  };
-
-  Module._loadBinary = path => {
-    const effect = loadingEffect;
-    effect.context._makeContextCurrent();
-
-    var res = effect.resources.find(res => { return res.path == path });
-    if (res) {
-      return (res.isLoaded) ? res.buffer : null;
-    }
-
-    var res = { path: path, isLoaded: false, buffer: null };
-    effect.resources.push(res);
-
-    _loadResource(effect.baseDir + path, buffer => {
-      res.buffer = buffer;
-      res.isLoaded = true;
-      effect._update();
-    }, effect.onerror);
-    return null;
-  };
 
   class ContextStates {
     constructor(gl) {
@@ -705,11 +735,28 @@ const effekseer = (() => {
    */
   class Effekseer {
 
+    initRuntime(path, onload, onerror) {
+      if(typeof effekseer_native === "undefined")
+      {
+        onload();
+        return;
+      }
+
+      _onloadAssembly = onload;
+      _onerrorAssembly = onerror;
+      _initalize_wasm(path);
+    }
+
     /**
      * Create a context to render in multiple scenes
      * @returns {EffekseerContext} context
      */
     createContext() {
+      if(!_is_runtime_initialized)
+      {
+        return null;
+      }
+
       return new EffekseerContext();
     }
 
@@ -731,6 +778,7 @@ const effekseer = (() => {
      * @param {object} settings Some settings with Effekseer initialization
      */
     init(webglContext, settings) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext = new EffekseerContext();
       this.defaultContext.init(webglContext, settings);
     }
@@ -740,18 +788,22 @@ const effekseer = (() => {
      * @param {number=} deltaFrames number of advance frames
      */
     update(deltaFrames) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.update(deltaFrames);
     }
 
     beginUpdate() {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.beginUpdate();
     }
 
     endUpdate() {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.endUpdate();
     }
 
     updateHandle(handle, deltaFrames) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.updateHandle(handle, deltaFrames);
     }
 
@@ -759,18 +811,22 @@ const effekseer = (() => {
      * Main rendering.
      */
     draw() {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.draw();
     }
 
     beginDraw() {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.beginDraw();
     }
 
     endDraw() {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.endDraw();
     }
 
     drawHandle(handle) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.drawHandle(handle);
     }
 
@@ -779,6 +835,7 @@ const effekseer = (() => {
      * @param {array} matrixArray An array that is requred 16 elements
      */
     setProjectionMatrix(matrixArray) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.setProjectionMatrix(matrixArray);
     }
 
@@ -790,6 +847,7 @@ const effekseer = (() => {
      * @param {number} aspect Distance of far plane
      */
     setProjectionPerspective(fov, aspect, near, far) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.SetProjectionPerspective(fov, aspect, near, far);
     }
 
@@ -801,6 +859,7 @@ const effekseer = (() => {
      * @param {number} aspect Distance of far plane
      */
     setProjectionOrthographic(width, height, near, far) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.setProjectionOrthographic(width, height, near, far);
     }
 
@@ -809,6 +868,7 @@ const effekseer = (() => {
      * @param {array} matrixArray An array that is requred 16 elements
      */
     setCameraMatrix(matrixArray) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.setCameraMatrix(matrixArray);
     }
 
@@ -835,6 +895,7 @@ const effekseer = (() => {
       upvecY,
       upvecZ
     ) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.setCameraLookAt(positionX, positionY, positionZ, targetX, targetY, targetZ, upvecX, upvecY, upvecZ);
     }
 
@@ -845,6 +906,7 @@ const effekseer = (() => {
      * @param {object=} upvec upper vector
      */
     setCameraLookAtFromVector(position, target, upvec) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.setCameraLookAtFromVector(position, target, upvec);
     }
 
@@ -857,6 +919,7 @@ const effekseer = (() => {
      * @returns {EffekseerEffect} The effect data
      */
     loadEffect(path, scale = 1.0, onload, onerror) {
+      console.warn('deprecated : please use through createContext.');
       return this.defaultContext.loadEffect(path, scale, onload, onerror);
     }
 
@@ -865,6 +928,7 @@ const effekseer = (() => {
      * @param {EffekseerEffect} effect The loaded effect
      */
     releaseEffect(effect) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.releaseEffect(effect);
     }
 
@@ -877,6 +941,7 @@ const effekseer = (() => {
      * @returns {EffekseerHandle} The effect handle
      */
     play(effect, x, y, z) {
+      console.warn('deprecated : please use through createContext.');
       return this.defaultContext.play(effect, x, y, z);
     }
 
@@ -884,6 +949,7 @@ const effekseer = (() => {
      * Stop the all effects.
      */
     stopAll() {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.stopAll();
     }
 
@@ -892,6 +958,7 @@ const effekseer = (() => {
      * @param {function} loader
      */
     setResourceLoader(loader) {
+      console.warn('deprecated : please use through createContext.');
       this.defaultContext.setResourceLoader(loader);
     }
 
@@ -899,6 +966,7 @@ const effekseer = (() => {
      * Get whether VAO is supported
      */
     isVertexArrayObjectSupported() {
+      console.warn('deprecated : please use through createContext.');
       return this.defaultContext.isVertexArrayObjectSupported();
     }
   }
