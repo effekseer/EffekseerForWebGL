@@ -18,17 +18,8 @@ steps:
       source ./emsdk_env.sh
       cd ..
       git clone https://github.com/effekseer/Effekseer --depth 1 ../Effekseer
-      pip install dukpy jsmin
-      mkdir build
-      cd build
-      emcmake cmake ..
-      make
-
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      python build.py
+      python -m pip install dukpy jsmin
+      python build.py on_ci
 
 - task: Bash@3
   inputs:

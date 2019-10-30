@@ -6,10 +6,20 @@ import platform
 import dukpy
 import jsmin
 
+on_ci = False
+
+for arg in sys.argv:
+    if arg == 'on_ci':
+        on_ci = True
+
 def compile(build_dir,target_dir, option, effekseer_core_js, effekseer_src_js, effekseer_js, effekseer_min_js):
     if not os.path.exists(build_dir):
         os.mkdir(build_dir)
     os.chdir(build_dir)
+
+    if on_ci:
+        subprocess.check_call(["bash", "-c", "emcmake", "cmake", option, target_dir])
+        subprocess.check_call(["make"])
 
     if platform.system() == "Windows":
         subprocess.check_call(["cmd", "/c", "emcmake", "cmake",
