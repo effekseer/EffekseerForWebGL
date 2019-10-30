@@ -32,7 +32,7 @@ steps:
       import dukpy
       import jsmin
 
-      os.chdir("build")
+      os.chdir("build_wasm")
 
       effekseer_core_js = os.path.join(".", "effekseer.core.js")
       effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js")
