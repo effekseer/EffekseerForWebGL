@@ -12,10 +12,8 @@ import requests
 
 class DisplayTest(unittest.TestCase):
     def capturePng(self):
-        canvas = self.browser.find_element_by_css_selector("#canvas")
-
         # get the canvas as a PNG base64 string
-        canvas_base64 = self.browser.execute_script("return capturePNG()", canvas)
+        canvas_base64 = self.browser.execute_script("return capturePNG()")
 
         canvas_png = base64.b64decode(canvas_base64)
         return canvas_png
