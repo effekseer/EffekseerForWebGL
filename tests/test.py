@@ -18,8 +18,9 @@ class DisplayTest(unittest.TestCase):
         canvas_png = base64.b64decode(canvas_base64)
         return canvas_png
     def setUp(self):
-        files = glob.glob('../samples_for_test/**/*.efk')
-
+        files = []
+        for file in glob.glob('../samples_for_test/**/*.efk') :
+            files.append(file.replace('\\', '/'))
         with open("test-list.json", "w") as f:
             json.dump(files, f)
         time.sleep(2)
