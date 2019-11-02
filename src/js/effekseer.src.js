@@ -341,7 +341,7 @@ const effekseer = (() => {
       onload(xhr.response);
     };
     xhr.onerror = () => {
-      if (onerror) onerror('not found', url);
+      if (!(typeof onerror === "undefined")) onerror('not found', url);
     };
     xhr.send(null);
   };
@@ -356,7 +356,7 @@ const effekseer = (() => {
         onload(converted_image);
       };
       image.onerror = () => {
-        if (onerror) onerror('not found', path);
+        if (!(typeof onerror === "undefined")) onerror('not found', path);
       };
 
       image.crossOrigin = "anonymous";
