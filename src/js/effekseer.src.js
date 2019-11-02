@@ -356,7 +356,7 @@ const effekseer = (() => {
         onload(converted_image);
       };
       image.onerror = () => {
-        onerror('not found', path);
+        if (onerror) onerror('not found', path);
       };
 
       image.crossOrigin = "anonymous";
