@@ -1,12 +1,12 @@
-#include <stdlib.h>
-#include <math.h>
-#include <algorithm>
-#include <emscripten.h>
-#include <emscripten/bind.h>
-#include <AL/alc.h>
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
+#include <AL/alc.h>
+#include <algorithm>
+#include <emscripten.h>
+#include <emscripten/bind.h>
+#include <math.h>
+#include <stdlib.h>
 
 #include "glTFEffectFactory.h"
 #include "glbEffectFactory.h"
@@ -15,17 +15,23 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-static void ArrayToMatrix44(const float* array, Effekseer::Matrix44& matrix) {
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
+static void ArrayToMatrix44(const float* array, Effekseer::Matrix44& matrix)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
 			matrix.Values[i][j] = array[i * 4 + j];
 		}
 	}
 }
 
-static void ArrayToMatrix43(const float* array, Effekseer::Matrix43& matrix) {
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 3; j++) {
+static void ArrayToMatrix43(const float* array, Effekseer::Matrix43& matrix)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
 			matrix.Value[i][j] = array[i * 4 + j];
 		}
 	}
@@ -33,238 +39,226 @@ static void ArrayToMatrix43(const float* array, Effekseer::Matrix43& matrix) {
 
 namespace EfkWebViewer
 {
-	using namespace Effekseer;
+using namespace Effekseer;
 
-	class CustomTextureLoader : public TextureLoader
+class CustomTextureLoader : public TextureLoader
+{
+public:
+	CustomTextureLoader() = default;
+	~CustomTextureLoader() = default;
+
+public:
+	Effekseer::TextureData* Load(const EFK_CHAR* path, TextureType textureType) override
 	{
-	public:
-		CustomTextureLoader() = default;
-		~CustomTextureLoader() = default;
 
-	public:
-		Effekseer::TextureData* Load(const EFK_CHAR* path, TextureType textureType) override
+		// Request to load image
+		int loaded = EM_ASM_INT({ return Module._loadImage(UTF16ToString($0)) != null; }, path);
+		if (!loaded)
 		{
-			
-			// Request to load image
-			int loaded = EM_ASM_INT({
-				return Module._loadImage(UTF16ToString($0)) != null;
-			}, path);
-			if (!loaded) {
-				// Loading incompleted
-				return nullptr;
-			}
+			// Loading incompleted
+			return nullptr;
+		}
 
-			GLuint texture = 0;
-			glGenTextures(1, &texture);
+		GLuint texture = 0;
+		glGenTextures(1, &texture);
 
-			// Load texture from image
-			EM_ASM_INT({
+		// Load texture from image
+		EM_ASM_INT(
+			{
 				var binding = GLctx.getParameter(GLctx.TEXTURE_BINDING_2D);
 
 				var img = Module._loadImage(UTF16ToString($0));
 				GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[$1]);
 				GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, img);
-				if (Module._isPowerOfTwo(img)) {
+				if (Module._isPowerOfTwo(img))
+				{
 					GLctx.generateMipmap(GLctx.TEXTURE_2D);
 				}
 				GLctx.bindTexture(GLctx.TEXTURE_2D, binding);
-			}, path, texture);
-			
-			Effekseer::TextureData* textureData = new Effekseer::TextureData();
-			textureData->UserID = texture;
-			return textureData;
-		}
+			},
+			path,
+			texture);
 
-		Effekseer::TextureData* Load(const void* data, int32_t size, TextureType textureType) override
-		{
-			int width;
-			int height;
-			int channel;
+		Effekseer::TextureData* textureData = new Effekseer::TextureData();
+		textureData->UserID = texture;
+		return textureData;
+	}
 
-			uint8_t* img_ptr = stbi_load_from_memory((const uint8_t*)data, size, &width, &height, &channel, 4);
-
-			GLint binding = 0;
-
-			glGetIntegerv(GL_TEXTURE_BINDING_2D, &binding);
-
-			GLuint texture = 0;
-			glGenTextures(1, &texture);
-			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexImage2D(GL_TEXTURE_2D,
-					 0,
-					 GL_RGBA,
-					 width,
-					 height,
-					 0,
-					 GL_RGBA,
-					 GL_UNSIGNED_BYTE,
-					 img_ptr);
-
-			// Generate mipmap
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			glBindTexture(GL_TEXTURE_2D, binding);
-			stbi_image_free(img_ptr);
-
-			auto textureData = new Effekseer::TextureData();
-			textureData->UserPtr = nullptr;
-			textureData->UserID = texture;
-			textureData->TextureFormat = Effekseer::TextureFormatType::ABGR8;
-			textureData->Width = width;
-			textureData->Height = height;
-			return textureData;
-		}
-
-		void Unload(Effekseer::TextureData* data ) override
-		{
-			if (data != NULL)
-			{
-				auto textureData = (Effekseer::TextureData*)data;
-				GLuint texture = (GLuint)textureData->UserID;
-				if (texture) {
-					glDeleteTextures(1, &texture);
-				}
-				delete textureData;
-			}
-			
-		}
-	};
-
-	class CustomModelLoader : public ModelLoader
+	Effekseer::TextureData* Load(const void* data, int32_t size, TextureType textureType) override
 	{
-		FileInterface* m_fileInterface;
+		int width;
+		int height;
+		int channel;
 
-	public:
-		CustomModelLoader( FileInterface* fileInterface )
-			: m_fileInterface	( fileInterface )
+		uint8_t* img_ptr = stbi_load_from_memory((const uint8_t*)data, size, &width, &height, &channel, 4);
+
+		GLint binding = 0;
+
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &binding);
+
+		GLuint texture = 0;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_ptr);
+
+		// Generate mipmap
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glBindTexture(GL_TEXTURE_2D, binding);
+		stbi_image_free(img_ptr);
+
+		auto textureData = new Effekseer::TextureData();
+		textureData->UserPtr = nullptr;
+		textureData->UserID = texture;
+		textureData->TextureFormat = Effekseer::TextureFormatType::ABGR8;
+		textureData->Width = width;
+		textureData->Height = height;
+		return textureData;
+	}
+
+	void Unload(Effekseer::TextureData* data) override
+	{
+		if (data != NULL)
 		{
-		}
-
-		~CustomModelLoader() = default;
-
-		void* Load( const EFK_CHAR* path )
-		{
-			std::unique_ptr<Effekseer::FileReader> 
-				reader( m_fileInterface->OpenRead( path ) );
-			
-			if( reader.get() != NULL )
+			auto textureData = (Effekseer::TextureData*)data;
+			GLuint texture = (GLuint)textureData->UserID;
+			if (texture)
 			{
-				size_t size_model = reader->GetLength();
-				char* data_model = new char[size_model];
-				reader->Read( data_model, size_model );
-
-				Model* model = new EffekseerRendererGL::Model(data_model, size_model);
-
-				delete [] data_model;
-
-				return (void*)model;
+				glDeleteTextures(1, &texture);
 			}
-
-			return NULL;
+			delete textureData;
 		}
+	}
+};
 
-		void* Load(const void* data, int32_t size) override
+class CustomModelLoader : public ModelLoader
+{
+	FileInterface* m_fileInterface;
+
+public:
+	CustomModelLoader(FileInterface* fileInterface) : m_fileInterface(fileInterface) {}
+
+	~CustomModelLoader() = default;
+
+	void* Load(const EFK_CHAR* path)
+	{
+		std::unique_ptr<Effekseer::FileReader> reader(m_fileInterface->OpenRead(path));
+
+		if (reader.get() != NULL)
 		{
-			Model* model = new EffekseerRendererGL::Model((void*)data, size);
+			size_t size_model = reader->GetLength();
+			char* data_model = new char[size_model];
+			reader->Read(data_model, size_model);
+
+			Model* model = new EffekseerRendererGL::Model(data_model, size_model);
+
+			delete[] data_model;
+
 			return (void*)model;
 		}
 
-		void Unload( void* data )
-		{
-			if( data != NULL )
-			{
-				Model* model = (Model*)data;
-				delete model;
-			}
-		}
-	};
+		return NULL;
+	}
 
-
-	class Context
+	void* Load(const void* data, int32_t size) override
 	{
-	public:
-		Manager* manager = NULL;
-		EffekseerRendererGL::Renderer* renderer = NULL;
-		EffekseerSound::Sound* sound = NULL;
+		Model* model = new EffekseerRendererGL::Model((void*)data, size);
+		return (void*)model;
+	}
 
-		Matrix44 projectionMatrix;
-		Matrix44 cameraMatrix;
-
-		CustomFileInterface fileInterface;
-			
-		glbEffectFactory* glbEffectFactory_ = nullptr;
-		glTFEffectFactory* glTFEffectFactory_ = nullptr;
-
-		ALCdevice* alcDevice = nullptr;
-		ALCcontext* alcContext = nullptr;
-
-		//! pass strings
-		std::string tempStr;
-
-	public:
-		Context() = default;
-		~Context() = default;
-		
-		bool Init(int instanceMaxCount, int squareMaxCount) {
-			manager = Manager::Create(instanceMaxCount);
-			renderer = EffekseerRendererGL::Renderer::Create(squareMaxCount, 
-				EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
-			sound = EffekseerSound::Sound::Create(16);
-
-			manager->SetSpriteRenderer( renderer->CreateSpriteRenderer() );
-			manager->SetRibbonRenderer( renderer->CreateRibbonRenderer() );
-			manager->SetRingRenderer( renderer->CreateRingRenderer() );
-			manager->SetModelRenderer( renderer->CreateModelRenderer() );
-			manager->SetTrackRenderer( renderer->CreateTrackRenderer() );
-			manager->SetTextureLoader( new CustomTextureLoader() );
-			manager->SetModelLoader( new CustomModelLoader(&fileInterface) );
-		
-			manager->SetSoundPlayer( sound->CreateSoundPlayer() );
-			manager->SetSoundLoader( sound->CreateSoundLoader(&fileInterface) );
-
-			manager->SetCoordinateSystem( CoordinateSystem::RH );
-			
-			glbEffectFactory_ = new glbEffectFactory();
-			glTFEffectFactory_ = new glTFEffectFactory();
-
-			manager->GetSetting()->AddEffectFactory(glbEffectFactory_);
-			manager->GetSetting()->AddEffectFactory(glTFEffectFactory_);
-
-			return true;
+	void Unload(void* data)
+	{
+		if (data != NULL)
+		{
+			Model* model = (Model*)data;
+			delete model;
 		}
-		
-		void Terminate() {
-			manager->Destroy();
-			renderer->Destroy();
-			sound->Destroy();
-		}
+	}
+};
 
-		void Update(float deltaFrames) {
-			manager->Update(deltaFrames);
-		}
-		
-		void Draw() {
-			renderer->SetProjectionMatrix(projectionMatrix);
-			renderer->SetCameraMatrix(cameraMatrix);
+class Context
+{
+public:
+	Manager* manager = NULL;
+	EffekseerRendererGL::Renderer* renderer = NULL;
+	EffekseerSound::Sound* sound = NULL;
 
-			renderer->BeginRendering();
-			manager->Draw();
-			renderer->EndRendering();
-		}
-	};
+	Matrix44 projectionMatrix;
+	Matrix44 cameraMatrix;
+
+	CustomFileInterface fileInterface;
+
+	glbEffectFactory* glbEffectFactory_ = nullptr;
+	glTFEffectFactory* glTFEffectFactory_ = nullptr;
+
+	ALCdevice* alcDevice = nullptr;
+	ALCcontext* alcContext = nullptr;
 
 	//! pass strings
 	std::string tempStr;
-}
+
+public:
+	Context() = default;
+	~Context() = default;
+
+	bool Init(int instanceMaxCount, int squareMaxCount)
+	{
+		manager = Manager::Create(instanceMaxCount);
+		renderer = EffekseerRendererGL::Renderer::Create(squareMaxCount, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
+		sound = EffekseerSound::Sound::Create(16);
+
+		manager->SetSpriteRenderer(renderer->CreateSpriteRenderer());
+		manager->SetRibbonRenderer(renderer->CreateRibbonRenderer());
+		manager->SetRingRenderer(renderer->CreateRingRenderer());
+		manager->SetModelRenderer(renderer->CreateModelRenderer());
+		manager->SetTrackRenderer(renderer->CreateTrackRenderer());
+		manager->SetTextureLoader(new CustomTextureLoader());
+		manager->SetModelLoader(new CustomModelLoader(&fileInterface));
+
+		manager->SetSoundPlayer(sound->CreateSoundPlayer());
+		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
+
+		manager->SetCoordinateSystem(CoordinateSystem::RH);
+
+		glbEffectFactory_ = new glbEffectFactory();
+		glTFEffectFactory_ = new glTFEffectFactory();
+
+		manager->GetSetting()->AddEffectFactory(glbEffectFactory_);
+		manager->GetSetting()->AddEffectFactory(glTFEffectFactory_);
+
+		return true;
+	}
+
+	void Terminate()
+	{
+		manager->Destroy();
+		renderer->Destroy();
+		sound->Destroy();
+	}
+
+	void Update(float deltaFrames) { manager->Update(deltaFrames); }
+
+	void Draw()
+	{
+		renderer->SetProjectionMatrix(projectionMatrix);
+		renderer->SetCameraMatrix(cameraMatrix);
+
+		renderer->BeginRendering();
+		manager->Draw();
+		renderer->EndRendering();
+	}
+};
+
+//! pass strings
+std::string tempStr;
+} // namespace EfkWebViewer
 
 #define EXPORT EMSCRIPTEN_KEEPALIVE
 
-int main(int argc, char *argv[])
-{
-	return 0;
-}
+int main(int argc, char* argv[]) { return 0; }
 
-extern "C" {
+extern "C"
+{
 	using namespace Effekseer;
 
 	EfkWebViewer::Context* EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount)
@@ -276,7 +270,8 @@ extern "C" {
 		alcMakeContextCurrent(context->alcContext);
 
 		// Initialize viewer
-		if (!context->Init(instanceMaxCount, squareMaxCount)) {
+		if (!context->Init(instanceMaxCount, squareMaxCount))
+		{
 			delete context;
 			return nullptr;
 		}
@@ -290,30 +285,18 @@ extern "C" {
 		delete context;
 	}
 
-	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames)
-	{
-		context->Update(deltaFrames);
-	}
+	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames) { context->Update(deltaFrames); }
 
-	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context)
-	{
-		context->manager->BeginUpdate();
-	}
+	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context) { context->manager->BeginUpdate(); }
 
-	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context)
-	{
-		context->manager->EndUpdate();
-	}
+	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context) { context->manager->EndUpdate(); }
 
 	void EXPORT EffekseerUpdateHandle(EfkWebViewer::Context* context, int handle, float deltaFrame)
 	{
 		context->manager->UpdateHandle(handle, deltaFrame);
 	}
 
-	void EXPORT EffekseerDraw(EfkWebViewer::Context* context)
-	{
-		context->Draw();
-	}
+	void EXPORT EffekseerDraw(EfkWebViewer::Context* context) { context->Draw(); }
 
 	void EXPORT EffekseerBeginDraw(EfkWebViewer::Context* context)
 	{
@@ -322,15 +305,9 @@ extern "C" {
 		context->renderer->BeginRendering();
 	}
 
-	void EXPORT EffekseerEndDraw(EfkWebViewer::Context* context)
-	{
-		context->renderer->EndRendering();
-	}
+	void EXPORT EffekseerEndDraw(EfkWebViewer::Context* context) { context->renderer->EndRendering(); }
 
-	void EXPORT EffekseerDrawHandle(EfkWebViewer::Context* context, int handle)
-	{
-		context->manager->DrawHandle(handle);
-	}
+	void EXPORT EffekseerDrawHandle(EfkWebViewer::Context* context, int handle) { context->manager->DrawHandle(handle); }
 
 	void EXPORT EffekseerSetProjectionMatrix(EfkWebViewer::Context* context, const float* matrixElements)
 	{
@@ -352,11 +329,18 @@ extern "C" {
 		ArrayToMatrix44(matrixElements, context->cameraMatrix);
 	}
 
-	void EXPORT EffekseerSetCameraLookAt(EfkWebViewer::Context* context, float eyeX, float eyeY, float eyeZ, 
-		float atX, float atY, float atZ, float upX, float upY, float upZ)
+	void EXPORT EffekseerSetCameraLookAt(EfkWebViewer::Context* context,
+										 float eyeX,
+										 float eyeY,
+										 float eyeZ,
+										 float atX,
+										 float atY,
+										 float atZ,
+										 float upX,
+										 float upY,
+										 float upZ)
 	{
-		context->cameraMatrix.LookAtRH(Vector3D(eyeX, eyeY, eyeZ), 
-			Vector3D(atX, atY, atZ), Vector3D(upX, upY, upZ));
+		context->cameraMatrix.LookAtRH(Vector3D(eyeX, eyeY, eyeZ), Vector3D(atX, atY, atZ), Vector3D(upX, upY, upZ));
 	}
 
 	Effect* EXPORT EffekseerLoadEffect(EfkWebViewer::Context* context, void* data, int32_t size, float magnification)
@@ -364,40 +348,25 @@ extern "C" {
 		return Effect::Create(context->manager, data, size, magnification);
 	}
 
-	void EXPORT EffekseerReleaseEffect(EfkWebViewer::Context* context, Effect* effect)
-	{
-		effect->Release();
-	}
-	
+	void EXPORT EffekseerReleaseEffect(EfkWebViewer::Context* context, Effect* effect) { effect->Release(); }
+
 	void EXPORT EffekseerReloadResources(EfkWebViewer::Context* context, Effect* effect, void* data, int32_t size)
 	{
 		effect->ReloadResources(data, size);
 	}
 
-	void EXPORT EffekseerStopAllEffects(EfkWebViewer::Context* context)
-	{
-		context->manager->StopAllEffects();
-	}
+	void EXPORT EffekseerStopAllEffects(EfkWebViewer::Context* context) { context->manager->StopAllEffects(); }
 
 	int EXPORT EffekseerPlayEffect(EfkWebViewer::Context* context, Effect* effect, float x, float y, float z)
 	{
 		return context->manager->Play(effect, x, y, z);
 	}
 
-	void EXPORT EffekseerStopEffect(EfkWebViewer::Context* context,int handle)
-	{
-		context->manager->StopEffect(handle);
-	}
+	void EXPORT EffekseerStopEffect(EfkWebViewer::Context* context, int handle) { context->manager->StopEffect(handle); }
 
-	void EXPORT EffekseerStopRoot(EfkWebViewer::Context* context,int handle)
-	{
-		context->manager->StopRoot(handle);
-	}
+	void EXPORT EffekseerStopRoot(EfkWebViewer::Context* context, int handle) { context->manager->StopRoot(handle); }
 
-	int EXPORT EffekseerExists(EfkWebViewer::Context* context, int handle)
-	{
-		return context->manager->Exists(handle) ? 1 : 0;
-	}
+	int EXPORT EffekseerExists(EfkWebViewer::Context* context, int handle) { return context->manager->Exists(handle) ? 1 : 0; }
 
 	void EXPORT EffekseerSetLocation(EfkWebViewer::Context* context, int handle, float x, float y, float z)
 	{
@@ -431,15 +400,9 @@ extern "C" {
 		context->manager->SetPaused(handle, paused != 0);
 	}
 
-	void EXPORT EffekseerSetShown(EfkWebViewer::Context* context, int handle, int shown)
-	{
-		context->manager->SetShown(handle, shown != 0);
-	}
+	void EXPORT EffekseerSetShown(EfkWebViewer::Context* context, int handle, int shown) { context->manager->SetShown(handle, shown != 0); }
 
-	void EXPORT EffekseerSetSpeed(EfkWebViewer::Context* context, int handle, float speed)
-	{
-		context->manager->SetSpeed(handle, speed);
-	}
+	void EXPORT EffekseerSetSpeed(EfkWebViewer::Context* context, int handle, float speed) { context->manager->SetSpeed(handle, speed); }
 
 	int EXPORT EffekseerIsBinaryglTF(EfkWebViewer::Context* context, void* data, int32_t size)
 	{
@@ -460,10 +423,7 @@ extern "C" {
 		return context->renderer->IsVertexArrayObjectSupported() ? 1 : 0;
 	}
 
-	int32_t EXPORT EffekseerEffectGetColorImageCount(Effect* effect)
-	{
-		return effect->GetColorImageCount();
-	}
+	int32_t EXPORT EffekseerEffectGetColorImageCount(Effect* effect) { return effect->GetColorImageCount(); }
 
 	const char* EXPORT EffekseerEffectGetColorImagePath(Effect* effect, int index)
 	{

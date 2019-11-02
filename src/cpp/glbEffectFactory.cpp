@@ -89,7 +89,8 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 			char path[260];
 			Effekseer::ConvertUtf16ToUtf8((int8_t*)path, 260, (int16_t*)effect->GetColorImagePath(i));
 			auto buf = glbData_.gltf.images[i];
-			auto resource = textureLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength, Effekseer::TextureType::Color);
+			auto resource =
+				textureLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength, Effekseer::TextureType::Color);
 			SetTexture(effect, i, Effekseer::TextureType::Color, resource);
 		}
 
@@ -121,8 +122,7 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 			char path[260];
 			Effekseer::ConvertUtf16ToUtf8((int8_t*)path, 260, (int16_t*)effect->GetWavePath(i));
 			auto buf = glbData_.gltf.sounds[i];
-			auto resource =
-				soundLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength);
+			auto resource = soundLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength);
 			SetSound(effect, i, resource);
 		}
 	}
@@ -134,8 +134,7 @@ void glbEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void* 
 			char path[260];
 			Effekseer::ConvertUtf16ToUtf8((int8_t*)path, 260, (int16_t*)effect->GetModelPath(i));
 			auto buf = glbData_.gltf.models[i];
-			auto resource =
-				modelLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength);
+			auto resource = modelLoader->Load((const void*)(glbData_.bin + buf.byteOffset), buf.byteLength);
 			SetModel(effect, i, resource);
 		}
 	}

@@ -4,19 +4,23 @@
 static void PathCombine(EFK_CHAR* dst, const EFK_CHAR* src1, const EFK_CHAR* src2)
 {
 	int len1 = 0, len2 = 0;
-	if( src1 != NULL )
+	if (src1 != NULL)
 	{
-		for( len1 = 0; src1[len1] != u'\0'; len1++ ) {}
-		memcpy( dst, src1, len1 * sizeof(EFK_CHAR) );
-		if( len1 > 0 && src1[len1 - 1] != u'/' && src1[len1 - 1] != u'\\' )
+		for (len1 = 0; src1[len1] != u'\0'; len1++)
+		{
+		}
+		memcpy(dst, src1, len1 * sizeof(EFK_CHAR));
+		if (len1 > 0 && src1[len1 - 1] != u'/' && src1[len1 - 1] != u'\\')
 		{
 			dst[len1++] = u'/';
 		}
 	}
-	if( src2 != NULL)
+	if (src2 != NULL)
 	{
-		for( len2 = 0; src2[len2] != u'\0'; len2++ ) {}
-		memcpy( &dst[len1], src2, len2 * sizeof(EFK_CHAR) );
+		for (len2 = 0; src2[len2] != u'\0'; len2++)
+		{
+		}
+		memcpy(&dst[len1], src2, len2 * sizeof(EFK_CHAR));
 	}
 	dst[len1 + len2] = u'\0';
 }
@@ -46,7 +50,6 @@ bool glTFEffectFactory::OnLoading(
 	data_.resize(reader->GetLength());
 	reader->Read(data_.data(), data_.size());
 
-
 	auto ret = LoadBody(effect, data_.data() + glTFData_.body.byteOffset, glTFData_.body.byteLength, magnification, materialPath);
 	ES_SAFE_DELETE(reader);
 
@@ -71,8 +74,8 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.imagePathes[i].c_str());
 
 			// javascript connects a path
-			//EFK_CHAR fullPath[512];
-			//PathCombine(fullPath, materialPath, path);
+			// EFK_CHAR fullPath[512];
+			// PathCombine(fullPath, materialPath, path);
 
 			auto resource = textureLoader->Load(path, Effekseer::TextureType::Color);
 			SetTexture(effect, i, Effekseer::TextureType::Color, resource);
@@ -84,8 +87,8 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.normalImagePathes[i].c_str());
 
 			// javascript connects a path
-			//EFK_CHAR fullPath[512];
-			//PathCombine(fullPath, materialPath, path);
+			// EFK_CHAR fullPath[512];
+			// PathCombine(fullPath, materialPath, path);
 
 			auto resource = textureLoader->Load(path, Effekseer::TextureType::Normal);
 			SetTexture(effect, i, Effekseer::TextureType::Normal, resource);
@@ -97,8 +100,8 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.distortionImagePathes[i].c_str());
 
 			// javascript connects a path
-			//EFK_CHAR fullPath[512];
-			//PathCombine(fullPath, materialPath, path);
+			// EFK_CHAR fullPath[512];
+			// PathCombine(fullPath, materialPath, path);
 
 			auto resource = textureLoader->Load(path, Effekseer::TextureType::Distortion);
 			SetTexture(effect, i, Effekseer::TextureType::Distortion, resource);
@@ -107,26 +110,26 @@ void glTFEffectFactory::OnLoadingResource(Effekseer::Effect* effect, const void*
 
 	if (soundLoader != nullptr)
 	{
-        for (auto i = 0; i < effect->GetWaveCount(); i++)
+		for (auto i = 0; i < effect->GetWaveCount(); i++)
 		{
 			char16_t path[260];
 			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.soundPathes[i].c_str());
 
 			auto resource = soundLoader->Load(path);
-			SetSound(effect, i,resource);
-        }
+			SetSound(effect, i, resource);
+		}
 	}
 
 	if (modelLoader != nullptr)
 	{
-        for (auto i = 0; i < effect->GetModelCount(); i++)
+		for (auto i = 0; i < effect->GetModelCount(); i++)
 		{
 			char16_t path[260];
 			Effekseer::ConvertUtf8ToUtf16((int16_t*)path, 260, (int8_t*)gltf.modelPathes[i].c_str());
 
 			auto resource = modelLoader->Load(path);
-			SetModel(effect, i,resource);
-        }
+			SetModel(effect, i, resource);
+		}
 	}
 }
 
