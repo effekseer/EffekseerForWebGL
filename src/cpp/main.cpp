@@ -1,15 +1,15 @@
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
+#include "glTFEffectFactory.h"
+#include "glbEffectFactory.h"
 #include <AL/alc.h>
+#include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
 #include <algorithm>
 #include <emscripten.h>
 #include <emscripten/bind.h>
 #include <math.h>
 #include <stdlib.h>
-#include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
-#include "glTFEffectFactory.h"
-#include "glbEffectFactory.h"
 
 #include "CustomFile.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -176,6 +176,41 @@ public:
 	}
 };
 
+class CustomMaterialLoader : public EffekseerRendererGL::MaterialLoader
+{
+	FileInterface* fi_ = nullptr;
+public:
+	CustomMaterialLoader(EffekseerRendererGL::Renderer* renderer, FileInterface* fileInterface)
+		: EffekseerRendererGL::MaterialLoader(renderer, fileInterface),
+		fi_(fileInterface)
+	{
+	}
+
+	virtual ~CustomMaterialLoader() = default;
+
+	::Effekseer::MaterialData* Load(const EFK_CHAR* path) override
+	{
+		// code file
+		{
+			std::unique_ptr<Effekseer::FileReader> reader(fi_->OpenRead(path));
+
+			if (reader.get() != nullptr)
+			{
+				size_t size = reader->GetLength();
+				std::vector<char> data;
+				data.resize(size);
+				reader->Read(data.data(), size);
+
+				auto material = EffekseerRendererGL::MaterialLoader::Load(data.data(), (int32_t)size, ::Effekseer::MaterialFileType::Code);
+
+				return material;
+			}
+		}
+
+		return nullptr;
+	}
+};
+
 class Context
 {
 public:
@@ -214,7 +249,7 @@ public:
 		manager->SetTrackRenderer(renderer->CreateTrackRenderer());
 		manager->SetTextureLoader(new CustomTextureLoader());
 		manager->SetModelLoader(new CustomModelLoader(&fileInterface));
-		manager->SetMaterialLoader(new EffekseerRendererGL::MaterialLoader(renderer, &fileInterface));
+		manager->SetMaterialLoader(new CustomMaterialLoader(renderer, &fileInterface));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 
