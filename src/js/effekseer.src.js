@@ -60,7 +60,7 @@ const effekseer = (() => {
         return (res.isLoaded) ? res.image : null;
       }
 
-      var res = { path: path, isLoaded: false, image: null };
+      var res = { path: path, isLoaded: false, image: null, isRequired: true };
       effect.resources.push(res);
 
       _loadResource(effect.baseDir + path, image => {
@@ -413,7 +413,7 @@ const effekseer = (() => {
         return (res.isLoaded) ? res.buffer : null;
       }
 
-      var res = { path: path, isLoaded: false, buffer: null };
+      var res = { path: path, isLoaded: false, buffer: null, isRequired: true };
       effect.resources.push(res);
 
       _loadBinFile(effect.baseDir + path, buffer => {

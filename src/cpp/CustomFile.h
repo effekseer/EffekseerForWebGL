@@ -39,7 +39,7 @@ public:
 	Effekseer::FileReader* OpenRead(const EFK_CHAR* path, bool isRequired)
 	{
 		// Request to load file
-		int loaded = EM_ASM_INT({ return Module._loadBinary(UTF16ToString($0), isRequired) != null; }, path);
+		int loaded = EM_ASM_INT({ return Module._loadBinary(UTF16ToString($0), $1) != null; }, path, isRequired);
 		if (!loaded)
 		{
 			return nullptr;
@@ -51,7 +51,7 @@ public:
 		// Copy data from arraybuffer
 		EM_ASM_INT(
 			{
-				var buffer = Module._loadBinary(UTF16ToString($0), isRequired);
+				var buffer = Module._loadBinary(UTF16ToString($0), $3);
 				var memptr = _malloc(buffer.byteLength);
 				HEAP8.set(new Uint8Array(buffer), memptr);
 				setValue($1, memptr, "i32");
@@ -59,9 +59,10 @@ public:
 			},
 			path,
 			&fileData,
-			&fileSize);
+			&fileSize,
+			isRequired);
 
-		if(fileData == nullptr)
+		if (fileData == nullptr)
 		{
 			return nullptr;
 		}
@@ -69,16 +70,9 @@ public:
 		return new CustomFileReader(fileData, fileSize);
 	}
 
+	Effekseer::FileReader* OpenRead(const EFK_CHAR* path) override { return OpenRead(path, true); }
 
-	Effekseer::FileReader* OpenRead(const EFK_CHAR* path) override
-	{
-		return OpenRead(path, true);
-	}
-
-	Effekseer::FileReader* TryOpenRead(const EFK_CHAR* path) override
-	{
-		return OpenRead(path, false);
-	}
+	Effekseer::FileReader* TryOpenRead(const EFK_CHAR* path) override { return OpenRead(path, false); }
 
 	Effekseer::FileWriter* OpenWrite(const EFK_CHAR* path) override { return nullptr; }
 };
