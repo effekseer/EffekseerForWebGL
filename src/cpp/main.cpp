@@ -7,7 +7,7 @@
 #include <emscripten/bind.h>
 #include <math.h>
 #include <stdlib.h>
-
+#include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
 #include "glTFEffectFactory.h"
 #include "glbEffectFactory.h"
 
@@ -214,7 +214,7 @@ public:
 		manager->SetTrackRenderer(renderer->CreateTrackRenderer());
 		manager->SetTextureLoader(new CustomTextureLoader());
 		manager->SetModelLoader(new CustomModelLoader(&fileInterface));
-
+		manager->SetMaterialLoader(new EffekseerRendererGL::MaterialLoader(renderer, &fileInterface));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 

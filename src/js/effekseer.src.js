@@ -71,7 +71,7 @@ const effekseer = (() => {
       return null;
     };
 
-    Module._loadBinary = path => {
+    Module._loadBinary = (path, isRequired) => {
       const effect = loadingEffect;
       effect.context._makeContextCurrent();
 
@@ -80,7 +80,7 @@ const effekseer = (() => {
         return (res.isLoaded) ? res.buffer : null;
       }
 
-      var res = { path: path, isLoaded: false, buffer: null };
+      var res = { path: path, isLoaded: false, buffer: null, isRequired: isRequired };
       effect.resources.push(res);
 
       _loadResource(effect.baseDir + path, buffer => {
@@ -111,8 +111,7 @@ const effekseer = (() => {
     xhr.send(null);
   };
 
-  if(typeof effekseer_native === "undefined")
-  {
+  if (typeof effekseer_native === "undefined") {
     Module = effekseer();
     _onRuntimeInitialized();
   }
@@ -157,7 +156,7 @@ const effekseer = (() => {
       let loaded = this.nativeptr != 0;
       if (this.resources.length > 0) {
         for (let i = 0; i < this.resources.length; i++) {
-          if (!this.resources[i].isLoaded) {
+          if (!this.resources[i].isLoaded && this.resources[i].isRequired) {
             loaded = false;
             break;
           }
@@ -736,8 +735,7 @@ const effekseer = (() => {
   class Effekseer {
 
     initRuntime(path, onload, onerror) {
-      if(typeof effekseer_native === "undefined")
-      {
+      if (typeof effekseer_native === "undefined") {
         onload();
         return;
       }
@@ -752,8 +750,7 @@ const effekseer = (() => {
      * @returns {EffekseerContext} context
      */
     createContext() {
-      if(!_is_runtime_initialized)
-      {
+      if (!_is_runtime_initialized) {
         return null;
       }
 
