@@ -41,7 +41,7 @@ steps:
       effekseer_min_js = os.path.join("..", "Release", "effekseer.min.js")
       outfile_js = open(effekseer_js, "w")
       outfile_min_js = open(effekseer_min_js, "w")
-      
+
       with open(effekseer_core_js) as infile:
           data = infile.read()
           outfile_js.write(data)
@@ -59,8 +59,9 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
+      git clone https://github.com/effekseer/TestData.git
       python -m pip install --upgrade pip
-      pip install selenium chromedriver-binary==76.0.3809.68.0
+      pip install requests selenium chromedriver-binary==76.0.3809.68.0
       cd tests
       python test.py
 
