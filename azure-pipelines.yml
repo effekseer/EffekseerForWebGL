@@ -59,7 +59,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      git clone https://github.com/effekseer/samples_for_test.git
+      git clone https://github.com/effekseer/TestData.git
       python -m pip install --upgrade pip
       pip install requests selenium chromedriver-binary==76.0.3809.68.0
       cd tests

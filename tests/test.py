@@ -19,10 +19,11 @@ class DisplayTest(unittest.TestCase):
         return canvas_png
     def setUp(self):
         files = []
-        for file in glob.glob('../samples_for_test/**/*.efk') :
+        for file in glob.glob('../TestData/**/*.efk', recursive=True) :
             files.append(file.replace('\\', '/'))
         with open("test-list.json", "w") as f:
             json.dump(files, f)
+
         time.sleep(2)
         self.files = files
         options = webdriver.ChromeOptions()
@@ -33,7 +34,7 @@ class DisplayTest(unittest.TestCase):
         options.add_argument('--enable-asm-webassembly')
 
         self.browser = webdriver.Chrome(options=options)
-        self.browser.set_window_size(736, 640)
+        self.browser.set_window_size(320, 320)
 
     @classmethod
     def tearDownClass(self):
@@ -62,7 +63,7 @@ class DisplayTest(unittest.TestCase):
                     with open('screenshots/' + name +'_step' + str(step) + '.png', 'wb') as f:
                         f.write(self.capturePng())
                     time.sleep(1)
-                    self.assertTrue(filecmp.cmp('original/' + name +'_step' + str(step) + '.png', 'screenshots/' + name + '_step' + str(step) + '.png'), name + '_step' + str(step) + ' is not equal')
+                    self.assertTrue(filecmp.cmp('../TestData/Tests/WebGL/' + name +'_step' + str(step) + '.png', 'screenshots/' + name + '_step' + str(step) + '.png'), name + '_step' + str(step) + ' is not equal')
 
 
 
