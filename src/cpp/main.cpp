@@ -217,6 +217,8 @@ public:
 	Manager* manager = NULL;
 	EffekseerRendererGL::Renderer* renderer = NULL;
 	EffekseerSound::Sound* sound = NULL;
+	float time_ = 0.0f;
+	bool isFirstUpdate_ = false;
 
 	Matrix44 projectionMatrix;
 	Matrix44 cameraMatrix;
@@ -320,15 +322,30 @@ extern "C"
 		delete context;
 	}
 
-	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames) { context->Update(deltaFrames); }
+	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames) { 
+		context->Update(deltaFrames); 
+		context->time_ += deltaFrames * 1.0f / 60.0f;
+		context->renderer->SetTime(context->time_);
+	}
 
-	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context) { context->manager->BeginUpdate(); }
+	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context) { 
+		context->manager->BeginUpdate(); 
+		context->isFirstUpdate_ = true;
+	}
 
-	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context) { context->manager->EndUpdate(); }
+	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context) { 
+		context->manager->EndUpdate(); 
+		context->renderer->SetTime(context->time_);
+	}
 
 	void EXPORT EffekseerUpdateHandle(EfkWebViewer::Context* context, int handle, float deltaFrame)
 	{
 		context->manager->UpdateHandle(handle, deltaFrame);
+		if (context->isFirstUpdate_)
+		{
+			context->time_ += deltaFrame * 1.0f / 60.0f;
+			context->isFirstUpdate_ = false;
+		}
 	}
 
 	void EXPORT EffekseerDraw(EfkWebViewer::Context* context) { context->Draw(); }
