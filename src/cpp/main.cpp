@@ -5,6 +5,8 @@
 #include "glbEffectFactory.h"
 #include <AL/alc.h>
 #include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
+#include <EffekseerRenderer/EffekseerRendererGL.RendererImplemented.h>
+
 #include <algorithm>
 #include <emscripten.h>
 #include <emscripten/bind.h>
@@ -176,38 +178,72 @@ public:
 	}
 };
 
-class CustomMaterialLoader : public EffekseerRendererGL::MaterialLoader
+class CachedMaterialLoader : public ::Effekseer::MaterialLoader
 {
-	FileInterface* fi_ = nullptr;
-public:
-	CustomMaterialLoader(EffekseerRendererGL::Renderer* renderer, FileInterface* fileInterface)
-		: EffekseerRendererGL::MaterialLoader(renderer, fileInterface),
-		fi_(fileInterface)
+private:
+	struct Cached
 	{
-	}
+		::Effekseer::MaterialData* DataPtr;
+		int32_t Count;
 
-	virtual ~CustomMaterialLoader() = default;
-
-	::Effekseer::MaterialData* Load(const EFK_CHAR* path) override
-	{
-		// code file
+		Cached()
 		{
-			std::unique_ptr<Effekseer::FileReader> reader(fi_->OpenRead(path));
+			DataPtr = nullptr;
+			Count = 1;
+		}
+	};
 
-			if (reader.get() != nullptr)
-			{
-				size_t size = reader->GetLength();
-				std::vector<char> data;
-				data.resize(size);
-				reader->Read(data.data(), size);
+	::Effekseer::MaterialLoader* loader_;
+	std::map<std::basic_string<EFK_CHAR>, Cached> cache_;
+	std::map<void*, std::basic_string<EFK_CHAR>> data2key_;
 
-				auto material = EffekseerRendererGL::MaterialLoader::Load(data.data(), (int32_t)size, ::Effekseer::MaterialFileType::Code);
+public:
+	CachedMaterialLoader(::Effekseer::MaterialLoader* loader) { this->loader_ = loader; }
 
-				return material;
-			}
+	virtual ~CachedMaterialLoader() { ES_SAFE_DELETE(loader_); }
+
+	virtual ::Effekseer::MaterialData* Load(const EFK_CHAR* path) override
+	{
+		auto key = std::basic_string<EFK_CHAR>(path);
+
+		auto it = cache_.find(key);
+
+		if (it != cache_.end())
+		{
+			it->second.Count++;
+			return it->second.DataPtr;
 		}
 
-		return nullptr;
+		Cached v;
+		v.DataPtr = loader_->Load(path);
+
+		if (v.DataPtr != nullptr)
+		{
+			cache_[key] = v;
+			data2key_[v.DataPtr] = key;
+		}
+
+		return v.DataPtr;
+	}
+
+	virtual void Unload(::Effekseer::MaterialData* data) override
+	{
+		if (data == nullptr)
+			return;
+		auto key = data2key_[data];
+
+		auto it = cache_.find(key);
+
+		if (it != cache_.end())
+		{
+			it->second.Count--;
+			if (it->second.Count == 0)
+			{
+				loader_->Unload(it->second.DataPtr);
+				data2key_.erase(data);
+				cache_.erase(key);
+			}
+		}
 	}
 };
 
@@ -251,7 +287,10 @@ public:
 		manager->SetTrackRenderer(renderer->CreateTrackRenderer());
 		manager->SetTextureLoader(new CustomTextureLoader());
 		manager->SetModelLoader(new CustomModelLoader(&fileInterface));
-		manager->SetMaterialLoader(new CustomMaterialLoader(renderer, &fileInterface));
+
+		auto r = static_cast<EffekseerRendererGL::RendererImplemented*>(renderer);
+		manager->SetMaterialLoader(new CachedMaterialLoader(
+			new EffekseerRendererGL::MaterialLoader(r->GetDeviceType(), r, r->GetDeviceObjectCollection(), &fileInterface, false)));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 
@@ -322,19 +361,22 @@ extern "C"
 		delete context;
 	}
 
-	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames) { 
-		context->Update(deltaFrames); 
+	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames)
+	{
+		context->Update(deltaFrames);
 		context->time_ += deltaFrames * 1.0f / 60.0f;
 		context->renderer->SetTime(context->time_);
 	}
 
-	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context) { 
-		context->manager->BeginUpdate(); 
+	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context)
+	{
+		context->manager->BeginUpdate();
 		context->isFirstUpdate_ = true;
 	}
 
-	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context) { 
-		context->manager->EndUpdate(); 
+	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context)
+	{
+		context->manager->EndUpdate();
 		context->renderer->SetTime(context->time_);
 	}
 
