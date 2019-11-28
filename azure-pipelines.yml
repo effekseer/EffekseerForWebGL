@@ -35,12 +35,18 @@ steps:
 
       os.chdir("build_wasm")
 
+      license_js = os.path.join("..", "src", "js", "license.js")
       effekseer_core_js = os.path.join(".", "effekseer.core.js")
       effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js")
       effekseer_js = os.path.join("..", "Release", "effekseer.js")
       effekseer_min_js = os.path.join("..", "Release", "effekseer.min.js")
       outfile_js = open(effekseer_js, "w")
       outfile_min_js = open(effekseer_min_js, "w")
+
+      with open(license_js) as infile:
+          data = infile.read()
+          outfile_js.write(data)
+          outfile_min_js.write(data)
 
       with open(effekseer_core_js) as infile:
           data = infile.read()

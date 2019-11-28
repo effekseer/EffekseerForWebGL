@@ -6,7 +6,7 @@ import platform
 import dukpy
 import jsmin
 
-def compile(build_dir,target_dir, option, effekseer_core_js, effekseer_src_js, effekseer_js, effekseer_min_js):
+def compile(build_dir,target_dir, option, license_js, effekseer_core_js, effekseer_src_js, effekseer_js, effekseer_min_js):
     if not os.path.exists(build_dir):
         os.mkdir(build_dir)
     os.chdir(build_dir)
@@ -22,6 +22,10 @@ def compile(build_dir,target_dir, option, effekseer_core_js, effekseer_src_js, e
     outfile_js = open(effekseer_js, "w")
     outfile_min_js = open(effekseer_min_js, "w")
 
+    with open(license_js) as infile:
+        data = infile.read()
+        outfile_js.write(data)
+        outfile_min_js.write(data)
     with open(effekseer_core_js) as infile:
         data = infile.read()
         outfile_js.write(data)
@@ -38,6 +42,7 @@ def compile(build_dir,target_dir, option, effekseer_core_js, effekseer_src_js, e
 compile('build_asmjs',
     '../src/',
     '-DAS_WASM=OFF',
+    license_js = os.path.join("..", "src", "js", "license.js"),
     effekseer_core_js = os.path.join(".", "effekseer.core.js"),
     effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),
     effekseer_js = os.path.join("..", "Release", "effekseer_asmjs.js"),
@@ -46,6 +51,7 @@ compile('build_asmjs',
 compile('build_wasm',
     '../src/',
     '-DAS_WASM=ON',
+    license_js = os.path.join("..", "src", "js", "license.js"),
     effekseer_core_js = os.path.join(".", "effekseer.core.js"),
     effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),
     effekseer_js = os.path.join("..", "Release", "effekseer.js"),

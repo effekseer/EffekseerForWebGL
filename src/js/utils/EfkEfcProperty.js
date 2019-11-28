@@ -6,6 +6,11 @@ class BinaryReader {
         this.offset = 0;
     }
 
+    returnBack(size)
+    {
+        this.offset -= size;
+    }
+
     getInt32() {
         var ret = new DataView(this.buffer, this.offset, 4).getInt32(0, true);
         this.offset += 4;
@@ -43,6 +48,7 @@ class EfkEfcProperty {
         this.distortionImages = []
         this.models = []
         this.sounds = []
+        this.materials = []
     }
 }
 
@@ -70,11 +76,28 @@ function loadEfkEfcInformation(buffer) {
 
         if (chunk == "INFO") {
             var info = new EfkEfcProperty();
+
+            version = reader.getInt32();
+            if(version >= 1500)
+            {
+            }
+            else
+            {
+                reader.returnBack(4);
+                version = 0;
+            }
+
             info.colorImages = readStringArray(reader);
             info.normalImages = readStringArray(reader);
             info.distortionImages = readStringArray(reader);
             info.models = readStringArray(reader);
             info.sounds = readStringArray(reader);
+
+            if(version >= 1500)
+            {
+                info.materials = readStringArray(reader);
+            }
+
             return info;
         }
         else {
