@@ -374,6 +374,7 @@ const effekseer = (() => {
     constructor(gl) {
       this.gl = gl;
       this.ext_vao = null;
+      this.isWebGL2VAOEnabled = false;
       this.effekseer_vao = null;
       this.current_vao = null;
       this.current_vbo = null;
@@ -382,6 +383,10 @@ const effekseer = (() => {
       this.ext_vao = gl.getExtension('OES_vertex_array_object');
       if (this.ext_vao != null) {
         this.effekseer_vao = this.ext_vao.createVertexArrayOES();
+      }
+      else if('createVertexArray' in this.gl) {
+        this.isWebGL2VAOEnabled = true;
+        this.effekseer_vao = this.gl.createVertexArray();
       }
     }
 
@@ -392,11 +397,18 @@ const effekseer = (() => {
         this.current_vao = this.gl.getParameter(this.ext_vao.VERTEX_ARRAY_BINDING_OES);
         this.ext_vao.bindVertexArrayOES(this.effekseer_vao);
       }
+      else if(this.isWebGL2VAOEnabled) {
+        this.current_vao = this.gl.getParameter(this.gl.VERTEX_ARRAY_BINDING);
+        this.gl.bindVertexArray(this.effekseer_vao);
+      }
     }
 
     restore() {
       if (this.ext_vao != null) {
         this.ext_vao.bindVertexArrayOES(this.current_vao);
+      }
+      else if(this.isWebGL2VAOEnabled) { 
+        this.gl.bindVertexArray(this.current_vao);
       }
 
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.current_vbo);
