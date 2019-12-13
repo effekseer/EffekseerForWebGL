@@ -109,7 +109,7 @@ steps:
     script: |
       git clone https://github.com/effekseer/TestData.git
       python -m pip install --upgrade pip
-      pip install requests selenium chromedriver-binary==76.0.3809.68.0
+      pip install requests selenium chromedriver-binary==76.0.3809.126.0
       cd tests
       python test.py
 
