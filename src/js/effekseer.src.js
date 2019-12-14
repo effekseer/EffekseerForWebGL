@@ -357,8 +357,15 @@ const effekseer = (() => {
   };
 
   let _loadResource = (path, onload, onerror) => {
-    const extindex = path.lastIndexOf(".");
-    let ext = (extindex >= 0) ? path.slice(extindex) : "";
+    splitted_path = path.split('?');
+    var ext_path = path;
+    if(splitted_path.length >= 2)
+    {
+      ext_path = splitted_path[0];
+    }
+
+    const extindex = ext_path.lastIndexOf(".");
+    let ext = (extindex >= 0) ? ext_path.slice(extindex) : "";
     if (ext == ".png" || ext == ".jpg") {
       const image = new Image();
       image.onload = () => {
