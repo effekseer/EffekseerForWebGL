@@ -63,7 +63,12 @@ const effekseer = (() => {
       var res = { path: path, isLoaded: false, image: null, isRequired: true };
       effect.resources.push(res);
 
-      _loadResource(effect.baseDir + path, image => {
+      var path = effect.baseDir + path;
+      if (effect.redirect) {
+        path = effect.redirect(path);
+      }
+
+      _loadResource(path, image => {
         res.image = image
         res.isLoaded = true;
         effect._update();
@@ -83,7 +88,12 @@ const effekseer = (() => {
       var res = { path: path, isLoaded: false, buffer: null, isRequired: isRequired };
       effect.resources.push(res);
 
-      _loadResource(effect.baseDir + path, buffer => {
+      var path = effect.baseDir + path;
+      if (effect.redirect) {
+        path = effect.redirect(path);
+      }
+
+      _loadResource(path, buffer => {
         res.buffer = buffer;
         res.isLoaded = true;
         effect._update();
@@ -347,8 +357,15 @@ const effekseer = (() => {
   };
 
   let _loadResource = (path, onload, onerror) => {
-    const extindex = path.lastIndexOf(".");
-    let ext = (extindex >= 0) ? path.slice(extindex) : "";
+    splitted_path = path.split('?');
+    var ext_path = path;
+    if(splitted_path.length >= 2)
+    {
+      ext_path = splitted_path[0];
+    }
+
+    const extindex = ext_path.lastIndexOf(".");
+    let ext = (extindex >= 0) ? ext_path.slice(extindex) : "";
     if (ext == ".png" || ext == ".jpg") {
       const image = new Image();
       image.onload = () => {
@@ -384,7 +401,7 @@ const effekseer = (() => {
       if (this.ext_vao != null) {
         this.effekseer_vao = this.ext_vao.createVertexArrayOES();
       }
-      else if('createVertexArray' in this.gl) {
+      else if ('createVertexArray' in this.gl) {
         this.isWebGL2VAOEnabled = true;
         this.effekseer_vao = this.gl.createVertexArray();
       }
@@ -397,7 +414,7 @@ const effekseer = (() => {
         this.current_vao = this.gl.getParameter(this.ext_vao.VERTEX_ARRAY_BINDING_OES);
         this.ext_vao.bindVertexArrayOES(this.effekseer_vao);
       }
-      else if(this.isWebGL2VAOEnabled) {
+      else if (this.isWebGL2VAOEnabled) {
         this.current_vao = this.gl.getParameter(this.gl.VERTEX_ARRAY_BINDING);
         this.gl.bindVertexArray(this.effekseer_vao);
       }
@@ -407,7 +424,7 @@ const effekseer = (() => {
       if (this.ext_vao != null) {
         this.ext_vao.bindVertexArrayOES(this.current_vao);
       }
-      else if(this.isWebGL2VAOEnabled) { 
+      else if (this.isWebGL2VAOEnabled) {
         this.gl.bindVertexArray(this.current_vao);
       }
 
@@ -627,9 +644,10 @@ const effekseer = (() => {
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
+     * @param {function=} redirect A function to redirect a path. First argument is an url and return redirected url.
      * @returns {EffekseerEffect} The effect data
      */
-    loadEffect(path, scale = 1.0, onload, onerror) {
+    loadEffect(path, scale = 1.0, onload, onerror, redirect) {
       this._makeContextCurrent();
 
       const effect = new EffekseerEffect(this);
@@ -640,11 +658,13 @@ const effekseer = (() => {
         effect.scale = 1.0;
         effect.onload = scale;
         effect.onerror = onload;
+        effect.redirect = redirect;
       }
       else {
         effect.scale = scale;
         effect.onload = onload;
         effect.onerror = onerror;
+        effect.redirect = redirect;
       }
 
       if (typeof path === "string") {

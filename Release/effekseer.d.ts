@@ -222,9 +222,10 @@ declare namespace effekseer {
          * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
          * @param {function=} onload A function that is called at loading complete
          * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
+         * @param {function=} redirect A function to redirect a path. First argument is an url and return redirected url.
          * @returns {EffekseerEffect} The effect data
          */
-        loadEffect(path: string, scale?: number, onload?, onerror?): EffekseerEffect;
+        loadEffect(path: string, scale?: number, onload?, onerror?, redirect?): EffekseerEffect;
 
         /**
         * Release the specified effect. Don't touch the instance of effect after released.
