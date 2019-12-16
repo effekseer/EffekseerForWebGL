@@ -9,6 +9,8 @@
 
 # Download
 
+- [1.50Beta3](https://github.com/effekseer/EffekseerForWebGL/releases/download/NightlyBuild/EffekseerForWebGL150Beta3.zip)
+
 - [1.43](https://github.com/effekseer/EffekseerForWebGL/releases/download/143/EffekseerForWebGL143.zip)
 
 # How to use
