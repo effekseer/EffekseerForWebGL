@@ -498,6 +498,11 @@ extern "C"
 
 	void EXPORT EffekseerSetSpeed(EfkWebViewer::Context* context, int handle, float speed) { context->manager->SetSpeed(handle, speed); }
 
+	int32_t EXPORT EffekseerGetRestInstancesCount(EfkWebViewer::Context* context)
+	{
+		return context->manager->GetRestInstancesCount();
+	}
+
 	int EXPORT EffekseerIsBinaryglTF(EfkWebViewer::Context* context, void* data, int32_t size)
 	{
 		return context->glTFEffectFactory_->OnCheckIsBinarySupported(data, size) ? 1 : 0;

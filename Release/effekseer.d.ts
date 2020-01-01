@@ -343,6 +343,11 @@ declare namespace effekseer {
          * @param {number} speed Speed ratio
          */
         setSpeed(speed);
+
+        /**
+         * Gets the number of remaining allocated instances.
+         */
+        getRestInstancesCount() : Number;
     }
 }
 

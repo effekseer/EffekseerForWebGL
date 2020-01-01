@@ -39,6 +39,7 @@ const effekseer = (() => {
       SetPaused: Module.cwrap("EffekseerSetPaused", "void", ["number", "number", "number"]),
       SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
       SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
+      GetRestInstancesCount: Module.cwrap("EffekseerGetRestInstancesCount", "number", ["number"]),      
       IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number", "number"]),
       GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number", "number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
@@ -750,6 +751,13 @@ const effekseer = (() => {
      */
     setResourceLoader(loader) {
       _loadResource = loader;
+    }
+
+    /**
+     * Gets the number of remaining allocated instances.
+     */
+    getRestInstancesCount() {
+      return Core.GetRestInstancesCount(this.nativeptr);
     }
 
     /**
