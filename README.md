@@ -16,16 +16,93 @@
 # How to use
 
 ```html
+<canvas id="canvas" width="640" height="480"></canvas>
 <script src="three.min.js"></script>
 <script src="effekseer.min.js"></script>
 ```
 
+or
+
+```html
+<canvas id="canvas" width="640" height="480"></canvas>
+<script src="three.min.js"></script>
+<script src="effekseer_asmjs.js"></script>
+```
+
+## JavaScript
+
+### 1.5
+
+```js
+
+function main()
+{
+  // Setup WebGLRenderer
+  var canvas = document.getElementById("canvas");
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas });
+  renderer.setSize(canvas.width, canvas.height);
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(30.0, canvas.width / canvas.height, 1, 1000);
+  camera.position.set(20, 20, 20);
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+  // Create a context
+  context = effekseer.createContext();
+
+  // Initialize by WebGLRenderingContext
+  context.init(renderer.getContext());
+
+  // Load effect data
+  var effect = context.loadEffect("Laser01.efk", 1.0, function(){
+    // Play the loaded effect
+    context.play(effect);
+  });
+
+  (function renderLoop() {
+    requestAnimationFrame( renderLoop );
+
+    // Effekseer Update
+    context.update();
+
+    // Three.js Rendering
+    renderer.render(scene, camera);
+
+    // Rendering Settings
+    context.setProjectionMatrix(camera.projectionMatrix.elements);
+    context.setCameraMatrix(camera.matrixWorldInverse.elements);
+
+    // Effekseer Rendering
+    context.draw();
+  })();
+}
+
+useWASM = true;
+
+if(useWASM) {
+  // if you use wasm version
+  effekseer.initRuntime('effekseer.wasm', () => {
+    main();
+  });
+} else {
+  main();
+}
+
+```
+
+### 1.4
+
 ```js
 // Setup WebGLRenderer
-var renderer = new THREE.WebGLRenderer();
+var canvas = document.getElementById("canvas");
+var renderer = new THREE.WebGLRenderer({ canvas: canvas });
+renderer.setSize(canvas.width, canvas.height);
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(30.0, canvas.width / canvas.height, 1, 1000);
+camera.position.set(20, 20, 20);
+camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 // Initialize by WebGLRenderingContext
-effekseer.init(renderer.context);
+effekseer.init(renderer.getContext());
 
 // Load effect data
 var effect = effekseer.loadEffect("Laser01.efk", function(){

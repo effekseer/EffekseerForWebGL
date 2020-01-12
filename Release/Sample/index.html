@@ -45,7 +45,7 @@
         effekseer.initRuntime('../effekseer.wasm', () => {
           context = effekseer.createContext();
 
-          context.init(renderer.context);
+          context.init(renderer.getContext());
           effects["Laser01"] = context.loadEffect(
             "../Resources/Laser01.efk",
             1.0,
