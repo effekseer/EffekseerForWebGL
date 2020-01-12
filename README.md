@@ -9,11 +9,13 @@
 
 # Download
 
-- [1.50Beta3](https://github.com/effekseer/EffekseerForWebGL/releases/download/NightlyBuild/EffekseerForWebGL150Beta3.zip)
+- [1.50Beta5](https://github.com/effekseer/EffekseerForWebGL/releases/download/NightlyBuild/EffekseerForWebGL150Beta5.zip)
 
 - [1.43](https://github.com/effekseer/EffekseerForWebGL/releases/download/143/EffekseerForWebGL143.zip)
 
 # How to use
+
+WASM version
 
 ```html
 <canvas id="canvas" width="640" height="480"></canvas>
@@ -22,6 +24,8 @@
 ```
 
 or
+
+asm.js version
 
 ```html
 <canvas id="canvas" width="640" height="480"></canvas>
@@ -85,6 +89,7 @@ if(useWASM) {
     main();
   });
 } else {
+  // if you use asmjs version
   main();
 }
 
