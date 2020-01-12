@@ -10,6 +10,7 @@ var main = function () {
     var aspect = width / height;
     var near = 1;
     var far = 1000;
+    var clock = new THREE.Clock();
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     var target = new THREE.Vector3(0, 0, 0);
     camera.position.set(20, 20, 20);
@@ -17,7 +18,7 @@ var main = function () {
     var renderer = new THREE.WebGLRenderer({ canvas: canvas });
     renderer.setSize(width, height);
     //document.body.appendChild( renderer.domElement );
-    effekseer.init(renderer.context, {
+    effekseer.init(renderer.getContext(), {
         instanceMaxCount: 2000,
         squareMaxCount: 8000
     });
@@ -37,7 +38,7 @@ var main = function () {
     (function renderLoop() {
         requestAnimationFrame(renderLoop);
         mesh.rotation.set(0, mesh.rotation.y + .01, mesh.rotation.z + .01);
-        effekseer.update();
+        effekseer.update(clock.getDelta() * 60.0);
         renderer.render(scene, camera);
         effekseer.setProjectionMatrix(camera.projectionMatrix.elements);
         effekseer.setCameraMatrix(camera.matrixWorldInverse.elements);

@@ -16,10 +16,11 @@ var main = function () {
     var target = new THREE.Vector3(0, 0, 0);
     camera.position.set(20, 20, 20);
     camera.lookAt(target);
+    var clock = new THREE.Clock();
     var renderer = new THREE.WebGLRenderer({ canvas: canvas });
     renderer.setSize(width, height);
     //document.body.appendChild( renderer.domElement );
-    effekseer.init(renderer.context, {
+    effekseer.init(renderer.getContext(), {
         instanceMaxCount: 2000,
         squareMaxCount: 8000,
     });
@@ -49,7 +50,7 @@ var main = function () {
             mesh.rotation.z + .01
         );
 
-        effekseer.update();
+        effekseer.update(clock.getDelta() * 60.0);
 
         renderer.render(scene, camera);
         effekseer.setProjectionMatrix(camera.projectionMatrix.elements);

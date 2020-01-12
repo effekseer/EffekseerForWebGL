@@ -41,6 +41,7 @@ function main()
   var canvas = document.getElementById("canvas");
   var renderer = new THREE.WebGLRenderer({ canvas: canvas });
   renderer.setSize(canvas.width, canvas.height);
+  var clock = new THREE.Clock();
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(30.0, canvas.width / canvas.height, 1, 1000);
   camera.position.set(20, 20, 20);
@@ -62,7 +63,7 @@ function main()
     requestAnimationFrame( renderLoop );
 
     // Effekseer Update
-    context.update();
+    context.update(clock.getDelta() * 60.0);
 
     // Three.js Rendering
     renderer.render(scene, camera);
@@ -96,6 +97,7 @@ if(useWASM) {
 var canvas = document.getElementById("canvas");
 var renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(canvas.width, canvas.height);
+var clock = new THREE.Clock();
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(30.0, canvas.width / canvas.height, 1, 1000);
 camera.position.set(20, 20, 20);
@@ -114,7 +116,7 @@ var effect = effekseer.loadEffect("Laser01.efk", function(){
   requestAnimationFrame( renderLoop );
 
   // Effekseer Update
-  effekseer.update();
+  effekseer.update(clock.getDelta() * 60.0);
 
   // Three.js Rendering
   renderer.render(scene, camera);
