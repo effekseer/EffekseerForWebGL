@@ -39,6 +39,7 @@ const effekseer = (() => {
       SetPaused: Module.cwrap("EffekseerSetPaused", "void", ["number", "number", "number"]),
       SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
       SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
+      GetRestInstancesCount: Module.cwrap("EffekseerGetRestInstancesCount", "number", ["number"]),      
       IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number", "number"]),
       GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number", "number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
@@ -60,10 +61,15 @@ const effekseer = (() => {
         return (res.isLoaded) ? res.image : null;
       }
 
-      var res = { path: path, isLoaded: false, image: null };
+      var res = { path: path, isLoaded: false, image: null, isRequired: true };
       effect.resources.push(res);
 
-      _loadResource(effect.baseDir + path, image => {
+      var path = effect.baseDir + path;
+      if (effect.redirect) {
+        path = effect.redirect(path);
+      }
+
+      _loadResource(path, image => {
         res.image = image
         res.isLoaded = true;
         effect._update();
@@ -71,7 +77,7 @@ const effekseer = (() => {
       return null;
     };
 
-    Module._loadBinary = path => {
+    Module._loadBinary = (path, isRequired) => {
       const effect = loadingEffect;
       effect.context._makeContextCurrent();
 
@@ -80,10 +86,15 @@ const effekseer = (() => {
         return (res.isLoaded) ? res.buffer : null;
       }
 
-      var res = { path: path, isLoaded: false, buffer: null };
+      var res = { path: path, isLoaded: false, buffer: null, isRequired: isRequired };
       effect.resources.push(res);
 
-      _loadResource(effect.baseDir + path, buffer => {
+      var path = effect.baseDir + path;
+      if (effect.redirect) {
+        path = effect.redirect(path);
+      }
+
+      _loadResource(path, buffer => {
         res.buffer = buffer;
         res.isLoaded = true;
         effect._update();
@@ -111,8 +122,7 @@ const effekseer = (() => {
     xhr.send(null);
   };
 
-  if(typeof effekseer_native === "undefined")
-  {
+  if (typeof effekseer_native === "undefined") {
     Module = effekseer();
     _onRuntimeInitialized();
   }
@@ -157,7 +167,7 @@ const effekseer = (() => {
       let loaded = this.nativeptr != 0;
       if (this.resources.length > 0) {
         for (let i = 0; i < this.resources.length; i++) {
-          if (!this.resources[i].isLoaded) {
+          if (!this.resources[i].isLoaded && this.resources[i].isRequired) {
             loaded = false;
             break;
           }
@@ -342,14 +352,21 @@ const effekseer = (() => {
       onload(xhr.response);
     };
     xhr.onerror = () => {
-      if (onerror) onerror('not found', url);
+      if (!(typeof onerror === "undefined")) onerror('not found', url);
     };
     xhr.send(null);
   };
 
   let _loadResource = (path, onload, onerror) => {
-    const extindex = path.lastIndexOf(".");
-    let ext = (extindex >= 0) ? path.slice(extindex) : "";
+    splitted_path = path.split('?');
+    var ext_path = path;
+    if(splitted_path.length >= 2)
+    {
+      ext_path = splitted_path[0];
+    }
+
+    const extindex = ext_path.lastIndexOf(".");
+    let ext = (extindex >= 0) ? ext_path.slice(extindex) : "";
     if (ext == ".png" || ext == ".jpg") {
       const image = new Image();
       image.onload = () => {
@@ -357,7 +374,7 @@ const effekseer = (() => {
         onload(converted_image);
       };
       image.onerror = () => {
-        onerror('not found', path);
+        if (!(typeof onerror === "undefined")) onerror('not found', path);
       };
 
       image.crossOrigin = "anonymous";
@@ -375,6 +392,7 @@ const effekseer = (() => {
     constructor(gl) {
       this.gl = gl;
       this.ext_vao = null;
+      this.isWebGL2VAOEnabled = false;
       this.effekseer_vao = null;
       this.current_vao = null;
       this.current_vbo = null;
@@ -383,6 +401,10 @@ const effekseer = (() => {
       this.ext_vao = gl.getExtension('OES_vertex_array_object');
       if (this.ext_vao != null) {
         this.effekseer_vao = this.ext_vao.createVertexArrayOES();
+      }
+      else if ('createVertexArray' in this.gl) {
+        this.isWebGL2VAOEnabled = true;
+        this.effekseer_vao = this.gl.createVertexArray();
       }
     }
 
@@ -393,11 +415,18 @@ const effekseer = (() => {
         this.current_vao = this.gl.getParameter(this.ext_vao.VERTEX_ARRAY_BINDING_OES);
         this.ext_vao.bindVertexArrayOES(this.effekseer_vao);
       }
+      else if (this.isWebGL2VAOEnabled) {
+        this.current_vao = this.gl.getParameter(this.gl.VERTEX_ARRAY_BINDING);
+        this.gl.bindVertexArray(this.effekseer_vao);
+      }
     }
 
     restore() {
       if (this.ext_vao != null) {
         this.ext_vao.bindVertexArrayOES(this.current_vao);
+      }
+      else if (this.isWebGL2VAOEnabled) {
+        this.gl.bindVertexArray(this.current_vao);
       }
 
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.current_vbo);
@@ -414,7 +443,7 @@ const effekseer = (() => {
         return (res.isLoaded) ? res.buffer : null;
       }
 
-      var res = { path: path, isLoaded: false, buffer: null };
+      var res = { path: path, isLoaded: false, buffer: null, isRequired: true };
       effect.resources.push(res);
 
       _loadBinFile(effect.baseDir + path, buffer => {
@@ -616,9 +645,10 @@ const effekseer = (() => {
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
+     * @param {function=} redirect A function to redirect a path. First argument is an url and return redirected url.
      * @returns {EffekseerEffect} The effect data
      */
-    loadEffect(path, scale = 1.0, onload, onerror) {
+    loadEffect(path, scale = 1.0, onload, onerror, redirect) {
       this._makeContextCurrent();
 
       const effect = new EffekseerEffect(this);
@@ -629,11 +659,13 @@ const effekseer = (() => {
         effect.scale = 1.0;
         effect.onload = scale;
         effect.onerror = onload;
+        effect.redirect = redirect;
       }
       else {
         effect.scale = scale;
         effect.onload = onload;
         effect.onerror = onerror;
+        effect.redirect = redirect;
       }
 
       if (typeof path === "string") {
@@ -722,6 +754,13 @@ const effekseer = (() => {
     }
 
     /**
+     * Gets the number of remaining allocated instances.
+     */
+    getRestInstancesCount() {
+      return Core.GetRestInstancesCount(this.nativeptr);
+    }
+
+    /**
      * Get whether VAO is supported
      */
     isVertexArrayObjectSupported() {
@@ -736,8 +775,7 @@ const effekseer = (() => {
   class Effekseer {
 
     initRuntime(path, onload, onerror) {
-      if(typeof effekseer_native === "undefined")
-      {
+      if (typeof effekseer_native === "undefined") {
         onload();
         return;
       }
@@ -752,8 +790,7 @@ const effekseer = (() => {
      * @returns {EffekseerContext} context
      */
     createContext() {
-      if(!_is_runtime_initialized)
-      {
+      if (!_is_runtime_initialized) {
         return null;
       }
 

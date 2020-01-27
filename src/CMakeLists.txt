@@ -68,10 +68,12 @@ file(GLOB effekseer_src
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Culling/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/IO/*.cpp
+  ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Utils/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Parameter/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Material/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
+  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/OpenGL/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
   ${PROJECT_SOURCE_DIR}/cpp/*.cpp
 )

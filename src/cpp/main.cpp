@@ -1,15 +1,17 @@
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
+#include "glTFEffectFactory.h"
+#include "glbEffectFactory.h"
 #include <AL/alc.h>
+#include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
+#include <EffekseerRenderer/EffekseerRendererGL.RendererImplemented.h>
+
 #include <algorithm>
 #include <emscripten.h>
 #include <emscripten/bind.h>
 #include <math.h>
 #include <stdlib.h>
-
-#include "glTFEffectFactory.h"
-#include "glbEffectFactory.h"
 
 #include "CustomFile.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -176,12 +178,83 @@ public:
 	}
 };
 
+class CachedMaterialLoader : public ::Effekseer::MaterialLoader
+{
+private:
+	struct Cached
+	{
+		::Effekseer::MaterialData* DataPtr;
+		int32_t Count;
+
+		Cached()
+		{
+			DataPtr = nullptr;
+			Count = 1;
+		}
+	};
+
+	::Effekseer::MaterialLoader* loader_;
+	std::map<std::basic_string<EFK_CHAR>, Cached> cache_;
+	std::map<void*, std::basic_string<EFK_CHAR>> data2key_;
+
+public:
+	CachedMaterialLoader(::Effekseer::MaterialLoader* loader) { this->loader_ = loader; }
+
+	virtual ~CachedMaterialLoader() { ES_SAFE_DELETE(loader_); }
+
+	virtual ::Effekseer::MaterialData* Load(const EFK_CHAR* path) override
+	{
+		auto key = std::basic_string<EFK_CHAR>(path);
+
+		auto it = cache_.find(key);
+
+		if (it != cache_.end())
+		{
+			it->second.Count++;
+			return it->second.DataPtr;
+		}
+
+		Cached v;
+		v.DataPtr = loader_->Load(path);
+
+		if (v.DataPtr != nullptr)
+		{
+			cache_[key] = v;
+			data2key_[v.DataPtr] = key;
+		}
+
+		return v.DataPtr;
+	}
+
+	virtual void Unload(::Effekseer::MaterialData* data) override
+	{
+		if (data == nullptr)
+			return;
+		auto key = data2key_[data];
+
+		auto it = cache_.find(key);
+
+		if (it != cache_.end())
+		{
+			it->second.Count--;
+			if (it->second.Count == 0)
+			{
+				loader_->Unload(it->second.DataPtr);
+				data2key_.erase(data);
+				cache_.erase(key);
+			}
+		}
+	}
+};
+
 class Context
 {
 public:
 	Manager* manager = NULL;
 	EffekseerRendererGL::Renderer* renderer = NULL;
 	EffekseerSound::Sound* sound = NULL;
+	float time_ = 0.0f;
+	bool isFirstUpdate_ = false;
 
 	Matrix44 projectionMatrix;
 	Matrix44 cameraMatrix;
@@ -215,6 +288,9 @@ public:
 		manager->SetTextureLoader(new CustomTextureLoader());
 		manager->SetModelLoader(new CustomModelLoader(&fileInterface));
 
+		auto r = static_cast<EffekseerRendererGL::RendererImplemented*>(renderer);
+		manager->SetMaterialLoader(new CachedMaterialLoader(
+			new EffekseerRendererGL::MaterialLoader(r->GetDeviceType(), r, r->GetDeviceObjectCollection(), &fileInterface, false)));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 
@@ -285,15 +361,33 @@ extern "C"
 		delete context;
 	}
 
-	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames) { context->Update(deltaFrames); }
+	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames)
+	{
+		context->Update(deltaFrames);
+		context->time_ += deltaFrames * 1.0f / 60.0f;
+		context->renderer->SetTime(context->time_);
+	}
 
-	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context) { context->manager->BeginUpdate(); }
+	void EXPORT EffekseerBeginUpdate(EfkWebViewer::Context* context)
+	{
+		context->manager->BeginUpdate();
+		context->isFirstUpdate_ = true;
+	}
 
-	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context) { context->manager->EndUpdate(); }
+	void EXPORT EffekseerEndUpdate(EfkWebViewer::Context* context)
+	{
+		context->manager->EndUpdate();
+		context->renderer->SetTime(context->time_);
+	}
 
 	void EXPORT EffekseerUpdateHandle(EfkWebViewer::Context* context, int handle, float deltaFrame)
 	{
 		context->manager->UpdateHandle(handle, deltaFrame);
+		if (context->isFirstUpdate_)
+		{
+			context->time_ += deltaFrame * 1.0f / 60.0f;
+			context->isFirstUpdate_ = false;
+		}
 	}
 
 	void EXPORT EffekseerDraw(EfkWebViewer::Context* context) { context->Draw(); }
@@ -403,6 +497,11 @@ extern "C"
 	void EXPORT EffekseerSetShown(EfkWebViewer::Context* context, int handle, int shown) { context->manager->SetShown(handle, shown != 0); }
 
 	void EXPORT EffekseerSetSpeed(EfkWebViewer::Context* context, int handle, float speed) { context->manager->SetSpeed(handle, speed); }
+
+	int32_t EXPORT EffekseerGetRestInstancesCount(EfkWebViewer::Context* context)
+	{
+		return context->manager->GetRestInstancesCount();
+	}
 
 	int EXPORT EffekseerIsBinaryglTF(EfkWebViewer::Context* context, void* data, int32_t size)
 	{

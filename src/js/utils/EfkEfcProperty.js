@@ -1,9 +1,17 @@
 
 
+
+
+
 class BinaryReader {
     constructor(buffer) {
         this.buffer = buffer;
         this.offset = 0;
+    }
+
+    returnBack(size)
+    {
+        this.offset -= size;
     }
 
     getInt32() {
@@ -13,7 +21,8 @@ class BinaryReader {
     }
 
     getChunk4() {
-        var ret = new TextDecoder().decode(this.buffer.slice(this.offset, this.offset + 4));
+        var sliced = new Uint8Array(this.buffer.slice(this.offset, this.offset + 4));
+        var ret = String.fromCharCode(sliced[0], sliced[1], sliced[2], sliced[3]);
         this.offset += 4;
         return ret;
     }
@@ -21,8 +30,13 @@ class BinaryReader {
     getStringAsUTF16() {
         var size = new DataView(this.buffer, this.offset, 4).getInt32(0, true);
         this.offset += 4;
+        var sliced = new Uint8Array(this.buffer.slice(this.offset, this.offset + (size * 2 - 2)));
 
-        var str = new TextDecoder("utf-16le").decode(this.buffer.slice(this.offset, this.offset + (size * 2 - 2)));
+        var str = "";
+        for(var i = 0; i < sliced.byteLength / 2; i++) {
+            str += String.fromCharCode(sliced[i * 2] + sliced[i * 2 + 1] * 256);
+        }
+
         this.offset += (size * 2);
         return str;
     }
@@ -43,6 +57,7 @@ class EfkEfcProperty {
         this.distortionImages = []
         this.models = []
         this.sounds = []
+        this.materials = []
     }
 }
 
@@ -70,11 +85,28 @@ function loadEfkEfcInformation(buffer) {
 
         if (chunk == "INFO") {
             var info = new EfkEfcProperty();
+
+            version = reader.getInt32();
+            if(version >= 1500)
+            {
+            }
+            else
+            {
+                reader.returnBack(4);
+                version = 0;
+            }
+
             info.colorImages = readStringArray(reader);
             info.normalImages = readStringArray(reader);
             info.distortionImages = readStringArray(reader);
             info.models = readStringArray(reader);
             info.sounds = readStringArray(reader);
+
+            if(version >= 1500)
+            {
+                info.materials = readStringArray(reader);
+            }
+
             return info;
         }
         else {

@@ -24,7 +24,7 @@
 
       var main = function () {
         var canvas = document.getElementById("canvas");
-
+        var clock = new THREE.Clock();
         var scene = new THREE.Scene();
         var width = canvas.width;
         var height = canvas.height;
@@ -45,7 +45,7 @@
         effekseer.initRuntime('../effekseer.wasm', () => {
           context = effekseer.createContext();
 
-          context.init(renderer.context);
+          context.init(renderer.getContext());
           effects["Laser01"] = context.loadEffect(
             "../Resources/Laser01.efk",
             1.0,
@@ -82,7 +82,7 @@
               mesh.rotation.z + .01
             );
 
-            context.update();
+            context.update(clock.getDelta() * 60.0);
 
             renderer.render(scene, camera);
             context.setProjectionMatrix(camera.projectionMatrix.elements);
