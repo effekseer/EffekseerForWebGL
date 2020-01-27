@@ -11,18 +11,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      git clone https://github.com/emscripten-core/emsdk.git
-      cd emsdk
-      ./emsdk install latest
-      ./emsdk activate latest
-      source ./emsdk_env.sh
-      cd ..
-      git clone https://github.com/effekseer/Effekseer --depth 1 ../Effekseer
-      pip install dukpy jsmin
-      mkdir build_wasm
-      cd build_wasm
-      emcmake cmake ../src/ -DAS_WASM=ON
-      make
+      "/c/Program Files\Git\bin\bash.exe" build_ci.sh
 
 - task: PythonScript@0
   inputs:
