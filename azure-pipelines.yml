@@ -2,7 +2,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'macos-10.14'
 
 
 steps:
@@ -109,9 +109,9 @@ steps:
     script: |
       git clone https://github.com/effekseer/TestData.git
       python -m pip install --upgrade pip
-      pip install requests selenium chromedriver-binary==78.0.3904.105.0
+      pip3 install requests selenium
       cd tests
-      python test.py
+      python3 test.py
 
 - task: PublishBuildArtifacts@1
   inputs:
