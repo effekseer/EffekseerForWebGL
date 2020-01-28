@@ -1,7 +1,6 @@
 import unittest
 import os
 import time
-import chromedriver_binary
 from selenium import webdriver
 import shutil
 import filecmp
