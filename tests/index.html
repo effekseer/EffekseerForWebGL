@@ -72,15 +72,8 @@
 
           var geometry = new THREE.CubeGeometry(2, 2, 2);
           var material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-          var mesh = new THREE.Mesh(geometry, material);
-          scene.add(mesh);
 
           function renderLoop() {
-            mesh.rotation.set(
-              0,
-              mesh.rotation.y + .01,
-              mesh.rotation.z + .01
-            );
 
             context.update();
 
@@ -90,8 +83,12 @@
             context.draw();
           };
 
+          for (let i = 0; i < 20; i++) {
+            requestAnimationFrame(renderLoop);
+          }
+
           window.step = function (frame) {
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 20; i++) {
               requestAnimationFrame(renderLoop);
             }
           }

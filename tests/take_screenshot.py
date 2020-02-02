@@ -20,6 +20,8 @@ class DisplayTest(unittest.TestCase):
         files = []
         for file in glob.glob('../TestData/**/*.efk', recursive=True) :
             files.append(file.replace('\\', '/'))
+        for file in glob.glob('../TestData/**/*.efkefc', recursive=True) :
+            files.append(file.replace('\\', '/'))
         with open("test-list.json", "w") as f:
             json.dump(files, f)
 
@@ -55,7 +57,7 @@ class DisplayTest(unittest.TestCase):
             time.sleep(1)
             self.browser.find_element_by_id(name).click()
             time.sleep(1)
-            for step in range(5) :
+            for step in range(1) :
                 with self.subTest(name=name) :
                     self.browser.find_element_by_id('step').click()
                     time.sleep(1)
