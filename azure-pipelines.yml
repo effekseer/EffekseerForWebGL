@@ -110,6 +110,24 @@ steps:
       git clone https://github.com/effekseer/TestData.git
       python -m pip install --upgrade pip
       pip3 install requests selenium
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      cd tests
+      python3 take_screenshot.py
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'tests/screenshots'
+    ArtifactName: 'screenshots'
+    publishLocation: 'Container'
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
       cd tests
       python3 test.py
 
@@ -119,8 +137,3 @@ steps:
     ArtifactName: 'Release'
     publishLocation: 'Container'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'tests/screenshots'
-    ArtifactName: 'screenshots'
-    publishLocation: 'Container'
