@@ -150,7 +150,7 @@ git clone https://github.com/effekseer/EffekseerForWebGL
 - python
 - cmake
 - mingw-make (Windows only)
-- Emscripten 1.38.38 (Add directory to PATH)
+- Emscripten 1.38.38 or later (Add directory to PATH)
 
 ## Build
 
