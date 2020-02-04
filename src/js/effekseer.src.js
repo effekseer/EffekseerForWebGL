@@ -173,7 +173,10 @@ const effekseer = (() => {
           }
         }
         if (loaded) {
+          // glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING is wrong with Emscripten (Why?)
+          this.context.contextStates.save();
           this._reload();
+          this.context.contextStates.restore();
         }
       }
       if (!this.isLoaded && loaded) {
