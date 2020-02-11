@@ -255,6 +255,7 @@ public:
 	EffekseerSound::Sound* sound = NULL;
 	float time_ = 0.0f;
 	bool isFirstUpdate_ = false;
+	float restDeltaTime_ = 0.0f;
 
 	Matrix44 projectionMatrix;
 	Matrix44 cameraMatrix;
@@ -363,7 +364,13 @@ extern "C"
 
 	void EXPORT EffekseerUpdate(EfkWebViewer::Context* context, float deltaFrames)
 	{
-		context->Update(deltaFrames);
+		deltaFrames += context->restDeltaTime_;
+		context->restDeltaTime_ = deltaFrames - int(deltaFrames);
+		for(int loop = 0; loop < int(deltaFrames); loop++)
+		{
+			context->Update(1);
+		}
+
 		context->time_ += deltaFrames * 1.0f / 60.0f;
 		context->renderer->SetTime(context->time_);
 	}
