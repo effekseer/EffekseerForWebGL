@@ -36,6 +36,8 @@ const effekseer = (() => {
       SetScale: Module.cwrap("EffekseerSetScale", "void", ["number", "number", "number", "number", "number"]),
       SetMatrix: Module.cwrap("EffekseerSetMatrix", "void", ["number", "number", "number"]),
       SetTargetLocation: Module.cwrap("EffekseerSetTargetLocation", "void", ["number", "number", "number", "number", "number"]),
+      GetDynamicInput: Module.cwrap("EffekseerGetDynamicInput", "number", ["number", "number", "number"]),
+      SetDynamicInput: Module.cwrap("EffekseerSetDynamicInput", "void", ["number", "number", "number", "number"]),
       SetPaused: Module.cwrap("EffekseerSetPaused", "void", ["number", "number", "number"]),
       SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
       SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
@@ -283,6 +285,24 @@ const effekseer = (() => {
      */
     setTargetLocation(x, y, z) {
       Core.SetTargetLocation(this.context.nativeptr, this.native, x, y, z);
+    }
+
+    /**
+     * get a dynamic parameter, which changes effect parameters dynamically while playing
+     * @param {number} index slot index
+     * @returns {number} value
+     */
+    getDynamicInput(index) {
+      return Core.GetDynamicInput(this.context.nativeptr, this.native, index);
+    }
+
+    /**
+     * specfiy a dynamic parameter, which changes effect parameters dynamically while playing
+     * @param {number} index slot index
+     * @param {number} value value
+     */
+    setDynamicInput(index, value) {
+      Core.SetDynamicInput(this.context.nativeptr, this.native, index);
     }
 
     /**
