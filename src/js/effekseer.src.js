@@ -776,7 +776,13 @@ const effekseer = (() => {
    * @class
    */
   class Effekseer {
-
+    /**
+    * Initialize Effekseer.js.
+    * This function must be called at first if use WebAssembly
+    * @param {string} path A file of webassembply
+    * @param {function=} onload A function that is called at loading complete
+    * @param {function=} onerror A function that is called at loading error.
+    */
     initRuntime(path, onload, onerror) {
       if (typeof effekseer_native === "undefined") {
         onload();

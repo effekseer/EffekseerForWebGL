@@ -2,9 +2,18 @@
 declare namespace effekseer {
 
     /**
- * Create a context to render in multiple scenes
- * @returns {EffekseerContext} context
- */
+    * Initialize Effekseer.js.
+    * This function must be called at first if use WebAssembly
+    * @param {string} path A file of webassembply
+    * @param {function=} onload A function that is called at loading complete
+    * @param {function=} onerror A function that is called at loading error.
+    */
+   export function initRuntime(path, onload, onerror);
+
+    /**
+    * Create a context to render in multiple scenes
+    * @returns {EffekseerContext} context
+    */
     export function createContext(): EffekseerContext;
 
     /**
@@ -267,7 +276,7 @@ declare namespace effekseer {
          * get paths to color images
          * @returns {Array<string>} paths to color images
          */
-        getColorImagePaths() : Array<string>;
+        getColorImagePaths(): Array<string>;
     }
 
     export class EffekseerHandle {
@@ -347,7 +356,7 @@ declare namespace effekseer {
         /**
          * Gets the number of remaining allocated instances.
          */
-        getRestInstancesCount() : Number;
+        getRestInstancesCount(): Number;
     }
 }
 
