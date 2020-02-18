@@ -9,7 +9,7 @@
 
 # Download
 
-- [1.50Beta5](https://github.com/effekseer/EffekseerForWebGL/releases/download/NightlyBuild/EffekseerForWebGL150Beta5.zip)
+- [1.50RC1](https://github.com/effekseer/EffekseerForWebGL/releases/download/NightlyBuild/EffekseerForWebGL150RC1.zip)
 
 - [1.43](https://github.com/effekseer/EffekseerForWebGL/releases/download/143/EffekseerForWebGL143.zip)
 
