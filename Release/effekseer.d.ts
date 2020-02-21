@@ -8,7 +8,7 @@ declare namespace effekseer {
     * @param {function=} onload A function that is called at loading complete
     * @param {function=} onerror A function that is called at loading error.
     */
-   export function initRuntime(path, onload, onerror);
+    export function initRuntime(path, onload, onerror);
 
     /**
     * Create a context to render in multiple scenes
@@ -333,6 +333,20 @@ declare namespace effekseer {
          * @param {number} z Z value of target location
          */
         setTargetLocation(x, y, z);
+
+        /**
+         * get a dynamic parameter, which changes effect parameters dynamically while playing
+         * @param {number} index slot index
+         * @returns {number} value
+         */
+        getDynamicInput(index) : number;
+
+        /**
+         * specfiy a dynamic parameter, which changes effect parameters dynamically while playing
+         * @param {number} index slot index
+         * @param {number} value value
+         */
+        setDynamicInput(index, value);
 
         /**
          * Set the paused flag of this effect instance.

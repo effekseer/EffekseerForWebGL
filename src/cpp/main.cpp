@@ -491,6 +491,16 @@ extern "C"
 		context->manager->SetMatrix(handle, matrix43);
 	}
 
+	float EXPORT EffekseerGetDynamicInput(EfkWebViewer::Context* context, int handle, int32_t index)
+	{
+		return context->manager->GetDynamicInput(handle, index);
+	}
+
+	void EXPORT EffekseerSetDynamicInput(EfkWebViewer::Context* context, int handle, int32_t index, float value)
+	{
+		context->manager->SetDynamicInput(handle, index, value);
+	}
+
 	void EXPORT EffekseerSetTargetLocation(EfkWebViewer::Context* context, int handle, float x, float y, float z)
 	{
 		context->manager->SetTargetLocation(handle, x, y, z);
