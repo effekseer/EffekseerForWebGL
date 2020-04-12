@@ -267,6 +267,11 @@ declare namespace effekseer {
         * Get whether VAO is supported
         */
         isVertexArrayObjectSupported();
+
+        /**
+         * Gets the number of remaining allocated instances.
+         */
+        getRestInstancesCount(): Number;
     }
 
     export class EffekseerEffect {
@@ -366,11 +371,6 @@ declare namespace effekseer {
          * @param {number} speed Speed ratio
          */
         setSpeed(speed);
-
-        /**
-         * Gets the number of remaining allocated instances.
-         */
-        getRestInstancesCount(): Number;
     }
 }
 
