@@ -44,11 +44,7 @@ class DisplayTest(unittest.TestCase):
             name = os.path.basename(png)
             with open(png, 'rb') as file:
                 files[name] = (name, file.read(), 'image/png')
-        requests.post('https://echo.effekseer.org', files=files)
-
-
-
-
+        # requests.post('https://echo.effekseer.org', files=files)
 
     def test_some_effects(self):
         for path in self.files:
