@@ -1,3 +1,7 @@
+# 1.52a
+
+Fixed a bug that a behavior of rotated billboard is something wrong when an angle is about 90 degree
+
 # 1.52
 
 Update Effekseer to 1.52
