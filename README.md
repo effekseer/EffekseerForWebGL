@@ -9,9 +9,8 @@
 
 # Download
 
-- [1.52](https://github.com/effekseer/EffekseerForWebGL/releases/download/152/EffekseerForWebGL152.zip)
+- [1.52a](https://github.com/effekseer/EffekseerForWebGL/releases/download/152a/EffekseerForWebGL152a.zip)
 
-- [1.43](https://github.com/effekseer/EffekseerForWebGL/releases/download/143/EffekseerForWebGL143.zip)
 
 # How to use
 
@@ -92,47 +91,6 @@ if(useWASM) {
   // if you use asmjs version
   main();
 }
-
-```
-
-### 1.4
-
-```js
-// Setup WebGLRenderer
-var canvas = document.getElementById("canvas");
-var renderer = new THREE.WebGLRenderer({ canvas: canvas });
-renderer.setSize(canvas.width, canvas.height);
-var clock = new THREE.Clock();
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(30.0, canvas.width / canvas.height, 1, 1000);
-camera.position.set(20, 20, 20);
-camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-// Initialize by WebGLRenderingContext
-effekseer.init(renderer.getContext());
-
-// Load effect data
-var effect = effekseer.loadEffect("Laser01.efk", function(){
-  // Play the loaded effect
-  effekseer.play(effect);
-});
-
-(function renderLoop() {
-  requestAnimationFrame( renderLoop );
-
-  // Effekseer Update
-  effekseer.update(clock.getDelta() * 60.0);
-
-  // Three.js Rendering
-  renderer.render(scene, camera);
-
-  // Rendering Settings
-  effekseer.setProjectionMatrix(camera.projectionMatrix.elements);
-  effekseer.setCameraMatrix(camera.matrixWorldInverse.elements);
-
-  // Effekseer Rendering
-  effekseer.draw();
-})();
 
 ```
 
