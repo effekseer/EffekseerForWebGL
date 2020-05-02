@@ -134,6 +134,6 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: 'Release'
-    ArtifactName: 'EffekseerForWebGL152a'
+    ArtifactName: 'EffekseerForWebGL152b'
     publishLocation: 'Container'
 
