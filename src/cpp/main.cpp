@@ -291,7 +291,7 @@ public:
 
 		auto r = static_cast<EffekseerRendererGL::RendererImplemented*>(renderer);
 		manager->SetMaterialLoader(new CachedMaterialLoader(
-			new EffekseerRendererGL::MaterialLoader(r->GetDeviceType(), r, r->GetDeviceObjectCollection(), &fileInterface, false)));
+			new EffekseerRendererGL::MaterialLoader(r->GetGraphicsDevice(), &fileInterface, false)));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 
