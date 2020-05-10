@@ -413,6 +413,7 @@ const effekseer = (() => {
 
   class ContextStates {
     constructor(gl) {
+      this.restore_texture_slot_max = 8;
       this.gl = gl;
       this.ext_vao = null;
       this.isWebGL2VAOEnabled = false;
@@ -420,6 +421,8 @@ const effekseer = (() => {
       this.current_vao = null;
       this.current_vbo = null;
       this.current_ibo = null;
+      this.current_textures = [];
+      this.current_textures.length = this.restore_texture_slot_max;
 
       this.ext_vao = gl.getExtension('OES_vertex_array_object');
       if (this.ext_vao != null) {
@@ -432,6 +435,9 @@ const effekseer = (() => {
     }
 
     save() {
+      // glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING) is wrong with Emscripten (Why?)
+      // glGetIntegerv(GL_TEXTURE_BINDING_2D) is wrong with Emscripten (Why?)
+
       this.current_vbo = this.gl.getParameter(this.gl.ARRAY_BUFFER_BINDING);
       this.current_ibo = this.gl.getParameter(this.gl.ELEMENT_ARRAY_BUFFER_BINDING);
       if (this.ext_vao != null) {
@@ -442,9 +448,21 @@ const effekseer = (() => {
         this.current_vao = this.gl.getParameter(this.gl.VERTEX_ARRAY_BINDING);
         this.gl.bindVertexArray(this.effekseer_vao);
       }
+
+      for(var i = 0; i < this.restore_texture_slot_max; i++)
+      {
+        this.gl.activeTexture(this.gl.TEXTURE0 + i);
+        this.current_textures[i] = gl.getParameter(gl.TEXTURE_BINDING_2D);
+      }
     }
 
     restore() {
+      for(var i = 0; i < this.restore_texture_slot_max; i++)
+      {
+        this.gl.activeTexture(this.gl.TEXTURE0 + i);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.current_textures[i]);
+      }
+
       if (this.ext_vao != null) {
         this.ext_vao.bindVertexArrayOES(this.current_vao);
       }
@@ -568,11 +586,13 @@ const effekseer = (() => {
     }
 
     beginDraw() {
+      this.contextStates.save();
       Core.BeginDraw(this.nativeptr);
     }
 
     endDraw() {
       Core.EndDraw(this.nativeptr);
+      this.contextStates.restore();
     }
 
     drawHandle(handle) {
