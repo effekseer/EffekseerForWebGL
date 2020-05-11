@@ -1,9 +1,20 @@
 trigger:
 - master
+- 15x
 
 pool:
   vmImage: 'macos-10.14'
 
+steps:
+- script: git clone https://github.com/effekseer/Effekseer --depth 1 ../Effekseer
+
+steps:
+- script: |
+  cd ../Effekseer
+  git checkout -b 15x origin/15x
+  cd ../EffekseerForWebGL
+
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/15x'))
 
 steps:
 
@@ -17,7 +28,6 @@ steps:
       ./emsdk activate sdk-1.39.14-64bit
       source ./emsdk_env.sh
       cd ..
-      git clone https://github.com/effekseer/Effekseer --depth 1 ../Effekseer
       pip install dukpy jsmin
 
       mkdir build_wasm
