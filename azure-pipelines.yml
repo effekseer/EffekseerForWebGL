@@ -1,6 +1,5 @@
 trigger:
 - master
-- 15x
 
 pool:
   vmImage: 'macos-10.14'
@@ -11,20 +10,6 @@ steps:
     targetType: 'inline'
     script: |
       git clone https://github.com/effekseer/Effekseer --depth 1 ../Effekseer
-
-- task: Bash@3
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/15x'))
-  inputs:
-    targetType: 'inline'
-    script: |
-      cd ../Effekseer
-      git checkout -b 15x origin/15x
-      cd ../EffekseerForWebGL
-
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
       git clone https://github.com/emscripten-core/emsdk.git
       cd emsdk
       ./emsdk install sdk-1.39.14-64bit
