@@ -1,5 +1,8 @@
 trigger:
-- master
+  branches:
+    include:
+    - master
+    - 15x
 
 pool:
   vmImage: 'macos-10.14'
