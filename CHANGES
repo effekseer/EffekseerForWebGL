@@ -2,6 +2,8 @@
 
 Update emscipten to 1.39.14
 
+Fixed a restoration of states about textures is wrong
+
 # 1.52b
 
 Fixed a bug where particles are not shown with Line of SpawnMethod
