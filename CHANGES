@@ -2,6 +2,8 @@
 
 Update emscipten to 1.39.14
 
+# 1.52f
+
 Fixed a restoration of states about textures is wrong
 
 # 1.52b
