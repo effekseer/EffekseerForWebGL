@@ -52,6 +52,7 @@ class BinaryReader {
 
 class EfkEfcProperty {
     constructor() {
+        this.version = 0
         this.colorImages = []
         this.normalImages = []
         this.distortionImages = []
@@ -96,6 +97,7 @@ function loadEfkEfcInformation(buffer) {
                 version = 0;
             }
 
+            info.version = version;
             info.colorImages = readStringArray(reader);
             info.normalImages = readStringArray(reader);
             info.distortionImages = readStringArray(reader);
