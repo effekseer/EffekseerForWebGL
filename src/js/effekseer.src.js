@@ -423,6 +423,7 @@ const effekseer = (() => {
       this.current_ibo = null;
       this.current_textures = [];
       this.current_textures.length = this.restore_texture_slot_max;
+      this.current_active_texture_id = null;
 
       this.ext_vao = gl.getExtension('OES_vertex_array_object');
       if (this.ext_vao != null) {
@@ -454,6 +455,8 @@ const effekseer = (() => {
         this.gl.activeTexture(this.gl.TEXTURE0 + i);
         this.current_textures[i] = gl.getParameter(gl.TEXTURE_BINDING_2D);
       }
+
+      this.current_active_texture_id = gl.getParameter(gl.ACTIVE_TEXTURE);
     }
 
     restore() {
@@ -462,6 +465,7 @@ const effekseer = (() => {
         this.gl.activeTexture(this.gl.TEXTURE0 + i);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.current_textures[i]);
       }
+      this.gl.activeTexture(this.current_active_texture_id);
 
       if (this.ext_vao != null) {
         this.ext_vao.bindVertexArrayOES(this.current_vao);
