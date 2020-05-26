@@ -108,7 +108,9 @@ steps:
     script: |
       git clone https://github.com/effekseer/TestData.git
       python -m pip install --upgrade pip
-      pip3 install requests selenium
+      pip3 install chromedriver-binary==81.0.4044.138.0
+      pip3 install selenium==3.141.0
+      pip3 install requests
 
 - task: Bash@3
   inputs:
