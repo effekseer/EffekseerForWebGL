@@ -6,6 +6,8 @@ Update emscipten to 1.39.14
 
 Update Effekseer to 1.52g
 
+Fixed a restoration of states about ActiveTexture
+
 # 1.52f
 
 Fixed a restoration of states about textures is wrong
