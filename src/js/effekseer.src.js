@@ -360,7 +360,7 @@ const effekseer = (() => {
       canvas.width = calcNextPowerOfTwo(image.width);
       canvas.height = calcNextPowerOfTwo(image.height);
       var context2d = canvas.getContext("2d");
-      context2d.drawImage(image, 0, 0, image.width, image.height);
+      context2d.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
       image = canvas;
     }
 
