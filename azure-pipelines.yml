@@ -99,6 +99,12 @@ steps:
           outfile_js.write(data_es5)
           outfile_min_js.write(jsmin.jsmin(data_es5))
 
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'Release'
+    ArtifactName: 'EffekseerForWebGL152g'
+    publishLocation: 'Container'
+
 - task: Bash@3
   inputs:
     targetType: 'inline'
@@ -128,9 +134,4 @@ steps:
       cd tests
       python3 test.py
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'Release'
-    ArtifactName: 'EffekseerForWebGL152g'
-    publishLocation: 'Container'
 
