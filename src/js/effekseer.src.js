@@ -400,7 +400,7 @@ const effekseer = (() => {
         if (!(typeof onerror === "undefined")) onerror('not found', path);
       };
 
-      image.crossOrigin = "anonymous";
+      image.crossOrigin = "use-credentials";
       image.src = path;
     } else {
       _loadBinFile(path, buffer => {
