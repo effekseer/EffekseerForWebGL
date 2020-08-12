@@ -134,4 +134,9 @@ steps:
       cd tests
       python3 test.py
 
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'Release'
+    ArtifactName: 'EffekseerForWebGL152k'
+    publishLocation: 'Container'
 
