@@ -63,6 +63,7 @@ include_directories(
 # Enable OpenGL ES 2.0 mode
 add_definitions(-D__EFFEKSEER_RENDERER_GLES2__)
 add_definitions(-DNDEBUG)
+add_definitions(-D__EFFEKSEER_BUILD_VERSION16__)
 
 # Set source files
 file(GLOB effekseer_src
