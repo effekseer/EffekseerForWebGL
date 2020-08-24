@@ -14,7 +14,7 @@ steps:
     script: |
       sh scripts/clone_dependencies.sh
       source emsdk/emsdk_env.sh
-      pip install dukpy
+      pip install dukpy jsmin
 
       mkdir build_wasm
       cd build_wasm
