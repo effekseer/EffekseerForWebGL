@@ -1,5 +1,5 @@
 /*!
- *  Effekseer for WebGL v1.52k
+ *  Effekseer for WebGL v1.52m
  *  https://github.com/effekseer/EffekseerForWebGL
  *
  *  This software is licensed under the MIT License.
