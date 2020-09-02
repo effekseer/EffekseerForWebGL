@@ -71,11 +71,18 @@ public:
 
 				var img = Module._loadImage(UTF16ToString($0));
 				GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[$1]);
+
+				var pa = gl.getParameter(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL);
+				GLctx.pixelStorei(GLctx.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+
 				GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, img);
 				if (Module._isPowerOfTwo(img))
 				{
 					GLctx.generateMipmap(GLctx.TEXTURE_2D);
 				}
+
+				GLctx.pixelStorei(GLctx.UNPACK_PREMULTIPLY_ALPHA_WEBGL, pa);
+
 				GLctx.bindTexture(GLctx.TEXTURE_2D, binding);
 			},
 			path,
