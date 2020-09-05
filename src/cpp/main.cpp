@@ -6,6 +6,7 @@
 #include <AL/alc.h>
 #include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
 #include <EffekseerRenderer/EffekseerRendererGL.RendererImplemented.h>
+#include <EffekseerRenderer/GraphicsDevice.h>
 
 #include <algorithm>
 #include <emscripten.h>
@@ -159,7 +160,8 @@ public:
 			char* data_model = new char[size_model];
 			reader->Read(data_model, size_model);
 
-			Model* model = new EffekseerRendererGL::Model(data_model, size_model);
+			// Model* model = new EffekseerRendererGL::Model(data_model, size_model);
+			auto model = new EffekseerRenderer::Model((uint8_t*)data_model, size_model, 1, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
 
 			delete[] data_model;
 
@@ -171,7 +173,9 @@ public:
 
 	void* Load(const void* data, int32_t size) override
 	{
-		Model* model = new EffekseerRendererGL::Model((void*)data, size);
+		// Model* model = new EffekseerRendererGL::Model((void*)data, size);
+		auto model = new EffekseerRenderer::Model((uint8_t*)data, size, 1, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
+
 		return (void*)model;
 	}
 
@@ -179,7 +183,7 @@ public:
 	{
 		if (data != NULL)
 		{
-			Model* model = (Model*)data;
+			EffekseerRenderer::Model* model = (EffekseerRenderer::Model*)data;
 			delete model;
 		}
 	}
