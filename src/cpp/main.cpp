@@ -144,11 +144,18 @@ public:
 class CustomModelLoader : public ModelLoader
 {
 	FileInterface* m_fileInterface;
+	Backend::GraphicsDevice* graphicsDevice_ = nullptr;
 
 public:
-	CustomModelLoader(FileInterface* fileInterface) : m_fileInterface(fileInterface) {}
+	CustomModelLoader(FileInterface* fileInterface) : m_fileInterface(fileInterface) 
+	{
+		graphicsDevice_ = new Backend::GraphicsDevice(EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
+	}
 
-	~CustomModelLoader() = default;
+	~CustomModelLoader()
+	{
+		ES_SAFE_RELEASE(graphicsDevice_);
+	}
 
 	void* Load(const EFK_CHAR* path)
 	{
@@ -161,7 +168,7 @@ public:
 			reader->Read(data_model, size_model);
 
 			// Model* model = new EffekseerRendererGL::Model(data_model, size_model);
-			auto model = new EffekseerRenderer::Model((uint8_t*)data_model, size_model, 1, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
+			auto model = new EffekseerRenderer::Model((uint8_t*)data_model, size_model, 1, graphicsDevice_);
 
 			delete[] data_model;
 
@@ -174,7 +181,7 @@ public:
 	void* Load(const void* data, int32_t size) override
 	{
 		// Model* model = new EffekseerRendererGL::Model((void*)data, size);
-		auto model = new EffekseerRenderer::Model((uint8_t*)data, size, 1, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
+		auto model = new EffekseerRenderer::Model((uint8_t*)data, size, 1, graphicsDevice_);
 
 		return (void*)model;
 	}
