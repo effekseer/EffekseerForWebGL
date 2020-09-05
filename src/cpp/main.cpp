@@ -144,12 +144,12 @@ public:
 class CustomModelLoader : public ModelLoader
 {
 	FileInterface* m_fileInterface;
-	Backend::GraphicsDevice* graphicsDevice_ = nullptr;
+	EffekseerRendererGL::Backend::GraphicsDevice* graphicsDevice_ = nullptr;
 
 public:
 	CustomModelLoader(FileInterface* fileInterface) : m_fileInterface(fileInterface) 
 	{
-		graphicsDevice_ = new Backend::GraphicsDevice(EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
+		graphicsDevice_ = new EffekseerRendererGL::Backend::GraphicsDevice(EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
 	}
 
 	~CustomModelLoader()
