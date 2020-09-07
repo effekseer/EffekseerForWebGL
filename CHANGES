@@ -2,6 +2,10 @@
 
 Update emscipten to 1.39.14
 
+# 1.52n
+
+Fixed a bug where rendering is not correct when premultipied alpha is enabled
+
 # 1.52m
 
 Update Effekseer to 1.52m
