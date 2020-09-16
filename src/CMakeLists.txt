@@ -76,6 +76,7 @@ file(GLOB effekseer_src
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Material/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/SIMD/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/ForceField/*.cpp
+  ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Model/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/OpenGL/*.cpp
