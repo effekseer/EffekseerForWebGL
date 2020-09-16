@@ -183,7 +183,7 @@ public:
 		// Model* model = new EffekseerRendererGL::Model((void*)data, size);
 		auto model = new Effekseer::Model((uint8_t*)data, size);
 
-		return (void*)model;
+		return model;
 	}
 
 	void Unload(Effekseer::Model* data)
