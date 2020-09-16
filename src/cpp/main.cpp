@@ -157,7 +157,7 @@ public:
 		ES_SAFE_RELEASE(graphicsDevice_);
 	}
 
-	void* Load(const EFK_CHAR* path)
+	Effekseer::Model* Load(const EFK_CHAR* path)
 	{
 		std::unique_ptr<Effekseer::FileReader> reader(m_fileInterface->OpenRead(path));
 
@@ -168,29 +168,29 @@ public:
 			reader->Read(data_model, size_model);
 
 			// Model* model = new EffekseerRendererGL::Model(data_model, size_model);
-			auto model = new EffekseerRenderer::Model((uint8_t*)data_model, size_model, 1, graphicsDevice_);
+			auto model = new Effekseer::Model((uint8_t*)data_model, size_model);
 
 			delete[] data_model;
 
-			return (void*)model;
+			return model;
 		}
 
 		return NULL;
 	}
 
-	void* Load(const void* data, int32_t size) override
+	Effekseer::Model* Load(const void* data, int32_t size) override
 	{
 		// Model* model = new EffekseerRendererGL::Model((void*)data, size);
-		auto model = new EffekseerRenderer::Model((uint8_t*)data, size, 1, graphicsDevice_);
+		auto model = new Effekseer::Model((uint8_t*)data, size);
 
 		return (void*)model;
 	}
 
-	void Unload(void* data)
+	void Unload(Effekseer::Model* data)
 	{
 		if (data != NULL)
 		{
-			EffekseerRenderer::Model* model = (EffekseerRenderer::Model*)data;
+			Effekseer::Model* model = (Effekseer::Model*)data;
 			delete model;
 		}
 	}
