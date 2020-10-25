@@ -41,7 +41,7 @@ const effekseer = (() => {
       SetPaused: Module.cwrap("EffekseerSetPaused", "void", ["number", "number", "number"]),
       SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
       SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
-      GetRestInstancesCount: Module.cwrap("EffekseerGetRestInstancesCount", "number", ["number"]),      
+      GetRestInstancesCount: Module.cwrap("EffekseerGetRestInstancesCount", "number", ["number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
     };
 
@@ -364,8 +364,7 @@ const effekseer = (() => {
   let _loadResource = (path, onload, onerror) => {
     splitted_path = path.split('?');
     var ext_path = path;
-    if(splitted_path.length >= 2)
-    {
+    if (splitted_path.length >= 2) {
       ext_path = splitted_path[0];
     }
 
@@ -383,7 +382,10 @@ const effekseer = (() => {
 
       image.crossOrigin = "use-credentials";
       image.src = path;
-    } else {
+    } else if (ext == ".tga") {
+      if (!(typeof onerror === "undefined")) onerror('not supported', path);
+    }
+    else {
       _loadBinFile(path, buffer => {
         onload(buffer);
       }, onerror);
@@ -433,16 +435,14 @@ const effekseer = (() => {
 
       this.current_active_texture_id = gl.getParameter(gl.ACTIVE_TEXTURE);
 
-      for(var i = 0; i < this.restore_texture_slot_max; i++)
-      {
+      for (var i = 0; i < this.restore_texture_slot_max; i++) {
         this.gl.activeTexture(this.gl.TEXTURE0 + i);
         this.current_textures[i] = gl.getParameter(gl.TEXTURE_BINDING_2D);
       }
     }
 
     restore() {
-      for(var i = 0; i < this.restore_texture_slot_max; i++)
-      {
+      for (var i = 0; i < this.restore_texture_slot_max; i++) {
         this.gl.activeTexture(this.gl.TEXTURE0 + i);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.current_textures[i]);
       }
