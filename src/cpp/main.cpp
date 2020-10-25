@@ -1,8 +1,6 @@
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
-#include "glTFEffectFactory.h"
-#include "glbEffectFactory.h"
 #include <AL/alc.h>
 #include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
 #include <EffekseerRenderer/EffekseerRendererGL.RendererImplemented.h>
@@ -94,7 +92,7 @@ public:
 		return textureData;
 	}
 
-	Effekseer::TextureData* Load(const void* data, int32_t size, TextureType textureType) override
+	Effekseer::TextureData* Load(const void* data, int32_t size, TextureType textureType, bool isMipMapEnabled) override
 	{
 		int width;
 		int height;
@@ -112,7 +110,10 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_ptr);
 
 		// Generate mipmap
-		glGenerateMipmap(GL_TEXTURE_2D);
+		if (isMipMapEnabled)
+		{
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
 
 		glBindTexture(GL_TEXTURE_2D, binding);
 		stbi_image_free(img_ptr);
@@ -123,6 +124,7 @@ public:
 		textureData->TextureFormat = Effekseer::TextureFormatType::ABGR8;
 		textureData->Width = width;
 		textureData->Height = height;
+		textureData->HasMipmap = isMipMapEnabled;
 		return textureData;
 	}
 
@@ -147,15 +149,12 @@ class CustomModelLoader : public ModelLoader
 	EffekseerRendererGL::Backend::GraphicsDevice* graphicsDevice_ = nullptr;
 
 public:
-	CustomModelLoader(FileInterface* fileInterface) : m_fileInterface(fileInterface) 
+	CustomModelLoader(FileInterface* fileInterface) : m_fileInterface(fileInterface)
 	{
 		graphicsDevice_ = new EffekseerRendererGL::Backend::GraphicsDevice(EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
 	}
 
-	~CustomModelLoader()
-	{
-		ES_SAFE_RELEASE(graphicsDevice_);
-	}
+	~CustomModelLoader() { ES_SAFE_RELEASE(graphicsDevice_); }
 
 	Effekseer::Model* Load(const EFK_CHAR* path)
 	{
@@ -280,9 +279,6 @@ public:
 
 	CustomFileInterface fileInterface;
 
-	glbEffectFactory* glbEffectFactory_ = nullptr;
-	glTFEffectFactory* glTFEffectFactory_ = nullptr;
-
 	ALCdevice* alcDevice = nullptr;
 	ALCcontext* alcContext = nullptr;
 
@@ -308,18 +304,14 @@ public:
 		manager->SetModelLoader(new CustomModelLoader(&fileInterface));
 
 		auto r = static_cast<EffekseerRendererGL::RendererImplemented*>(renderer);
-		manager->SetMaterialLoader(new CachedMaterialLoader(
-			new EffekseerRendererGL::MaterialLoader(r->GetGraphicsDevice(), &fileInterface, false)));
+
+		// TODO : refactor
+		manager->SetMaterialLoader(
+			new CachedMaterialLoader(new EffekseerRendererGL::MaterialLoader(r->GetIntetnalGraphicsDevice(), &fileInterface, false)));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 
 		manager->SetCoordinateSystem(CoordinateSystem::RH);
-
-		glbEffectFactory_ = new glbEffectFactory();
-		glTFEffectFactory_ = new glTFEffectFactory();
-
-		manager->GetSetting()->AddEffectFactory(glbEffectFactory_);
-		manager->GetSetting()->AddEffectFactory(glTFEffectFactory_);
 
 		return true;
 	}
@@ -384,7 +376,7 @@ extern "C"
 	{
 		deltaFrames += context->restDeltaTime_;
 		context->restDeltaTime_ = deltaFrames - int(deltaFrames);
-		for(int loop = 0; loop < int(deltaFrames); loop++)
+		for (int loop = 0; loop < int(deltaFrames); loop++)
 		{
 			context->Update(1);
 		}
@@ -533,21 +525,7 @@ extern "C"
 
 	void EXPORT EffekseerSetSpeed(EfkWebViewer::Context* context, int handle, float speed) { context->manager->SetSpeed(handle, speed); }
 
-	int32_t EXPORT EffekseerGetRestInstancesCount(EfkWebViewer::Context* context)
-	{
-		return context->manager->GetRestInstancesCount();
-	}
-
-	int EXPORT EffekseerIsBinaryglTF(EfkWebViewer::Context* context, void* data, int32_t size)
-	{
-		return context->glTFEffectFactory_->OnCheckIsBinarySupported(data, size) ? 1 : 0;
-	}
-
-	const char* EXPORT EffekseerGetglTFBodyURI(EfkWebViewer::Context* context, void* data, int32_t size)
-	{
-		context->tempStr = context->glTFEffectFactory_->GetBodyURI(data, size);
-		return context->tempStr.c_str();
-	}
+	int32_t EXPORT EffekseerGetRestInstancesCount(EfkWebViewer::Context* context) { return context->manager->GetRestInstancesCount(); }
 
 	int EXPORT EffekseerIsVertexArrayObjectSupported(EfkWebViewer::Context* context)
 	{
@@ -555,16 +533,5 @@ extern "C"
 			return 0;
 
 		return context->renderer->IsVertexArrayObjectSupported() ? 1 : 0;
-	}
-
-	int32_t EXPORT EffekseerEffectGetColorImageCount(Effect* effect) { return effect->GetColorImageCount(); }
-
-	const char* EXPORT EffekseerEffectGetColorImagePath(Effect* effect, int index)
-	{
-		auto path = effect->GetColorImagePath(index);
-		char dst[260];
-		Effekseer::ConvertUtf16ToUtf8((int8_t*)dst, 260, (int16_t*)path);
-		EfkWebViewer::tempStr = dst;
-		return EfkWebViewer::tempStr.c_str();
 	}
 }

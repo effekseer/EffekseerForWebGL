@@ -2,6 +2,10 @@
 
 Update emscipten to 1.39.14
 
+Remove EffekseerEffectGetColorImageCount and gltf
+
+Please use EfkEfcProperty.js
+
 # 1.52n
 
 Fixed a bug where rendering is not correct when premultipied alpha is enabled
