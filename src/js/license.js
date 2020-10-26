@@ -5,7 +5,7 @@
  *  This software is licensed under the MIT License.
  *  http://www.opensource.org/licenses/mit-license
  *
- * picojson
+ * PicoJSON
  *
  * Copyright 2009-2010 Cybozu Labs, Inc.
  * Copyright 2011-2014 Kazuho Oku
