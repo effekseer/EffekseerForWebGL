@@ -1,8 +1,6 @@
 #include "Effekseer.h"
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
-#include "glTFEffectFactory.h"
-#include "glbEffectFactory.h"
 #include <AL/alc.h>
 #include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
 #include <EffekseerRenderer/EffekseerRendererGL.RendererImplemented.h>
@@ -14,8 +12,6 @@
 #include <stdlib.h>
 
 #include "CustomFile.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
 static void ArrayToMatrix44(const float* array, Effekseer::Matrix44& matrix)
 {
@@ -90,38 +86,6 @@ public:
 
 		Effekseer::TextureData* textureData = new Effekseer::TextureData();
 		textureData->UserID = texture;
-		return textureData;
-	}
-
-	Effekseer::TextureData* Load(const void* data, int32_t size, TextureType textureType) override
-	{
-		int width;
-		int height;
-		int channel;
-
-		uint8_t* img_ptr = stbi_load_from_memory((const uint8_t*)data, size, &width, &height, &channel, 4);
-
-		GLint binding = 0;
-
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &binding);
-
-		GLuint texture = 0;
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_ptr);
-
-		// Generate mipmap
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glBindTexture(GL_TEXTURE_2D, binding);
-		stbi_image_free(img_ptr);
-
-		auto textureData = new Effekseer::TextureData();
-		textureData->UserPtr = nullptr;
-		textureData->UserID = texture;
-		textureData->TextureFormat = Effekseer::TextureFormatType::ABGR8;
-		textureData->Width = width;
-		textureData->Height = height;
 		return textureData;
 	}
 
@@ -269,9 +233,6 @@ public:
 
 	CustomFileInterface fileInterface;
 
-	glbEffectFactory* glbEffectFactory_ = nullptr;
-	glTFEffectFactory* glTFEffectFactory_ = nullptr;
-
 	ALCdevice* alcDevice = nullptr;
 	ALCcontext* alcContext = nullptr;
 
@@ -303,12 +264,6 @@ public:
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 
 		manager->SetCoordinateSystem(CoordinateSystem::RH);
-
-		glbEffectFactory_ = new glbEffectFactory();
-		glTFEffectFactory_ = new glTFEffectFactory();
-
-		manager->GetSetting()->AddEffectFactory(glbEffectFactory_);
-		manager->GetSetting()->AddEffectFactory(glTFEffectFactory_);
 
 		return true;
 	}
@@ -527,33 +482,11 @@ extern "C"
 		return context->manager->GetRestInstancesCount();
 	}
 
-	int EXPORT EffekseerIsBinaryglTF(EfkWebViewer::Context* context, void* data, int32_t size)
-	{
-		return context->glTFEffectFactory_->OnCheckIsBinarySupported(data, size) ? 1 : 0;
-	}
-
-	const char* EXPORT EffekseerGetglTFBodyURI(EfkWebViewer::Context* context, void* data, int32_t size)
-	{
-		context->tempStr = context->glTFEffectFactory_->GetBodyURI(data, size);
-		return context->tempStr.c_str();
-	}
-
 	int EXPORT EffekseerIsVertexArrayObjectSupported(EfkWebViewer::Context* context)
 	{
 		if (context->renderer == nullptr)
 			return 0;
 
 		return context->renderer->IsVertexArrayObjectSupported() ? 1 : 0;
-	}
-
-	int32_t EXPORT EffekseerEffectGetColorImageCount(Effect* effect) { return effect->GetColorImageCount(); }
-
-	const char* EXPORT EffekseerEffectGetColorImagePath(Effect* effect, int index)
-	{
-		auto path = effect->GetColorImagePath(index);
-		char dst[260];
-		Effekseer::ConvertUtf16ToUtf8((int8_t*)dst, 260, (int16_t*)path);
-		EfkWebViewer::tempStr = dst;
-		return EfkWebViewer::tempStr.c_str();
 	}
 }
