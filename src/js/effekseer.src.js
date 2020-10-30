@@ -42,11 +42,7 @@ const effekseer = (() => {
       SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
       SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
       GetRestInstancesCount: Module.cwrap("EffekseerGetRestInstancesCount", "number", ["number"]),      
-      IsBinaryglTF: Module.cwrap("EffekseerIsBinaryglTF", "number", ["number", "number", "number"]),
-      GetglTFBodyURI: Module.cwrap("EffekseerGetglTFBodyURI", "number", ["number", "number", "number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
-      EffectGetColorImageCount: Module.cwrap("EffekseerEffectGetColorImageCount", "number", ["number"]),
-      EffectGetColorImagePath: Module.cwrap("EffekseerEffectGetColorImagePath", "number", ["number", "number"]),
     };
 
 
@@ -185,21 +181,6 @@ const effekseer = (() => {
         this.isLoaded = true;
         if (this.onload) this.onload();
       }
-    }
-
-    /**
-     * get paths to color images
-     * @returns {array[string]} paths to color images
-     */
-    getColorImagePaths() {
-      var arr = [];
-      let count = Core.EffectGetColorImageCount(this.nativeptr);
-      for (var i = 0; i < count; i++) {
-        let ptr = Core.EffectGetColorImagePath(this.nativeptr, i);
-        str = Module.UTF8ToString(ptr);
-        arr.push(str);
-      }
-      return arr;
     }
   }
 
@@ -499,23 +480,6 @@ const effekseer = (() => {
       return null;
     };
 
-    _getglTFBodyURI(buffer) {
-      const memptr = Module._malloc(buffer.byteLength);
-      Module.HEAP8.set(new Uint8Array(buffer), memptr);
-      ptr = Core.GetglTFBodyURI(context.nativeptr, memptr, buffer.byteLength);
-      str = Module.UTF8ToString(ptr);
-      Module._free(memptr);
-      return str;
-    }
-
-    _isBinaryglTF(context, buffer) {
-      const memptr = Module._malloc(buffer.byteLength);
-      Module.HEAP8.set(new Uint8Array(buffer), memptr);
-      var ret = Core.IsBinaryglTF(context.nativeptr, memptr, buffer.byteLength);
-      Module._free(memptr);
-      return ret > 0;
-    }
-
     _makeContextCurrent() {
       Module.GL.makeContextCurrent(this.ctx);
     }
@@ -718,19 +682,7 @@ const effekseer = (() => {
       if (typeof path === "string") {
         effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
         _loadBinFile(path, buffer => {
-
-          if (this._isBinaryglTF(this, buffer)) {
-            // glTF
-            bodyPath = this._getglTFBodyURI(buffer);
-
-            this._loadBinary_with_effect_cache(bodyPath, effect, bufferBody => {
-              effect._load(buffer);
-            }, effect.onerror);
-          }
-          else {
-            effect._load(buffer);
-          }
-
+          effect._load(buffer);
         }, effect.onerror);
       } else if (typeof path === "arraybuffer") {
         const buffer = path;
