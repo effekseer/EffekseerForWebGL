@@ -454,23 +454,34 @@ extern "C"
 		context->cameraMatrix.LookAtRH(Vector3D(eyeX, eyeY, eyeZ), Vector3D(atX, atY, atZ), Vector3D(upX, upY, upZ));
 	}
 
-	Effect* EXPORT EffekseerLoadEffect(EfkWebViewer::Context* context, void* data, int32_t size, float magnification)
+	void* EXPORT EffekseerLoadEffect(EfkWebViewer::Context* context, void* data, int32_t size, float magnification)
 	{
-		return Effect::Create(context->manager, data, size, magnification);
+		auto effect = Effect::Create(context->manager, data, size, magnification);
+		return effect.Pin();
 	}
 
-	void EXPORT EffekseerReleaseEffect(EfkWebViewer::Context* context, Effect* effect) { effect->Release(); }
+	void EXPORT EffekseerReleaseEffect(EfkWebViewer::Context* context, void* effect)
+	{
+		Effekseer::RefPtr<Effect>::Unpin(effect);
+	}
 
 	void EXPORT EffekseerReloadResources(EfkWebViewer::Context* context, Effect* effect, void* data, int32_t size)
 	{
-		effect->ReloadResources(data, size);
+		auto effectRef = Effekseer::RefPtr<Effect>::FromPinned(effect);
+		if(effectRef == nullptr)
+		{
+			return;
+		}
+
+		effectRef->ReloadResources(data, size);
 	}
 
 	void EXPORT EffekseerStopAllEffects(EfkWebViewer::Context* context) { context->manager->StopAllEffects(); }
 
-	int EXPORT EffekseerPlayEffect(EfkWebViewer::Context* context, Effect* effect, float x, float y, float z)
+	int EXPORT EffekseerPlayEffect(EfkWebViewer::Context* context, void* effect, float x, float y, float z)
 	{
-		return context->manager->Play(effect, x, y, z);
+		auto effectRef = Effekseer::RefPtr<Effect>::FromPinned(effect);
+		return context->manager->Play(effectRef, x, y, z);
 	}
 
 	void EXPORT EffekseerStopEffect(EfkWebViewer::Context* context, int handle) { context->manager->StopEffect(handle); }
