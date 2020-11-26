@@ -11,7 +11,7 @@
 
 - [Changes](CHANGES)
 
-- [1.52n](https://github.com/effekseer/EffekseerForWebGL/releases/download/152n/EffekseerForWebGL152n.zip)
+- [1.53](https://github.com/effekseer/EffekseerForWebGL/releases/download/153/EffekseerForWebGL153.zip)
 
 
 # How to use

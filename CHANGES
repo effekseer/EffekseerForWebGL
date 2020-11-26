@@ -2,6 +2,8 @@
 
 Update emscipten to 1.39.14
 
+# 1.53
+
 Remove EffekseerEffectGetColorImageCount and gltf
 
 Please use EfkEfcProperty.js
