@@ -210,14 +210,14 @@ private:
 		}
 	};
 
-	::Effekseer::MaterialLoader* loader_;
+	::Effekseer::MaterialLoaderRef loader_;
 	std::map<std::basic_string<EFK_CHAR>, Cached> cache_;
 	std::map<void*, std::basic_string<EFK_CHAR>> data2key_;
 
 public:
-	CachedMaterialLoader(::Effekseer::MaterialLoader* loader) { this->loader_ = loader; }
+	CachedMaterialLoader(::Effekseer::MaterialLoaderRef loader) { this->loader_ = loader; }
 
-	virtual ~CachedMaterialLoader() { ES_SAFE_DELETE(loader_); }
+	~CachedMaterialLoader() override = default;
 
 	virtual ::Effekseer::MaterialData* Load(const EFK_CHAR* path) override
 	{
@@ -267,9 +267,9 @@ public:
 class Context
 {
 public:
-	Manager* manager = NULL;
-	EffekseerRendererGL::Renderer* renderer = NULL;
-	EffekseerSound::Sound* sound = NULL;
+	Effekseer::ManagerRef manager = nullptr;
+	EffekseerRendererGL::RendererRef renderer = nullptr;
+	EffekseerSound::SoundRef sound = nullptr;
 	float time_ = 0.0f;
 	bool isFirstUpdate_ = false;
 	float restDeltaTime_ = 0.0f;
@@ -300,14 +300,11 @@ public:
 		manager->SetRingRenderer(renderer->CreateRingRenderer());
 		manager->SetModelRenderer(renderer->CreateModelRenderer());
 		manager->SetTrackRenderer(renderer->CreateTrackRenderer());
-		manager->SetTextureLoader(new CustomTextureLoader());
-		manager->SetModelLoader(new CustomModelLoader(&fileInterface));
+		manager->SetTextureLoader(Effekseer::MakeRefPtr<CustomTextureLoader>());
+		manager->SetModelLoader(Effekseer::MakeRefPtr<CustomModelLoader>(&fileInterface));
 
-		auto r = static_cast<EffekseerRendererGL::RendererImplemented*>(renderer);
-
-		// TODO : refactor
 		manager->SetMaterialLoader(
-			new CachedMaterialLoader(new EffekseerRendererGL::MaterialLoader(r->GetIntetnalGraphicsDevice(), &fileInterface, false)));
+			Effekseer::MakeRefPtr<CachedMaterialLoader>(Effekseer::MakeRefPtr<EffekseerRendererGL::MaterialLoader>(renderer->GetGraphicsDevice().DownCast<EffekseerRendererGL::Backend::GraphicsDevice>(), &fileInterface, false)));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 
@@ -318,9 +315,9 @@ public:
 
 	void Terminate()
 	{
-		manager->Destroy();
-		renderer->Destroy();
-		sound->Destroy();
+		manager.Reset();
+		renderer.Reset();
+		sound.Reset();
 	}
 
 	void Update(float deltaFrames) { manager->Update(deltaFrames); }
