@@ -13,8 +13,6 @@
 #include <stdlib.h>
 
 #include "CustomFile.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
 static void ArrayToMatrix44(const float* array, Effekseer::Matrix44& matrix)
 {
@@ -44,12 +42,16 @@ using namespace Effekseer;
 
 class CustomTextureLoader : public TextureLoader
 {
+private:
+	::Effekseer::Backend::GraphicsDevice* graphicsDevice_ = nullptr;
+
 public:
-	CustomTextureLoader() = default;
+	CustomTextureLoader(::Effekseer::Backend::GraphicsDevice* graphicsDevice) : graphicsDevice_(graphicsDevice) {}
+
 	~CustomTextureLoader() = default;
 
 public:
-	Effekseer::TextureData* Load(const EFK_CHAR* path, TextureType textureType) override
+	Effekseer::TextureRef Load(const EFK_CHAR* path, TextureType textureType) override
 	{
 
 		// Request to load image
@@ -87,181 +89,16 @@ public:
 			path,
 			texture);
 
-		Effekseer::TextureData* textureData = new Effekseer::TextureData();
-		textureData->UserID = texture;
-		return textureData;
-	}
-
-	Effekseer::TextureData* Load(const void* data, int32_t size, TextureType textureType, bool isMipMapEnabled) override
-	{
-		int width;
-		int height;
-		int channel;
-
-		uint8_t* img_ptr = stbi_load_from_memory((const uint8_t*)data, size, &width, &height, &channel, 4);
-
-		GLint binding = 0;
-
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &binding);
-
-		GLuint texture = 0;
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img_ptr);
-
-		// Generate mipmap
-		if (isMipMapEnabled)
-		{
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-
-		glBindTexture(GL_TEXTURE_2D, binding);
-		stbi_image_free(img_ptr);
-
-		auto textureData = new Effekseer::TextureData();
-		textureData->UserPtr = nullptr;
-		textureData->UserID = texture;
-		textureData->TextureFormat = Effekseer::TextureFormatType::ABGR8;
-		textureData->Width = width;
-		textureData->Height = height;
-		textureData->HasMipmap = isMipMapEnabled;
-		return textureData;
-	}
-
-	void Unload(Effekseer::TextureData* data) override
-	{
-		if (data != NULL)
-		{
-			auto textureData = (Effekseer::TextureData*)data;
-			GLuint texture = (GLuint)textureData->UserID;
-			if (texture)
-			{
+		auto backend =
+			static_cast<EffekseerRendererGL::Backend::GraphicsDevice*>(graphicsDevice_)->CreateTexture(texture, true, [texture]() -> void {
 				glDeleteTextures(1, &texture);
-			}
-			delete textureData;
-		}
-	}
-};
-
-class CustomModelLoader : public ModelLoader
-{
-	FileInterface* m_fileInterface;
-	EffekseerRendererGL::Backend::GraphicsDevice* graphicsDevice_ = nullptr;
-
-public:
-	CustomModelLoader(FileInterface* fileInterface) : m_fileInterface(fileInterface)
-	{
-		graphicsDevice_ = new EffekseerRendererGL::Backend::GraphicsDevice(EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
+			});
+		auto textureData = Effekseer::MakeRefPtr<Effekseer::Texture>();
+		textureData->SetBackend(backend);
+		return textureData;
 	}
 
-	~CustomModelLoader() { ES_SAFE_RELEASE(graphicsDevice_); }
-
-	Effekseer::Model* Load(const EFK_CHAR* path)
-	{
-		std::unique_ptr<Effekseer::FileReader> reader(m_fileInterface->OpenRead(path));
-
-		if (reader.get() != NULL)
-		{
-			size_t size_model = reader->GetLength();
-			char* data_model = new char[size_model];
-			reader->Read(data_model, size_model);
-
-			// Model* model = new EffekseerRendererGL::Model(data_model, size_model);
-			auto model = new Effekseer::Model((uint8_t*)data_model, size_model);
-
-			delete[] data_model;
-
-			return model;
-		}
-
-		return NULL;
-	}
-
-	Effekseer::Model* Load(const void* data, int32_t size) override
-	{
-		// Model* model = new EffekseerRendererGL::Model((void*)data, size);
-		auto model = new Effekseer::Model((uint8_t*)data, size);
-
-		return model;
-	}
-
-	void Unload(Effekseer::Model* data)
-	{
-		if (data != NULL)
-		{
-			Effekseer::Model* model = (Effekseer::Model*)data;
-			delete model;
-		}
-	}
-};
-
-class CachedMaterialLoader : public ::Effekseer::MaterialLoader
-{
-private:
-	struct Cached
-	{
-		::Effekseer::MaterialData* DataPtr;
-		int32_t Count;
-
-		Cached()
-		{
-			DataPtr = nullptr;
-			Count = 1;
-		}
-	};
-
-	::Effekseer::MaterialLoaderRef loader_;
-	std::map<std::basic_string<EFK_CHAR>, Cached> cache_;
-	std::map<void*, std::basic_string<EFK_CHAR>> data2key_;
-
-public:
-	CachedMaterialLoader(::Effekseer::MaterialLoaderRef loader) { this->loader_ = loader; }
-
-	~CachedMaterialLoader() override = default;
-
-	virtual ::Effekseer::MaterialData* Load(const EFK_CHAR* path) override
-	{
-		auto key = std::basic_string<EFK_CHAR>(path);
-
-		auto it = cache_.find(key);
-
-		if (it != cache_.end())
-		{
-			it->second.Count++;
-			return it->second.DataPtr;
-		}
-
-		Cached v;
-		v.DataPtr = loader_->Load(path);
-
-		if (v.DataPtr != nullptr)
-		{
-			cache_[key] = v;
-			data2key_[v.DataPtr] = key;
-		}
-
-		return v.DataPtr;
-	}
-
-	virtual void Unload(::Effekseer::MaterialData* data) override
-	{
-		if (data == nullptr)
-			return;
-		auto key = data2key_[data];
-
-		auto it = cache_.find(key);
-
-		if (it != cache_.end())
-		{
-			it->second.Count--;
-			if (it->second.Count == 0)
-			{
-				loader_->Unload(it->second.DataPtr);
-				data2key_.erase(data);
-				cache_.erase(key);
-			}
-		}
-	}
+	void Unload(Effekseer::TextureRef data) override {}
 };
 
 class Context
@@ -300,11 +137,10 @@ public:
 		manager->SetRingRenderer(renderer->CreateRingRenderer());
 		manager->SetModelRenderer(renderer->CreateModelRenderer());
 		manager->SetTrackRenderer(renderer->CreateTrackRenderer());
-		manager->SetTextureLoader(Effekseer::MakeRefPtr<CustomTextureLoader>());
-		manager->SetModelLoader(Effekseer::MakeRefPtr<CustomModelLoader>(&fileInterface));
-
-		manager->SetMaterialLoader(
-			Effekseer::MakeRefPtr<CachedMaterialLoader>(Effekseer::MakeRefPtr<EffekseerRendererGL::MaterialLoader>(renderer->GetGraphicsDevice().DownCast<EffekseerRendererGL::Backend::GraphicsDevice>(), &fileInterface, false)));
+		manager->SetTextureLoader(Effekseer::MakeRefPtr<CustomTextureLoader>(renderer->GetGraphicsDevice().Get()));
+		manager->SetModelLoader(renderer->CreateModelLoader(&fileInterface));
+		manager->SetMaterialLoader(Effekseer::MakeRefPtr<EffekseerRendererGL::MaterialLoader>(
+			renderer->GetGraphicsDevice().DownCast<EffekseerRendererGL::Backend::GraphicsDevice>(), &fileInterface, false));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
 		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
 
@@ -457,15 +293,12 @@ extern "C"
 		return effect.Pin();
 	}
 
-	void EXPORT EffekseerReleaseEffect(EfkWebViewer::Context* context, void* effect)
-	{
-		Effekseer::RefPtr<Effect>::Unpin(effect);
-	}
+	void EXPORT EffekseerReleaseEffect(EfkWebViewer::Context* context, void* effect) { Effekseer::RefPtr<Effect>::Unpin(effect); }
 
 	void EXPORT EffekseerReloadResources(EfkWebViewer::Context* context, Effect* effect, void* data, int32_t size)
 	{
 		auto effectRef = Effekseer::RefPtr<Effect>::FromPinned(effect);
-		if(effectRef == nullptr)
+		if (effectRef == nullptr)
 		{
 			return;
 		}
