@@ -2,6 +2,7 @@ import unittest
 import os
 import time
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import shutil
 import filecmp
 import base64
@@ -34,7 +35,10 @@ class DisplayTest(unittest.TestCase):
         options.add_argument('--enable-webgl')
         options.add_argument('--enable-asm-webassembly')
 
-        self.browser = webdriver.Chrome(options=options)
+        d = DesiredCapabilities.CHROME
+        d['goog:loggingPrefs'] = { 'browser':'ALL' }
+        
+        self.browser = webdriver.Chrome(options=options, desired_capabilities=d)
         self.browser.set_window_size(320, 320)
 
     @classmethod
@@ -44,7 +48,7 @@ class DisplayTest(unittest.TestCase):
             name = os.path.basename(png)
             with open(png, 'rb') as file:
                 files[name] = (name, file.read(), 'image/png')
-        # requests.post('https://echo.effekseer.org', files=files)
+
 
     def test_some_effects(self):
         for path in self.files:
@@ -62,9 +66,8 @@ class DisplayTest(unittest.TestCase):
                     time.sleep(1)
                     self.assertTrue(filecmp.cmp('../TestData/Tests/WebGL/' + name +'_step' + str(step) + '.png', 'screenshots/' + name + '_step' + str(step) + '.png'), name + '_step' + str(step) + ' is not equal')
 
-
-
-
+        for entry in self.browser.get_log('browser'):
+            print(entry)
 
 if __name__ == '__main__':
     if os.path.exists('screenshots'):

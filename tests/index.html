@@ -56,6 +56,7 @@
               btn.value = name;
               btn.id = name;
               btn.addEventListener('click', function () {
+                  console.log('Play : ' + name);
                   context.play(effects[name], 0, 0, 0);
               });
               buttons.appendChild(btn)
