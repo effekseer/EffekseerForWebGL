@@ -272,6 +272,16 @@ declare namespace effekseer {
          * Gets the number of remaining allocated instances.
          */
         getRestInstancesCount(): Number;
+
+        /**
+         * Gets a time when updating
+         */
+        getUpdateTime(): Number;
+
+        /**
+         * Gets a time when drawing
+         */
+        getDrawTime(): Number;
     }
 
     export class EffekseerEffect {

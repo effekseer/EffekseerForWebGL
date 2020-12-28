@@ -42,6 +42,8 @@ const effekseer = (() => {
       SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
       SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
       GetRestInstancesCount: Module.cwrap("EffekseerGetRestInstancesCount", "number", ["number"]),      
+      GetUpdateTime: Module.cwrap("EffekseerGetUpdateTime", "number", ["number"]),
+      GetDrawTime: Module.cwrap("EffekseerGetDrawTime", "number", ["number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
     };
 
@@ -757,6 +759,20 @@ const effekseer = (() => {
      */
     getRestInstancesCount() {
       return Core.GetRestInstancesCount(this.nativeptr);
+    }
+
+    /**
+     * Gets a time when updating
+     */
+    getUpdateTime() {
+      return Core.GetUpdateTime(this.nativeptr);
+    }
+
+    /**
+     * Gets a time when drawing
+     */
+    getDrawTime() {
+      return Core.GetDrawTime(this.nativeptr);
     }
 
     /**

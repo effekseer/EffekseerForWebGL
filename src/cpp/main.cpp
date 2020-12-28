@@ -482,6 +482,10 @@ extern "C"
 		return context->manager->GetRestInstancesCount();
 	}
 
+	int EXPORT EffekseerGetUpdateTime(EfkWebViewer::Context* context) { return context->manager->GetUpdateTime(); }
+
+	int EXPORT EffekseerGetDrawTime(EfkWebViewer::Context* context) { return context->manager->GetDrawTime(); }
+
 	int EXPORT EffekseerIsVertexArrayObjectSupported(EfkWebViewer::Context* context)
 	{
 		if (context->renderer == nullptr)
