@@ -481,7 +481,7 @@ const effekseer = (() => {
       window.gl = this.gl;
       // Setup native OpenGL context
       this.ctx = Module.GL.registerContext(webglContext, {
-        majorVersion: 1, minorVersion: 0, enableExtensionsByDefault: true
+        majorVersion: 1, minorVersion: 0, enableExtensionsByDefault: false
       });
       this._makeContextCurrent();
 
