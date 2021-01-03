@@ -29,6 +29,7 @@ if(AS_WASM)
       " -s TOTAL_MEMORY=33554432"
       " -s ALLOW_MEMORY_GROWTH=1"
       " -s EXPORT_NAME=\"'effekseer_native'\""
+      " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" "
       " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString']\" "
       " --post-js ${PROJECT_SOURCE_DIR}/js/post.js"
     )
@@ -44,6 +45,7 @@ else()
       " -s TOTAL_MEMORY=33554432"
       " -s ALLOW_MEMORY_GROWTH=1"
       " -s EXPORT_NAME=\"'effekseer'\""
+      " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" "
       " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString']\" "
       " --post-js ${PROJECT_SOURCE_DIR}/js/post.js"
     )
