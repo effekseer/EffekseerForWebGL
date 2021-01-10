@@ -498,6 +498,6 @@ extern "C"
 	{
 		if (context->renderer == nullptr)
 			return;
-		context->renderer->SetRestorationOfStatesFlag(handle, flag > 0);
+		context->renderer->SetRestorationOfStatesFlag(flag > 0);
 	}
 }
