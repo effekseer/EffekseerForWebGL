@@ -136,6 +136,7 @@ const effekseer = (() => {
     }
     else {
       Module = moduleOrPromise;
+      _onRuntimeInitialized();
     }
   }
 
