@@ -493,4 +493,11 @@ extern "C"
 
 		return context->renderer->IsVertexArrayObjectSupported() ? 1 : 0;
 	}
+
+	void EXPORT EffekseerSetRestorationOfStatesFlag(EfkWebViewer::Context* context, int flag)
+	{
+		if (context->renderer == nullptr)
+			return;
+		context->renderer->SetRestorationOfStatesFlag(handle, flag > 0);
+	}
 }

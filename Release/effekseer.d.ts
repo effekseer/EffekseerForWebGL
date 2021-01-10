@@ -282,7 +282,15 @@ declare namespace effekseer {
          * Gets a time when drawing
          */
         getDrawTime(): Number;
-    }
+
+        /**
+         * Set the flag whether the library restores OpenGL states 
+         * if specified true, it makes slow.
+         * if specified false, You need to restore OpenGL states by yourself
+         * it must be called after init
+         * @param {boolean} flag
+         */
+        setRestorationOfStatesFlag(flag);
 
     export class EffekseerEffect {
         constructor();

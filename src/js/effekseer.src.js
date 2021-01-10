@@ -45,6 +45,7 @@ const effekseer = (() => {
       GetUpdateTime: Module.cwrap("EffekseerGetUpdateTime", "number", ["number"]),
       GetDrawTime: Module.cwrap("EffekseerGetDrawTime", "number", ["number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
+      SetRestorationOfStatesFlag: Module.cwrap("EffekseerSetRestorationOfStatesFlag", "void", ["number", "number"]),
     };
 
 
@@ -509,6 +510,8 @@ const effekseer = (() => {
         };
       }
 
+      this._restorationOfStatesFlag = true;
+
       // Initializes Effekseer core.
       this.contextStates.save();
       this.nativeptr = Core.Init(settings.instanceMaxCount, settings.squareMaxCount);
@@ -543,26 +546,40 @@ const effekseer = (() => {
     draw() {
       this._makeContextCurrent();
 
-      // Save WebGL states
-      const program = this.gl.getParameter(gl.CURRENT_PROGRAM);
+      let program = null;
 
-      // Draw the effekseer core
-      this.contextStates.save();
+      if(this._restorationOfStatesFlag) {
+        // Save WebGL states
+        program = this.gl.getParameter(gl.CURRENT_PROGRAM);
+
+        // Draw the effekseer core
+        this.contextStates.save();
+      }
+
       Core.Draw(this.nativeptr);
-      this.contextStates.restore();
 
-      // Restore WebGL states
-      this.gl.useProgram(program);
+      if(this._restorationOfStatesFlag) {
+        this.contextStates.restore();
+
+        // Restore WebGL states
+        this.gl.useProgram(program);
+      }
     }
 
     beginDraw() {
-      this.contextStates.save();
+      if(this._restorationOfStatesFlag) {
+        this.contextStates.save();
+      }
+
       Core.BeginDraw(this.nativeptr);
     }
 
     endDraw() {
       Core.EndDraw(this.nativeptr);
-      this.contextStates.restore();
+
+      if(this._restorationOfStatesFlag) {
+        this.contextStates.restore();
+      }
     }
 
     drawHandle(handle) {
@@ -780,6 +797,18 @@ const effekseer = (() => {
      */
     isVertexArrayObjectSupported() {
       return Core.IsVertexArrayObjectSupported(this.nativeptr);
+    }
+
+    /**
+     * Set the flag whether the library restores OpenGL states 
+     * if specified true, it makes slow.
+     * if specified false, You need to restore OpenGL states by yourself
+     * it must be called after init
+     * @param {boolean} flag
+     */
+    setRestorationOfStatesFlag(flag) {
+      this._restorationOfStatesFlag = flag;
+      Core.SetRestorationOfStatesFlag(this.nativeptr, flag);
     }
   }
 
