@@ -113,8 +113,11 @@ const effekseer = (() => {
     xhr.onload = () => {
       var params = {};
       params.wasmBinary = xhr.response;
-      params.onRuntimeInitialized = _onRuntimeInitialized;
-      Module = effekseer_native(params);
+      // params.onRuntimeInitialized = _onRuntimeInitialized;
+      effekseer_native(params).then(function(module) {
+        Module = module;
+        _onRuntimeInitialized();
+      });
     };
     xhr.onerror = () => {
       _onerrorAssembly();
@@ -123,8 +126,18 @@ const effekseer = (() => {
   };
 
   if (typeof effekseer_native === "undefined") {
-    Module = effekseer();
-    _onRuntimeInitialized();
+    moduleOrPromise = effekseer();
+
+    if(moduleOrPromise instanceof Promise) {
+      moduleOrPromise.then(function(module) {
+        Module = module;
+        _onRuntimeInitialized();
+      });
+    }
+    else {
+      Module = moduleOrPromise;
+      _onRuntimeInitialized();
+    }
   }
 
   /**
