@@ -126,10 +126,17 @@ const effekseer = (() => {
   };
 
   if (typeof effekseer_native === "undefined") {
-    effekseer().then(function(module) {
-      Module = module;
-      _onRuntimeInitialized();
-    });
+    moduleOrPromise = effekseer();
+
+    if(moduleOrPromise instanceof Promise) {
+      moduleOrPromise.then(function(module) {
+        Module = module;
+        _onRuntimeInitialized();
+      });
+    }
+    else {
+      Module = moduleOrPromise;
+    }
   }
 
   /**
