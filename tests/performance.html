@@ -39,16 +39,25 @@
                     this.drawTime = 0;
                 }
 
+                var startUpdateTime = performance.now();
                 this.context.update();
+                var endUpdateTime = performance.now();
+
                 this.renderer.render(this.scene, this.camera);
                 this.context.setProjectionMatrix(this.camera.projectionMatrix.elements);
                 this.context.setCameraMatrix(this.camera.matrixWorldInverse.elements);
-                this.context.draw();
 
+                var startDrawTime = performance.now()
+                this.context.draw();
+                var endDrawTime = performance.now();
+                
+                // effekseer make states dirty
+                this.renderer.resetGLState();
+                
                 this.currentTime += 1;
 
-                this.updateTime += this.context.getUpdateTime();
-                this.drawTime += this.context.getDrawTime();
+                this.updateTime += (endUpdateTime - startUpdateTime);
+                this.drawTime += (endDrawTime - startDrawTime);
 
                 if (this.currentTime > 60) {
                     console.log("UpdateTime : " + this.updateTime);
@@ -93,6 +102,8 @@
             renderContext.context = effekseer.createContext();
 
             renderContext.context.init(renderContext.renderer.context);
+            
+            // renderContext.context.setRestorationOfStatesFlag(false);
 
             for (let fi = 0; fi < renderContext.filePaths.length; fi++) {
                 renderContext.effects.push(renderContext.context.loadEffect(renderContext.filePaths[fi], 1.0, () => {
