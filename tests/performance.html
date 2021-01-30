@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>EffekseerForWebGL - Performance</title>
+
+<body>
+    <canvas id="canvas" width="800" height="600" class="screen" oncontextmenu="event.preventDefault()"></canvas>
+    <script src="three.min.js"></script>
+    <script src="../Release/effekseer.js"></script>
+    <script type='text/javascript'>
+
+        class RenderContext {
+            constructor() {
+                this.context = null;
+                this.renderer = null;
+                this.filePaths = [];
+                this.effects = [];
+                this.currentIndex = 0;
+                this.currentTime = -1;
+                this.updateTime = 0;
+                this.drawTime = 0;
+                this.scene = null;
+                this.camera = null;
+            }
+
+            progress() {
+
+                if (this.currentTime == -1) {
+                    if (this.filePaths.length <= this.currentIndex) {
+                        return;
+                    }
+                    console.log("Play : " + this.filePaths[this.currentIndex]);
+                    this.context.play(this.effects[this.currentIndex]);
+                    this.currentTime = 0;
+                    this.updateTime = 0;
+                    this.drawTime = 0;
+                }
+
+                this.context.update();
+                this.renderer.render(this.scene, this.camera);
+                this.context.setProjectionMatrix(this.camera.projectionMatrix.elements);
+                this.context.setCameraMatrix(this.camera.matrixWorldInverse.elements);
+                this.context.draw();
+
+                this.currentTime += 1;
+
+                this.updateTime += this.context.getUpdateTime();
+                this.drawTime += this.context.getDrawTime();
+
+                if (this.currentTime > 60) {
+                    console.log("UpdateTime : " + this.updateTime);
+                    console.log("DrawTime : " + this.drawTime);
+                    this.context.stopAll();
+                    this.currentIndex += 1;
+                    this.currentTime = -1;
+                }
+                requestAnimationFrame(() => { this.progress(); });
+            }
+        };
+
+        var renderContext = new RenderContext();
+
+        var canvas = document.getElementById("canvas");
+
+        renderContext.scene = new THREE.Scene();
+        var width = canvas.width;
+        var height = canvas.height;
+        var fov = 30;
+        var aspect = width / height;
+        var near = 1;
+        var far = 1000;
+        renderContext.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        var target = new THREE.Vector3(0, 0, 0);
+        renderContext.camera.position.set(10, 10, 10);
+        renderContext.camera.lookAt(target);
+        three_camera = renderContext.camera;
+
+        renderContext.filePaths = [
+            "Resources/Arrow1.efkefc",
+            "Resources/Blow1.efkefc",
+            "Resources/Cure1.efkefc",
+        ];
+
+        renderContext.effects = [];
+
+        renderContext.renderer = new THREE.WebGLRenderer({ canvas: canvas, preserveDrawingBuffer: true });
+        renderContext.renderer.setSize(width, height);
+
+        effekseer.initRuntime('../Release/effekseer.wasm', () => {
+            renderContext.context = effekseer.createContext();
+
+            renderContext.context.init(renderContext.renderer.context);
+
+            for (let fi = 0; fi < renderContext.filePaths.length; fi++) {
+                renderContext.effects.push(renderContext.context.loadEffect(renderContext.filePaths[fi], 1.0, () => {
+                    canStart = true;
+                    for (var i = 0; i < renderContext.effects.length; i++) {
+                        if (!renderContext.effects[i].isLoaded) {
+                            canStart = false;
+                        }
+                    }
+
+                    if (canStart) {
+                        renderContext.progress();
+                    }
+                }));
+            }
+
+            var grid = new THREE.GridHelper(20, 10, 0xffffff, 0xffffff);
+            renderContext.scene.add(grid);
+
+            var directionalLight = new THREE.DirectionalLight(0xffffff);
+            directionalLight.position.set(0, 0.7, 0.7);
+            renderContext.scene.add(directionalLight);
+        });
+    </script>
+</body>
+
+</html>
