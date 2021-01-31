@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.4)
 
 # Set compiler flags
 string(APPEND CMAKE_CXX_FLAGS
-  " -Oz"
+  " -O2"
   " -Wno-inconsistent-missing-override"
   " --llvm-lto 1"
   " --memory-init-file 0"
