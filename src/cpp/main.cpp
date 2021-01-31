@@ -139,6 +139,8 @@ public:
 		manager->SetTrackRenderer(renderer->CreateTrackRenderer());
 		manager->SetTextureLoader(Effekseer::MakeRefPtr<CustomTextureLoader>(renderer->GetGraphicsDevice().Get()));
 		manager->SetModelLoader(renderer->CreateModelLoader(&fileInterface));
+		manager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>(&fileInterface));
+
 		manager->SetMaterialLoader(Effekseer::MakeRefPtr<EffekseerRendererGL::MaterialLoader>(
 			renderer->GetGraphicsDevice().DownCast<EffekseerRendererGL::Backend::GraphicsDevice>(), &fileInterface, false));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
