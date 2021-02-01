@@ -36,6 +36,16 @@ static void ArrayToMatrix43(const float* array, Effekseer::Matrix43& matrix)
 	}
 }
 
+static bool isEffekseerLogEnabled = false;
+
+static void PrintEffekseerLog(const std::string& message)
+{
+	if(isEffekseerLogEnabled) 
+	{
+		printf("%s\n", message.c_str());
+	}
+}
+
 namespace EfkWebViewer
 {
 using namespace Effekseer;
@@ -89,12 +99,20 @@ public:
 			path,
 			texture);
 
+		std::array<char, 260> path8;
+		Effekseer::ConvertUtf16ToUtf8(path8.data(), static_cast<int32_t>(path8.size()), path);
+		std::string pathStr = path8.data();
+
 		auto backend =
-			static_cast<EffekseerRendererGL::Backend::GraphicsDevice*>(graphicsDevice_)->CreateTexture(texture, true, [texture]() -> void {
+			static_cast<EffekseerRendererGL::Backend::GraphicsDevice*>(graphicsDevice_)->CreateTexture(texture, true, [texture, pathStr]() -> void {
 				glDeleteTextures(1, &texture);
+				PrintEffekseerLog("Effekseer : Unload : " + pathStr);
 			});
 		auto textureData = Effekseer::MakeRefPtr<Effekseer::Texture>();
 		textureData->SetBackend(backend);
+
+		PrintEffekseerLog("Effekseer : Load : " + pathStr);
+
 		return textureData;
 	}
 
@@ -387,5 +405,10 @@ extern "C"
 		if (context->renderer == nullptr)
 			return;
 		context->renderer->SetRestorationOfStatesFlag(flag > 0);
+	}
+
+	void EXPORT EffekseerSetLogEnabled(int flag)
+	{
+		isEffekseerLogEnabled = flag > 0;
 	}
 }
