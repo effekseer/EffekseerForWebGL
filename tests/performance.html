@@ -8,9 +8,16 @@
 
 <body>
     <canvas id="canvas" width="800" height="600" class="screen" oncontextmenu="event.preventDefault()"></canvas>
+    <p id="result"></p>
+
     <script src="three.min.js"></script>
     <script src="../Release/effekseer.js"></script>
     <script type='text/javascript'>
+
+        function writeResult(text)
+        {
+            document.getElementById("result").innerHTML += text + "</br>";
+        }
 
         class RenderContext {
             constructor() {
@@ -27,12 +34,12 @@
             }
 
             progress() {
-
                 if (this.currentTime == -1) {
                     if (this.filePaths.length <= this.currentIndex) {
                         return;
                     }
-                    console.log("Play : " + this.filePaths[this.currentIndex]);
+                    writeResult("Play : " + this.filePaths[this.currentIndex]);
+                    
                     this.context.play(this.effects[this.currentIndex]);
                     this.currentTime = 0;
                     this.updateTime = 0;
@@ -60,8 +67,8 @@
                 this.drawTime += (endDrawTime - startDrawTime);
 
                 if (this.currentTime > 60) {
-                    console.log("UpdateTime : " + this.updateTime);
-                    console.log("DrawTime : " + this.drawTime);
+                    writeResult("UpdateTime : " + this.updateTime);
+                    writeResult("DrawTime : " + this.drawTime);
                     this.context.stopAll();
                     this.currentIndex += 1;
                     this.currentTime = -1;
