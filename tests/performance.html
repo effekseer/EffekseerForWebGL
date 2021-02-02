@@ -36,6 +36,17 @@
             progress() {
                 if (this.currentTime == -1) {
                     if (this.filePaths.length <= this.currentIndex) {
+
+                        // Unload all resources
+                        for(var i = 0; i < 5; i++) {
+                            this.context.update();
+                            this.context.draw();
+                        }
+
+                        for(var i = 0; i < this.effects.length; i+=1) {
+                            this.context.releaseEffect(renderContext.effects[i]);
+                        }
+
                         return;
                     }
                     writeResult("Play : " + this.filePaths[this.currentIndex]);
@@ -53,7 +64,7 @@
                 this.renderer.render(this.scene, this.camera);
                 this.context.setProjectionMatrix(this.camera.projectionMatrix.elements);
                 this.context.setCameraMatrix(this.camera.matrixWorldInverse.elements);
-
+                
                 var startDrawTime = performance.now()
                 this.context.draw();
                 var endDrawTime = performance.now();
@@ -106,6 +117,7 @@
         renderContext.renderer.setSize(width, height);
 
         effekseer.initRuntime('../Release/effekseer.wasm', () => {
+            // effekseer.setSetLogEnabled(true);
             renderContext.context = effekseer.createContext();
 
             renderContext.context.init(renderContext.renderer.context);
