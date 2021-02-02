@@ -291,7 +291,8 @@ declare namespace effekseer {
          * @param {boolean} flag
          */
         setRestorationOfStatesFlag(flag);
-
+    }
+    
     export class EffekseerEffect {
         constructor();
 
