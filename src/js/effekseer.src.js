@@ -46,6 +46,7 @@ const effekseer = (() => {
       GetDrawTime: Module.cwrap("EffekseerGetDrawTime", "number", ["number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
       SetRestorationOfStatesFlag: Module.cwrap("EffekseerSetRestorationOfStatesFlag", "void", ["number", "number"]),
+      SetLogEnabled: Module.cwrap("EffekseerSetLogEnabled", "void", ["number"]),
     };
 
 
@@ -853,6 +854,14 @@ const effekseer = (() => {
       }
       Core.Terminate(context.nativeptr);
       context.nativeptr = null;
+    }
+
+    /**
+     * Set the flag whether Effekseer show logs
+     * @param {boolean} flag
+     */
+    setSetLogEnabled(flag) {
+      Core.SetLogEnabled(flag);
     }
 
     /**

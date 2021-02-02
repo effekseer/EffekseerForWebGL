@@ -23,6 +23,12 @@ declare namespace effekseer {
     export function releaseContext(context: EffekseerContext);
 
     /**
+     * Set the flag whether Effekseer show logs
+     * @param {boolean} flag
+     */
+    export function setSetLogEnabled(flag);
+
+    /**
          * Initialize graphics system.
          * @param {WebGLRenderingContext} webglContext WebGL Context
          * @param {object} settings Some settings with Effekseer initialization
