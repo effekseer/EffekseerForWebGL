@@ -48,9 +48,7 @@
                         }
 
                         return;
-                    }
-                    writeResult("Play : " + this.filePaths[this.currentIndex]);
-                    
+                    }                    
                     this.context.play(this.effects[this.currentIndex]);
                     this.currentTime = 0;
                     this.updateTime = 0;
@@ -78,8 +76,7 @@
                 this.drawTime += (endDrawTime - startDrawTime);
 
                 if (this.currentTime > 60) {
-                    writeResult("UpdateTime : " + this.updateTime);
-                    writeResult("DrawTime : " + this.drawTime);
+                    writeResult(this.filePaths[this.currentIndex] + "," + this.updateTime + "," + this.drawTime);
                     this.context.stopAll();
                     this.currentIndex += 1;
                     this.currentTime = -1;
@@ -87,6 +84,8 @@
                 requestAnimationFrame(() => { this.progress(); });
             }
         };
+
+        writeResult("Path,Update,Draw");
 
         var renderContext = new RenderContext();
 
@@ -109,6 +108,9 @@
             "Resources/Arrow1.efkefc",
             "Resources/Blow1.efkefc",
             "Resources/Cure1.efkefc",
+            "Resources/Light.efkefc",
+            "Resources/ToonHit.efkefc",
+            "Resources/ToonWater.efkefc",
         ];
 
         renderContext.effects = [];
