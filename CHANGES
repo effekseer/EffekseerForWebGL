@@ -2,6 +2,11 @@
 
 Update emscipten to 1.39.14
 
+# 1.53b
+
+Optimized a performance. This version is much faster than 1.53a
+Removed a limitation about memory size.
+
 # 1.53a
 
 Update Effekseer to 1.53a
