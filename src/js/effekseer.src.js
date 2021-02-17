@@ -493,25 +493,36 @@ const effekseer = (() => {
       this.gl = webglContext;
       this.contextStates = new ContextStates(this.gl);
 
+      var instanceMaxCount = 4000;
+      var squareMaxCount = 10000;
+      var enableExtensionsByDefault = true;
+
+      if (settings) {
+        if("instanceMaxCount" in settings)
+        {
+          instanceMaxCount = settings.instanceMaxCount;
+        }
+        if("squareMaxCount" in settings)
+        {
+          squareMaxCount = settings.squareMaxCount;
+        }
+        if("enableExtensionsByDefault" in settings)
+        {
+          enableExtensionsByDefault = settings.enableExtensionsByDefault;
+        }
+      }
       window.gl = this.gl;
       // Setup native OpenGL context
       this.ctx = Module.GL.registerContext(webglContext, {
-        majorVersion: 1, minorVersion: 0, enableExtensionsByDefault: true
+        majorVersion: 1, minorVersion: 0, enableExtensionsByDefault: enableExtensionsByDefault
       });
       this._makeContextCurrent();
-
-      if (!settings) {
-        settings = {
-          instanceMaxCount: 4000,
-          squareMaxCount: 10000,
-        };
-      }
 
       this._restorationOfStatesFlag = true;
 
       // Initializes Effekseer core.
       this.contextStates.save();
-      this.nativeptr = Core.Init(settings.instanceMaxCount, settings.squareMaxCount);
+      this.nativeptr = Core.Init(instanceMaxCount, squareMaxCount);
       this.contextStates.restore();
     }
 
