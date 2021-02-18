@@ -144,10 +144,10 @@ public:
 	Context() = default;
 	~Context() = default;
 
-	bool Init(int instanceMaxCount, int squareMaxCount)
+	bool Init(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled)
 	{
 		manager = Manager::Create(instanceMaxCount);
-		renderer = EffekseerRendererGL::Renderer::Create(squareMaxCount, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2);
+		renderer = EffekseerRendererGL::Renderer::Create(squareMaxCount, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2, isExtentionsEnabled);
 		sound = EffekseerSound::Sound::Create(16);
 
 		manager->SetSpriteRenderer(renderer->CreateSpriteRenderer());
@@ -201,7 +201,7 @@ extern "C"
 {
 	using namespace Effekseer;
 
-	EfkWebViewer::Context* EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount)
+	EfkWebViewer::Context* EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled)
 	{
 		auto context = new EfkWebViewer::Context();
 		// Initialize OpenAL
@@ -210,7 +210,7 @@ extern "C"
 		alcMakeContextCurrent(context->alcContext);
 
 		// Initialize viewer
-		if (!context->Init(instanceMaxCount, squareMaxCount))
+		if (!context->Init(instanceMaxCount, squareMaxCount, isExtentionsEnabled))
 		{
 			delete context;
 			return nullptr;
