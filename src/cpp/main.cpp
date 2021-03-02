@@ -206,7 +206,7 @@ public:
 		{
 			if(backGroundTexture_ == 0)
 			{
-				void glGenTextures(1, &backGroundTexture_);
+				glGenTextures(1, &backGroundTexture_);
 			}
 			glBindTexture(GL_TEXTURE_2D, backGroundTexture_);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
