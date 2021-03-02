@@ -460,23 +460,23 @@ extern "C"
 
 	void EXPORT EffekseerCaptureBackground(EfkWebViewer::Context* context)
 	{
-		if (context->renderer == nullptr)
+		if (context == nullptr)
 			return;
-		context->renderer->CaptureBackground();
+		context->CaptureBackground();
 	}
 
 	void EXPORT EffekseerSetBackground(EfkWebViewer::Context* context, int id)
 	{
-		if (context->renderer == nullptr)
+		if (context == nullptr)
 			return;
-		context->renderer->SetBackground(id);
+		context->SetBackground(id);
 	}
 
 	void EXPORT EffekseerResetBackground(EfkWebViewer::Context* context)
 	{
-		if (context->renderer == nullptr)
+		if (context == nullptr)
 			return;
-		context->renderer->ResetBackground();
+		context->ResetBackground();
 	}
 
 	void EXPORT EffekseerSetLogEnabled(int flag) { isEffekseerLogEnabled = flag > 0; }
