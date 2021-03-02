@@ -40,7 +40,7 @@ static bool isEffekseerLogEnabled = false;
 
 static void PrintEffekseerLog(const std::string& message)
 {
-	if(isEffekseerLogEnabled) 
+	if (isEffekseerLogEnabled)
 	{
 		printf("%s\n", message.c_str());
 	}
@@ -103,11 +103,11 @@ public:
 		Effekseer::ConvertUtf16ToUtf8(path8.data(), static_cast<int32_t>(path8.size()), path);
 		std::string pathStr = path8.data();
 
-		auto backend =
-			static_cast<EffekseerRendererGL::Backend::GraphicsDevice*>(graphicsDevice_)->CreateTexture(texture, true, [texture, pathStr]() -> void {
-				glDeleteTextures(1, &texture);
-				PrintEffekseerLog("Effekseer : Unload : " + pathStr);
-			});
+		auto backend = static_cast<EffekseerRendererGL::Backend::GraphicsDevice*>(graphicsDevice_)
+						   ->CreateTexture(texture, true, [texture, pathStr]() -> void {
+							   glDeleteTextures(1, &texture);
+							   PrintEffekseerLog("Effekseer : Unload : " + pathStr);
+						   });
 		auto textureData = Effekseer::MakeRefPtr<Effekseer::Texture>();
 		textureData->SetBackend(backend);
 
@@ -137,6 +137,10 @@ public:
 	ALCdevice* alcDevice = nullptr;
 	ALCcontext* alcContext = nullptr;
 
+	GLuint backGroundTexture_ = 0;
+	uint32_t backGroundTextureWidth_ = 0;
+	uint32_t backGroundTextureHeight_ = 0;
+
 	//! pass strings
 	std::string tempStr;
 
@@ -147,7 +151,8 @@ public:
 	bool Init(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled)
 	{
 		manager = Manager::Create(instanceMaxCount);
-		renderer = EffekseerRendererGL::Renderer::Create(squareMaxCount, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2, isExtentionsEnabled);
+		renderer =
+			EffekseerRendererGL::Renderer::Create(squareMaxCount, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2, isExtentionsEnabled);
 		sound = EffekseerSound::Sound::Create(16);
 
 		manager->SetSpriteRenderer(renderer->CreateSpriteRenderer());
@@ -171,6 +176,8 @@ public:
 
 	void Terminate()
 	{
+		ResetBackground();
+
 		manager.Reset();
 		renderer.Reset();
 		sound.Reset();
@@ -186,6 +193,50 @@ public:
 		renderer->BeginRendering();
 		manager->Draw();
 		renderer->EndRendering();
+	}
+
+	void CaptureBackground()
+	{
+		GLint viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		uint32_t width = viewport[2];
+		uint32_t height = viewport[3];
+
+		if (backGroundTextureWidth_ != width || backGroundTextureHeight_ != height)
+		{
+			glBindTexture(GL_TEXTURE_2D, backGroundTexture_);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+			backGroundTextureWidth_ = width;
+			backGroundTextureHeight_ = height;
+		}
+
+		glBindTexture(GL_TEXTURE_2D, backGroundTexture_);
+		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, viewport[0], viewport[1], width, height);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		auto r = static_cast<EffekseerRendererGL::Renderer*>(renderer.Get());
+		r->SetBackground(backGroundTexture_);
+	}
+
+	void SetBackground(int id)
+	{
+		ResetBackground();
+
+		auto r = static_cast<EffekseerRendererGL::Renderer*>(renderer.Get());
+		r->SetBackground(id);
+	}
+
+	void ResetBackground()
+	{
+		auto r = static_cast<EffekseerRendererGL::Renderer*>(renderer.Get());
+
+		if(backGroundTexture_ > 0)
+		{
+			glDeleteTextures(1, &backGroundTexture_);
+			backGroundTexture_ = 0;
+		}
+		r->SetBackground(0);
 	}
 };
 
@@ -407,8 +458,26 @@ extern "C"
 		context->renderer->SetRestorationOfStatesFlag(flag > 0);
 	}
 
-	void EXPORT EffekseerSetLogEnabled(int flag)
+	void EXPORT EffekseerCaptureBackground(EfkWebViewer::Context* context)
 	{
-		isEffekseerLogEnabled = flag > 0;
+		if (context->renderer == nullptr)
+			return;
+		context->renderer->CaptureBackground();
 	}
+
+	void EXPORT EffekseerSetBackground(EfkWebViewer::Context* context, int id)
+	{
+		if (context->renderer == nullptr)
+			return;
+		context->renderer->SetBackground(id);
+	}
+
+	void EXPORT EffekseerResetBackground(EfkWebViewer::Context* context)
+	{
+		if (context->renderer == nullptr)
+			return;
+		context->renderer->ResetBackground();
+	}
+
+	void EXPORT EffekseerSetLogEnabled(int flag) { isEffekseerLogEnabled = flag > 0; }
 }

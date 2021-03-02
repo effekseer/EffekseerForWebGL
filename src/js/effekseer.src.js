@@ -46,6 +46,9 @@ const effekseer = (() => {
       GetDrawTime: Module.cwrap("EffekseerGetDrawTime", "number", ["number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
       SetRestorationOfStatesFlag: Module.cwrap("EffekseerSetRestorationOfStatesFlag", "void", ["number", "number"]),
+      CaptureBackground: Module.cwrap("EffekseerCaptureBackground", "void", ["number"]),
+      SetBackground: Module.cwrap("EffekseerSetBackground", "void", ["number", "number"]),
+      ResetBackground: Module.cwrap("EffekseerResetBackground", "void", ["number"]),
       SetLogEnabled: Module.cwrap("EffekseerSetLogEnabled", "void", ["number"]),
     };
 
@@ -817,6 +820,28 @@ const effekseer = (() => {
     setRestorationOfStatesFlag(flag) {
       this._restorationOfStatesFlag = flag;
       Core.SetRestorationOfStatesFlag(this.nativeptr, flag);
+    }
+
+    /**
+     * Capture current viewport and set the image as a background
+     */
+    captureBackground() {
+      return Core.CaptureBackground();
+    }
+
+    /**
+     * Set the texture as a background
+     * @param {WebGLTexture} texture
+     */
+    setBackground(texture) {
+      return Core.SetBackground(texture.name);
+    }
+
+    /**
+     * Reset background
+     */
+    resetBackground() {
+      return Core.ResetBackground();
     }
   }
 
