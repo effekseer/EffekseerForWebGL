@@ -46,8 +46,7 @@ const effekseer = (() => {
       GetDrawTime: Module.cwrap("EffekseerGetDrawTime", "number", ["number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
       SetRestorationOfStatesFlag: Module.cwrap("EffekseerSetRestorationOfStatesFlag", "void", ["number", "number"]),
-      CaptureBackground: Module.cwrap("EffekseerCaptureBackground", "void", ["number"]),
-      SetBackground: Module.cwrap("EffekseerSetBackground", "void", ["number", "number"]),
+      CaptureBackground: Module.cwrap("EffekseerCaptureBackground", "void", ["number", "number", "number", "number", "number"]),
       ResetBackground: Module.cwrap("EffekseerResetBackground", "void", ["number"]),
       SetLogEnabled: Module.cwrap("EffekseerSetLogEnabled", "void", ["number"]),
     };
@@ -823,25 +822,21 @@ const effekseer = (() => {
     }
 
     /**
-     * Capture current viewport and set the image as a background
+     * Capture current frame buffer and set the image as a background
+     * @param {number} x captured image's x offset
+     * @param {number} y captured image's y offset
+     * @param {number} width captured image's width
+     * @param {number} height captured image's height
      */
-    captureBackground() {
-      return Core.CaptureBackground();
-    }
-
-    /**
-     * Set the texture as a background
-     * @param {WebGLTexture} texture
-     */
-    setBackground(texture) {
-      return Core.SetBackground(texture.name);
+    captureBackground(x, y, width, height) {
+      return Core.CaptureBackground(this.nativeptrm x, y, width, height);
     }
 
     /**
      * Reset background
      */
     resetBackground() {
-      return Core.ResetBackground();
+      return Core.ResetBackground(this.nativeptr);
     }
   }
 

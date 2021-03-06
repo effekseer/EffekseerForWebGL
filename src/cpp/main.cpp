@@ -195,13 +195,8 @@ public:
 		renderer->EndRendering();
 	}
 
-	void CaptureBackground()
+	void CaptureBackground(int x, int y, int width, int height)
 	{
-		GLint viewport[4];
-		glGetIntegerv(GL_VIEWPORT, viewport);
-		uint32_t width = viewport[2];
-		uint32_t height = viewport[3];
-
 		if (backGroundTextureWidth_ != width || backGroundTextureHeight_ != height)
 		{
 			if(backGroundTexture_ == 0)
@@ -216,19 +211,11 @@ public:
 		}
 
 		glBindTexture(GL_TEXTURE_2D, backGroundTexture_);
-		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, viewport[0], viewport[1], width, height);
+		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, x, y, width, height);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		auto r = static_cast<EffekseerRendererGL::Renderer*>(renderer.Get());
 		r->SetBackground(backGroundTexture_);
-	}
-
-	void SetBackground(int id)
-	{
-		ResetBackground();
-
-		auto r = static_cast<EffekseerRendererGL::Renderer*>(renderer.Get());
-		r->SetBackground(id);
 	}
 
 	void ResetBackground()
@@ -462,18 +449,11 @@ extern "C"
 		context->renderer->SetRestorationOfStatesFlag(flag > 0);
 	}
 
-	void EXPORT EffekseerCaptureBackground(EfkWebViewer::Context* context)
+	void EXPORT EffekseerCaptureBackground(EfkWebViewer::Context* context, int x, int y, int width, int height)
 	{
 		if (context == nullptr)
 			return;
-		context->CaptureBackground();
-	}
-
-	void EXPORT EffekseerSetBackground(EfkWebViewer::Context* context, int id)
-	{
-		if (context == nullptr)
-			return;
-		context->SetBackground(id);
+		context->CaptureBackground(x, y, width, height);
 	}
 
 	void EXPORT EffekseerResetBackground(EfkWebViewer::Context* context)
