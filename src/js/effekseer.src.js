@@ -829,7 +829,7 @@ const effekseer = (() => {
      * @param {number} height captured image's height
      */
     captureBackground(x, y, width, height) {
-      return Core.CaptureBackground(this.nativeptrm x, y, width, height);
+      return Core.CaptureBackground(this.nativeptr, x, y, width, height);
     }
 
     /**
