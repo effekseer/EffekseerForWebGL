@@ -46,6 +46,8 @@ const effekseer = (() => {
       GetDrawTime: Module.cwrap("EffekseerGetDrawTime", "number", ["number"]),
       IsVertexArrayObjectSupported: Module.cwrap("EffekseerIsVertexArrayObjectSupported", "number", ["number"]),
       SetRestorationOfStatesFlag: Module.cwrap("EffekseerSetRestorationOfStatesFlag", "void", ["number", "number"]),
+      CaptureBackground: Module.cwrap("EffekseerCaptureBackground", "void", ["number", "number", "number", "number", "number"]),
+      ResetBackground: Module.cwrap("EffekseerResetBackground", "void", ["number"]),
       SetLogEnabled: Module.cwrap("EffekseerSetLogEnabled", "void", ["number"]),
     };
 
@@ -817,6 +819,24 @@ const effekseer = (() => {
     setRestorationOfStatesFlag(flag) {
       this._restorationOfStatesFlag = flag;
       Core.SetRestorationOfStatesFlag(this.nativeptr, flag);
+    }
+
+    /**
+     * Capture current frame buffer and set the image as a background
+     * @param {number} x captured image's x offset
+     * @param {number} y captured image's y offset
+     * @param {number} width captured image's width
+     * @param {number} height captured image's height
+     */
+    captureBackground(x, y, width, height) {
+      return Core.CaptureBackground(this.nativeptr, x, y, width, height);
+    }
+
+    /**
+     * Reset background
+     */
+    resetBackground() {
+      return Core.ResetBackground(this.nativeptr);
     }
   }
 

@@ -297,8 +297,22 @@ declare namespace effekseer {
          * @param {boolean} flag
          */
         setRestorationOfStatesFlag(flag);
+
+        /**
+         * Capture current frame buffer and set the image as a background
+         * @param {number} x captured image's x offset
+         * @param {number} y captured image's y offset
+         * @param {number} width captured image's width
+         * @param {number} height captured image's height
+         */
+        captureBackground(x, y, width, height);
+
+        /**
+         * Reset background
+         */
+        resetBackground();
     }
-    
+
     export class EffekseerEffect {
         constructor();
     }
@@ -363,7 +377,7 @@ declare namespace effekseer {
          * @param {number} index slot index
          * @returns {number} value
          */
-        getDynamicInput(index) : number;
+        getDynamicInput(index): number;
 
         /**
          * specfiy a dynamic parameter, which changes effect parameters dynamically while playing
