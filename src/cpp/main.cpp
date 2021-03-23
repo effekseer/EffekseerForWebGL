@@ -171,6 +171,9 @@ public:
 
 		manager->SetCoordinateSystem(CoordinateSystem::RH);
 
+		auto g = renderer->GetGraphicsDevice().DownCast<EffekseerRendererGL::Backend::GraphicsDevice>();
+
+		PrintEffekseerLog("MaxVaryingVectors : " + std::to_string(g->GetProperty(EffekseerRendererGL::Backend::DevicePropertyType::MaxVaryingVectors)));
 		return true;
 	}
 
