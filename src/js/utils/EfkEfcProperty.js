@@ -59,6 +59,7 @@ class EfkEfcProperty {
         this.models = []
         this.sounds = []
         this.materials = []
+        this.curves = []
     }
 }
 
@@ -107,6 +108,11 @@ function loadEfkEfcInformation(buffer) {
             if(version >= 1500)
             {
                 info.materials = readStringArray(reader);
+            }
+
+            if(version >= 1610)
+            {
+                info.curves = readStringArray(reader);
             }
 
             return info;
