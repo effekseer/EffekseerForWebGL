@@ -2,6 +2,7 @@
 const effekseer = (() => {
   let Module = {};
   let Core = {};
+  let _imageCrossOrigin = "use-credentials";
   let _onloadAssembly = () => { }
   let _onerrorAssembly = () => { }
   let _is_runtime_initialized = false;
@@ -399,7 +400,7 @@ const effekseer = (() => {
         if (!(typeof onerror === "undefined")) onerror('not found', path);
       };
 
-      image.crossOrigin = "use-credentials";
+      image.crossOrigin = _imageCrossOrigin;
       image.src = path;
     } else if (ext == ".tga") {
       if (!(typeof onerror === "undefined")) onerror('not supported', path);
@@ -893,6 +894,14 @@ const effekseer = (() => {
      */
     setSetLogEnabled(flag) {
       Core.SetLogEnabled(flag);
+    }
+
+    /**
+     * Set the string of cross origin for images
+     * @param {boolean} crossOrigin
+     */
+     setImageCrossOrigin(crossOrigin) {
+      _imageCrossOrigin = crossOrigin;
     }
 
     /**

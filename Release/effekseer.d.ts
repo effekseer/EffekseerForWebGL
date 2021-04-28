@@ -29,6 +29,12 @@ declare namespace effekseer {
     export function setSetLogEnabled(flag);
 
     /**
+    * Set the string of cross origin for images
+    * @param {boolean} crossOrigin
+    */
+    export function setImageCrossOrigin(crossOrigin);
+
+    /**
          * Initialize graphics system.
          * @param {WebGLRenderingContext} webglContext WebGL Context
          * @param {object} settings Some settings with Effekseer initialization
