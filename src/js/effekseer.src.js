@@ -119,7 +119,7 @@ const effekseer = (() => {
       var params = {};
       params.wasmBinary = xhr.response;
       // params.onRuntimeInitialized = _onRuntimeInitialized;
-      effekseer_native(params).then(function(module) {
+      effekseer_native(params).then(function (module) {
         Module = module;
         _onRuntimeInitialized();
       });
@@ -133,8 +133,8 @@ const effekseer = (() => {
   if (typeof effekseer_native === "undefined") {
     moduleOrPromise = effekseer();
 
-    if(moduleOrPromise instanceof Promise) {
-      moduleOrPromise.then(function(module) {
+    if (moduleOrPromise instanceof Promise) {
+      moduleOrPromise.then(function (module) {
         Module = module;
         _onRuntimeInitialized();
       });
@@ -501,16 +501,13 @@ const effekseer = (() => {
       var enableExtensionsByDefault = true;
 
       if (settings) {
-        if("instanceMaxCount" in settings)
-        {
+        if ("instanceMaxCount" in settings) {
           instanceMaxCount = settings.instanceMaxCount;
         }
-        if("squareMaxCount" in settings)
-        {
+        if ("squareMaxCount" in settings) {
           squareMaxCount = settings.squareMaxCount;
         }
-        if("enableExtensionsByDefault" in settings)
-        {
+        if ("enableExtensionsByDefault" in settings) {
           enableExtensionsByDefault = settings.enableExtensionsByDefault;
         }
       }
@@ -559,7 +556,7 @@ const effekseer = (() => {
 
       let program = null;
 
-      if(this._restorationOfStatesFlag) {
+      if (this._restorationOfStatesFlag) {
         // Save WebGL states
         program = this.gl.getParameter(gl.CURRENT_PROGRAM);
 
@@ -569,7 +566,7 @@ const effekseer = (() => {
 
       Core.Draw(this.nativeptr);
 
-      if(this._restorationOfStatesFlag) {
+      if (this._restorationOfStatesFlag) {
         this.contextStates.restore();
 
         // Restore WebGL states
@@ -578,7 +575,7 @@ const effekseer = (() => {
     }
 
     beginDraw() {
-      if(this._restorationOfStatesFlag) {
+      if (this._restorationOfStatesFlag) {
         this.contextStates.save();
       }
 
@@ -588,7 +585,7 @@ const effekseer = (() => {
     endDraw() {
       Core.EndDraw(this.nativeptr);
 
-      if(this._restorationOfStatesFlag) {
+      if (this._restorationOfStatesFlag) {
         this.contextStates.restore();
       }
     }
@@ -900,7 +897,7 @@ const effekseer = (() => {
      * Set the string of cross origin for images
      * @param {boolean} crossOrigin
      */
-     setImageCrossOrigin(crossOrigin) {
+    setImageCrossOrigin(crossOrigin) {
       _imageCrossOrigin = crossOrigin;
     }
 
