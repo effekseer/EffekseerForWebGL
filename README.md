@@ -11,7 +11,7 @@
 
 - [Changes](CHANGES)
 
-- [1.6](https://github.com/effekseer/EffekseerForWebGL/releases/download/160/EffekseerForWebGL160.zip)
+- [1.60b](https://github.com/effekseer/EffekseerForWebGL/releases/download/160b/EffekseerForWebGL160b.zip)
 
 - [1.53c](https://github.com/effekseer/EffekseerForWebGL/releases/download/153c/EffekseerForWebGL153c.zip)
 
