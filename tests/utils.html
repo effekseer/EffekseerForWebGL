@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Utils</title>
+</head>
+
+<body>
+
+  <p id='result1'>Result1</p>
+  <p id='result2'>Result1</p>
+
+</body>
+
+<script src="../src/js/utils/EfkEfcProperty.js"></script>
+
+<script type='text/javascript'>
+
+  function checkData(url, id) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = "arraybuffer";
+    xhr.onload = () => {
+      var data = xhr.response;
+      var info = loadEfkEfcInformation(data);
+
+      document.getElementById(id).innerText = info.dependencies;
+    };
+    xhr.onerror = () => {
+      document.getElementById(id).innerText = "Error";
+    };
+    xhr.send(null);
+  }
+
+  checkData("Resources/16/AlphaBlendTexture01.efkefc", "result1");
+  checkData("Resources/16/Curve01.efkefc", "result2");
+
+</script>
+
+</html>

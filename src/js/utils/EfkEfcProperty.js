@@ -9,8 +9,7 @@ class BinaryReader {
         this.offset = 0;
     }
 
-    returnBack(size)
-    {
+    returnBack(size) {
         this.offset -= size;
     }
 
@@ -33,7 +32,7 @@ class BinaryReader {
         var sliced = new Uint8Array(this.buffer.slice(this.offset, this.offset + (size * 2 - 2)));
 
         var str = "";
-        for(var i = 0; i < sliced.byteLength / 2; i++) {
+        for (var i = 0; i < sliced.byteLength / 2; i++) {
             str += String.fromCharCode(sliced[i * 2] + sliced[i * 2 + 1] * 256);
         }
 
@@ -60,6 +59,7 @@ class EfkEfcProperty {
         this.sounds = []
         this.materials = []
         this.curves = []
+        this.dependencies = []
     }
 }
 
@@ -89,11 +89,9 @@ function loadEfkEfcInformation(buffer) {
             var info = new EfkEfcProperty();
 
             version = reader.getInt32();
-            if(version >= 1500)
-            {
+            if (version >= 1500) {
             }
-            else
-            {
+            else {
                 reader.returnBack(4);
                 version = 0;
             }
@@ -105,15 +103,20 @@ function loadEfkEfcInformation(buffer) {
             info.models = readStringArray(reader);
             info.sounds = readStringArray(reader);
 
-            if(version >= 1500)
-            {
+            if (version >= 1500) {
                 info.materials = readStringArray(reader);
             }
 
-            if(version >= 1610)
-            {
+            if (version >= 1610) {
                 info.curves = readStringArray(reader);
             }
+
+            info.dependencies = info.colorImages.concat(
+                info.normalImages,
+                info.distortionImages,
+                info.models, info.sounds,
+                info.materials,
+                info.curves);
 
             return info;
         }
