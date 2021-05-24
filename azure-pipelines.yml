@@ -1,8 +1,7 @@
 trigger:
   branches:
     include:
-    - master
-    - 15x
+    - 16x
 
 pool:
   vmImage: 'macos-10.14'
@@ -137,6 +136,6 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: 'Release'
-    ArtifactName: 'EffekseerForWebGL160'
+    ArtifactName: 'EffekseerForWebGL160c'
     publishLocation: 'Container'
 
