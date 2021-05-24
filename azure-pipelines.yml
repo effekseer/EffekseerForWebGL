@@ -3,6 +3,7 @@ trigger:
     include:
     - master
     - 15x
+    - 16x
 
 pool:
   vmImage: 'macos-10.14'
