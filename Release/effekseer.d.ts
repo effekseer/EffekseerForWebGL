@@ -8,7 +8,7 @@ declare namespace effekseer {
     * @param {function=} onload A function that is called at loading complete
     * @param {function=} onerror A function that is called at loading error.
     */
-    export function initRuntime(path, onload, onerror);
+    export function initRuntime(path: string, onload: () => void, onerror: () => void): void;
 
     /**
     * Create a context to render in multiple scenes
@@ -20,43 +20,43 @@ declare namespace effekseer {
     * Release specified context. After that, don't touch a context
     * @param {EffekseerContext} context context
     */
-    export function releaseContext(context: EffekseerContext);
+    export function releaseContext(context: EffekseerContext): void;
 
     /**
      * Set the flag whether Effekseer show logs
      * @param {boolean} flag
      */
-    export function setSetLogEnabled(flag);
+    export function setSetLogEnabled(flag: boolean): void;
 
     /**
     * Set the string of cross origin for images
     * @param {boolean} crossOrigin
     */
-    export function setImageCrossOrigin(crossOrigin);
+    export function setImageCrossOrigin(crossOrigin: boolean): void;
 
     /**
          * Initialize graphics system.
          * @param {WebGLRenderingContext} webglContext WebGL Context
          * @param {object} settings Some settings with Effekseer initialization
          */
-    export function init(webglContext, settings?: object);
+    export function init(webglContext: WebGLRenderingContext, settings?: object): void;
 
     /**
      * Advance frames.
      * @param {number=} deltaFrames number of advance frames
      */
-    export function update(deltaFrames?: number);
+    export function update(deltaFrames?: number): void;
 
     /**
      * Main rendering.
      */
-    export function draw();
+    export function draw(): void;
 
     /**
      * Set camera projection from matrix.
      * @param matrixArray An array that is requred 16 elements
      */
-    export function setProjectionMatrix(matrixArray);
+    export function setProjectionMatrix(matrixArray: Float32Array): void;
 
     /**
      * Set camera projection from perspective parameters.
@@ -65,7 +65,7 @@ declare namespace effekseer {
      * @param {number} near Distance of near plane
      * @param {number} aspect Distance of far plane
      */
-    export function setProjectionPerspective(fov, aspect, near, far);
+    export function setProjectionPerspective(fov: number, aspect: number, near: number, far: number): void;
 
     /**
      * Set camera projection from orthographic parameters.
@@ -74,13 +74,13 @@ declare namespace effekseer {
      * @param {number} near Distance of near plane
      * @param {number} aspect Distance of far plane
      */
-    export function setProjectionOrthographic(width, height, near, far);
+    export function setProjectionOrthographic(width: number, height: number, near: number, far: number): void;
 
     /**
      * Set camera view from matrix.
      * @param matrixArray An array that is requred 16 elements
      */
-    export function setCameraMatrix(matrixArray);
+    export function setCameraMatrix(matrixArray: Float32Array): void;
 
     /**
      * Set camera view from lookat parameters.
@@ -95,16 +95,16 @@ declare namespace effekseer {
      * @param {number} upvecZ Z value of upper vector
      */
     export function setCameraLookAt(
-        positionX,
-        positionY,
-        positionZ,
-        targetX,
-        targetY,
-        targetZ,
-        upvecX,
-        upvecY,
-        upvecZ
-    );
+        positionX: number,
+        positionY: number,
+        positionZ: number,
+        targetX: number,
+        targetY: number,
+        targetZ: number,
+        upvecX: number,
+        upvecY: number,
+        upvecZ: number
+    ): void;
 
     /**
      * Set camera view from lookat vector parameters.
@@ -112,7 +112,7 @@ declare namespace effekseer {
      * @param {object} target target position
      * @param {object=} upvec upper vector
      */
-    export function setCameraLookAtFromVector(position, target, upvec);
+    export function setCameraLookAtFromVector(position: object, target: object, upvec?: object): void;
 
     /**
      * Load the effect data file (and resources).
@@ -122,13 +122,13 @@ declare namespace effekseer {
      * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
      * @returns {EffekseerEffect} The effect data
      */
-    export function loadEffect(path: string, scale?: number, onload?, onerror?): EffekseerEffect;
+    export function loadEffect(path: string, scale?: number, onload?: () => void, onerror?: (reason: string, path: string) => void): EffekseerEffect;
 
     /**
     * Release the specified effect. Don't touch the instance of effect after released.
     * @param {EffekseerEffect} effect The loaded effect
     */
-    export function releaseEffect(effect: EffekseerEffect);
+    export function releaseEffect(effect: EffekseerEffect): void;
 
     /**
      * Play the specified effect.
@@ -138,23 +138,23 @@ declare namespace effekseer {
      * @param {number} z Z value of location that is emited
      * @returns {EffekseerHandle} The effect handle
      */
-    export function play(effect: EffekseerEffect, x, y, z): EffekseerHandle;
+    export function play(effect: EffekseerEffect, x: number, y: number, z: number): EffekseerHandle;
 
     /**
      * Stop the all effects.
      */
-    export function stopAll();
+    export function stopAll(): void;
 
     /**
      * Set the resource loader function.
      * @param {function} loader
      */
-    export function setResourceLoader(loader);
+    export function setResourceLoader(loader: (path: string, onload?: () => void, onerror?: (reason: string, path: string) => void) => void): void;
 
     /**
     * Get whether VAO is supported
     */
-    export function isVertexArrayObjectSupported();
+    export function isVertexArrayObjectSupported(): boolean;
 
     export class EffekseerContext {
         /**
@@ -162,24 +162,24 @@ declare namespace effekseer {
              * @param {WebGLRenderingContext} webglContext WebGL Context
              * @param {object} settings Some settings with Effekseer initialization
              */
-        init(webglContext, settings?: object);
+        init(webglContext: WebGLRenderingContext, settings?: object): void;
 
         /**
          * Advance frames.
          * @param {number=} deltaFrames number of advance frames
          */
-        update(deltaFrames?: number);
+        update(deltaFrames?: number): void;
 
         /**
          * Main rendering.
          */
-        draw();
+        draw(): void;
 
         /**
          * Set camera projection from matrix.
          * @param matrixArray An array that is requred 16 elements
          */
-        setProjectionMatrix(matrixArray);
+        setProjectionMatrix(matrixArray: Float32Array): void;
 
         /**
          * Set camera projection from perspective parameters.
@@ -188,7 +188,7 @@ declare namespace effekseer {
          * @param {number} near Distance of near plane
          * @param {number} aspect Distance of far plane
          */
-        setProjectionPerspective(fov, aspect, near, far);
+        setProjectionPerspective(fov: number, aspect: number, near: number, far: number): void;
 
         /**
          * Set camera projection from orthographic parameters.
@@ -197,13 +197,13 @@ declare namespace effekseer {
          * @param {number} near Distance of near plane
          * @param {number} aspect Distance of far plane
          */
-        setProjectionOrthographic(width, height, near, far);
+        setProjectionOrthographic(width: number, height: number, near: number, far: number): void;
 
         /**
          * Set camera view from matrix.
          * @param matrixArray An array that is requred 16 elements
          */
-        setCameraMatrix(matrixArray);
+        setCameraMatrix(matrixArray: Float32Array): void;
 
         /**
          * Set camera view from lookat parameters.
@@ -218,16 +218,16 @@ declare namespace effekseer {
          * @param {number} upvecZ Z value of upper vector
          */
         setCameraLookAt(
-            positionX,
-            positionY,
-            positionZ,
-            targetX,
-            targetY,
-            targetZ,
-            upvecX,
-            upvecY,
-            upvecZ
-        );
+            positionX: number,
+            positionY: number,
+            positionZ: number,
+            targetX: number,
+            targetY: number,
+            targetZ: number,
+            upvecX: number,
+            upvecY: number,
+            upvecZ: number
+        ): void;
 
         /**
          * Set camera view from lookat vector parameters.
@@ -235,7 +235,7 @@ declare namespace effekseer {
          * @param {object} target target position
          * @param {object=} upvec upper vector
          */
-        setCameraLookAtFromVector(position, target, upvec);
+        setCameraLookAtFromVector(position: object, target: object, upvec?: object): void;
 
         /**
          * Load the effect data file (and resources).
@@ -246,13 +246,13 @@ declare namespace effekseer {
          * @param {function=} redirect A function to redirect a path. First argument is an url and return redirected url.
          * @returns {EffekseerEffect} The effect data
          */
-        loadEffect(path: string, scale?: number, onload?, onerror?, redirect?): EffekseerEffect;
+        loadEffect(path: string, scale?: number, onload?: () => void, onerror?: (reason: string, path: string) => void, redirect?: (path: string) => string): EffekseerEffect;
 
         /**
         * Release the specified effect. Don't touch the instance of effect after released.
         * @param {EffekseerEffect} effect The loaded effect
         */
-        releaseEffect(effect: EffekseerEffect);
+        releaseEffect(effect: EffekseerEffect): void;
 
         /**
          * Play the specified effect.
@@ -262,23 +262,23 @@ declare namespace effekseer {
          * @param {number} z Z value of location that is emited
          * @returns {EffekseerHandle} The effect handle
          */
-        play(effect: EffekseerEffect, x, y, z): EffekseerHandle;
+        play(effect: EffekseerEffect, x: number, y: number, z: number): EffekseerHandle;
 
         /**
          * Stop the all effects.
          */
-        stopAll();
+        stopAll(): void;
 
         /**
          * Set the resource loader function.
          * @param {function} loader
          */
-        setResourceLoader(loader);
+        setResourceLoader(loader: (path: string, onload?: () => void, onerror?: (reason: string, path: string) => void) => void): void;
 
         /**
         * Get whether VAO is supported
         */
-        isVertexArrayObjectSupported();
+        isVertexArrayObjectSupported(): boolean;
 
         /**
          * Gets the number of remaining allocated instances.
@@ -302,7 +302,7 @@ declare namespace effekseer {
          * it must be called after init
          * @param {boolean} flag
          */
-        setRestorationOfStatesFlag(flag);
+        setRestorationOfStatesFlag(flag: boolean): void;
 
         /**
          * Capture current frame buffer and set the image as a background
@@ -311,12 +311,12 @@ declare namespace effekseer {
          * @param {number} width captured image's width
          * @param {number} height captured image's height
          */
-        captureBackground(x, y, width, height);
+        captureBackground(x: number, y: number, width: number, height: number): void;
 
         /**
          * Reset background
          */
-        resetBackground();
+        resetBackground(): void;
     }
 
     export class EffekseerEffect {
@@ -329,12 +329,12 @@ declare namespace effekseer {
         /**
          * Stop this effect instance.
          */
-        stop();
+        stop(): void;
 
         /**
          * Stop the root node of this effect instance.
          */
-        stopRoot();
+        stopRoot(): void;
 
         /**
          * if returned false, this effect is end of playing.
@@ -347,14 +347,14 @@ declare namespace effekseer {
          * @param {number} y Y value of location
          * @param {number} z Z value of location
          */
-        setLocation(x, y, z);
+        setLocation(x: number, y: number, z: number): void;
         /**
          * Set the rotation of this effect instance.
          * @param {number} x X value of euler angle
          * @param {number} y Y value of euler angle
          * @param {number} z Z value of euler angle
          */
-        setRotation(x, y, z);
+        setRotation(x: number, y: number, z: number): void;
 
         /**
          * Set the scale of this effect instance.
@@ -362,13 +362,13 @@ declare namespace effekseer {
          * @param {number} y Y value of scale factor
          * @param {number} z Z value of scale factor
          */
-        setScale(x, y, z);
+        setScale(x: number, y: number, z: number): void;
 
         /**
          * Set the model matrix of this effect instance.
          * @param {array} matrixArray An array that is requred 16 elements
          */
-        setMatrix(matrixArray);
+        setMatrix(matrixArray: Float32Array): void;
 
         /**
          * Set the target location of this effect instance.
@@ -376,40 +376,40 @@ declare namespace effekseer {
          * @param {number} y Y value of target location
          * @param {number} z Z value of target location
          */
-        setTargetLocation(x, y, z);
+        setTargetLocation(x: number, y: number, z: number): void;
 
         /**
          * get a dynamic parameter, which changes effect parameters dynamically while playing
          * @param {number} index slot index
          * @returns {number} value
          */
-        getDynamicInput(index): number;
+        getDynamicInput(index: number): number;
 
         /**
          * specfiy a dynamic parameter, which changes effect parameters dynamically while playing
          * @param {number} index slot index
          * @param {number} value value
          */
-        setDynamicInput(index, value);
+        setDynamicInput(index: number, value: number): void;
 
         /**
          * Set the paused flag of this effect instance.
          * if specified true, this effect playing will not advance.
          * @param {boolean} paused Paused flag
          */
-        setPaused(paused);
+        setPaused(paused: boolean): void;
 
         /**
          * Set the shown flag of this effect instance.
          * if specified false, this effect will be invisible.
          * @param {boolean} shown Shown flag
          */
-        setShown(shown);
+        setShown(shown: boolean): void;
         /**
          * Set playing speed of this effect.
          * @param {number} speed Speed ratio
          */
-        setSpeed(speed);
+        setSpeed(speed: number): void;
     }
 }
 
