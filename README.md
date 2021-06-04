@@ -38,7 +38,7 @@ asm.js version
 
 ## JavaScript
 
-### 1.5
+### 1.6
 
 ```js
 
@@ -61,9 +61,11 @@ function main()
   context.init(renderer.getContext());
 
   // Load effect data
-  var effect = context.loadEffect("Laser01.efk", 1.0, function(){
+  var effect = context.loadEffect("Laser01.efkefc", 1.0, function(){
     // Play the loaded effect
-    context.play(effect);
+    var handle = context.play(effect);
+    // Change a position
+    handle.setLocation(0,0,0);
   });
 
   (function renderLoop() {
