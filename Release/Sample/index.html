@@ -23,6 +23,12 @@
       <input id="posy" type="number" value="0">
       <input id="posz" type="number" value="0">
     </div>
+    <div>
+      <p>Rotation</p>
+      <input id="rotx" type="number" value="0">
+      <input id="roty" type="number" value="0">
+      <input id="rotz" type="number" value="0">
+    </div>
     <br>
     <script type='text/javascript'>
       var effects = {};
@@ -32,6 +38,7 @@
       var playEffect = function (name) {
         var handle = context.play(effects[name], 0, 0, 0);
         handle.setLocation(document.getElementById("posx").value, document.getElementById("posy").value, document.getElementById("posz").value);
+        handle.setRotation(document.getElementById("rotx").value / 180.0 * 3.14, document.getElementById("roty").value / 180.0 * 3.14, document.getElementById("rotz").value / 180.0 * 3.14);
       }
 
       var main = function () {
