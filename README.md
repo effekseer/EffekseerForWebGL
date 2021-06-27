@@ -2,14 +2,13 @@
 
 - [Official website](http://effekseer.github.io)
 - [Effekseer main repository](https://github.com/effekseer/Effekseer)
+- [Changes](CHANGES)
 
 # Demo
 
 - [Demo](https://effekseer.github.io/EffekseerForWebGL/Sample/index.html)
 
 # Download
-
-- [Changes](CHANGES)
 
 - [1.60d](https://github.com/effekseer/EffekseerForWebGL/releases/download/160d/EffekseerForWebGL160d.zip)
 
