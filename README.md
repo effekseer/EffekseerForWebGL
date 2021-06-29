@@ -101,6 +101,14 @@ if(useWASM) {
 
 # How to develop
 
+## Requirements
+
+- git
+- python
+- cmake
+- mingw-make (Windows only)
+- Emscripten 1.38.38 or later (Add directory to PATH)
+
 ## Clone the repositories
 
 ```
@@ -108,16 +116,11 @@ git clone https://github.com/effekseer/Effekseer
 git clone https://github.com/effekseer/EffekseerForWebGL
 ```
 
-## Requirements
-
-- python
-- cmake
-- mingw-make (Windows only)
-- Emscripten 1.38.38 or later (Add directory to PATH)
-
 ## Build
 
 ```
+emsdk install latest
+emsdk activate latest
 pip install dukpy jsmin
 python build.py
 ```
