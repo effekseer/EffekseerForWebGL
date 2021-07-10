@@ -112,8 +112,9 @@ if(useWASM) {
 ## Clone the repositories
 
 ```
-git clone https://github.com/effekseer/Effekseer
 git clone https://github.com/effekseer/EffekseerForWebGL
+cd EffekseerForWebGL
+git submodule update --init
 ```
 
 ## Build
