@@ -53,7 +53,7 @@ else()
 endif()
 
 # Assume Effekseer directory
-set(EFFEKSEER_DIR "${PROJECT_SOURCE_DIR}/../../Effekseer")
+set(EFFEKSEER_DIR "${PROJECT_SOURCE_DIR}/../Effekseer")
 
 # Set include directories
 include_directories(
