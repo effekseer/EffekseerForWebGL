@@ -12,6 +12,7 @@ steps:
     targetType: 'inline'
     script: |
       git submodule update --init --depth 1
+      sh scripts/clone_dependencies.sh
       source emsdk/emsdk_env.sh
       pip install dukpy jsmin
 
