@@ -60,6 +60,14 @@ function main()
   // Initialize by WebGLRenderingContext
   context.init(renderer.getContext());
 
+  // fast rendering by skipping state fetching.
+  // If there is a problem with the drawing, please set this flag to false.
+  var fastRenderMode = true;
+
+  if (fastRenderMode) {
+    context.setRestorationOfStatesFlag(false);
+  }
+
   // Load effect data
   var effect = context.loadEffect("Laser01.efkefc", 1.0, function(){
     // Play the loaded effect
@@ -83,6 +91,11 @@ function main()
 
     // Effekseer Rendering
     context.draw();
+
+    // Effekseer makes states dirtied. So reset three.js states
+    if (fastRenderMode) {
+      renderer.resetState();
+    }
   })();
 }
 
