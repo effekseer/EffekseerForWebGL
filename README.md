@@ -10,7 +10,7 @@
 
 # Download
 
-- [1.60d](https://github.com/effekseer/EffekseerForWebGL/releases/download/160d/EffekseerForWebGL160d.zip)
+- [1.60e](https://github.com/effekseer/EffekseerForWebGL/releases/download/160e/EffekseerForWebGL160e.zip)
 
 1.61 Beta1 is optimzied for smartphonnes.
 
