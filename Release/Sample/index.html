@@ -88,7 +88,7 @@
           directionalLight.position.set(0, 0.7, 0.7);
           scene.add(directionalLight);
 
-          var geometry = new THREE.CubeGeometry(2, 2, 2);
+          var geometry = new THREE.BoxGeometry(2, 2, 2);
           var material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
           var mesh = new THREE.Mesh(geometry, material);
           scene.add(mesh);
