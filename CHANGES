@@ -1,3 +1,15 @@
+# 1.60e
+
+Update Effekseer
+
+Improved three.js to work without state restoration.
+
+Added a sample without state restoration.
+
+Fixed a bug where TypeScript samples could not be executed.
+
+Changed the version of three.js used in the sample to the latest version.
+
 # 1.60d
 
 Update Effekseer
