@@ -50,6 +50,8 @@ function main()
 {
   // Setup WebGLRenderer
   var canvas = document.getElementById("canvas");
+
+  // There is a bug in the old three.js resetState. It is recommended to use a newer version.
   var renderer = new THREE.WebGLRenderer({ canvas: canvas });
   renderer.setSize(canvas.width, canvas.height);
   var clock = new THREE.Clock();

@@ -42,6 +42,8 @@
     }
 
     var main = function () {
+      // There is a bug in the old three.js resetState. It is recommended to use a newer version.
+      
       var canvas = document.getElementById("canvas");
       var clock = new THREE.Clock();
       var scene = new THREE.Scene();

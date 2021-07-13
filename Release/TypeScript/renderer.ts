@@ -7,6 +7,7 @@ var context: effekseer.EffekseerContext = null;
 var main = function () {
     var canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
+    // There is a bug in the old three.js resetState. It is recommended to use a newer version.
     var scene = new THREE.Scene();
     var width = canvas.width;
     var height = canvas.height;
