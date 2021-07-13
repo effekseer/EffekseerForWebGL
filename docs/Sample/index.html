@@ -10,23 +10,39 @@
   <canvas id="canvas" width="720" height="480" class="screen" oncontextmenu="event.preventDefault()"></canvas>
   <br>
   <div id="buttons">
-    <input type="button" onclick="latestHandle = context.play(effects['Laser01'], 0, 0, 0);" value="Laser01"></input>
-    <input type="button" onclick="latestHandle = context.play(effects['Laser02'], 0, 0, 0);" value="Laser02"></input>
-    <input type="button" onclick="latestHandle = context.play(effects['Simple_Ring_Shape1'], 0, 0, 0);"
-      value="Simple_Ring_Shape1"></input>
-    <input type="button" onclick="latestHandle = context.play(effects['block'], 0, 0, 0);" value="block"></input>
-    <input type="button" onclick="context.stopAll(); latestHandle = null;" value="stop"></input>
-
+    <input type="button" onclick="playEffect('Laser01');" value="Laser01"></input>
+    <input type="button" onclick="playEffect('Laser02');" value="Laser02"></input>
+    <input type="button" onclick="playEffect('Simple_Ring_Shape1');" value="Simple_Ring_Shape1"></input>
+    <input type="button" onclick="playEffect('block');" value="block"></input>
+    <input type="button" onclick="context.stopAll();" value="stop"></input>
+  </div>
+  <br>
+  <div>
+    <p>Position</p>
+    <input id="posx" type="number" value="0">
+    <input id="posy" type="number" value="0">
+    <input id="posz" type="number" value="0">
+  </div>
+  <div>
+    <p>Rotation</p>
+    <input id="rotx" type="number" value="0">
+    <input id="roty" type="number" value="0">
+    <input id="rotz" type="number" value="0">
   </div>
   <br>
   <script type='text/javascript'>
-    var latestHandle = null;
     var effects = {};
     var three_camera = null;
+    var context = null;
+
+    var playEffect = function (name) {
+      var handle = context.play(effects[name], 0, 0, 0);
+      handle.setLocation(document.getElementById("posx").value, document.getElementById("posy").value, document.getElementById("posz").value);
+      handle.setRotation(document.getElementById("rotx").value / 180.0 * 3.14, document.getElementById("roty").value / 180.0 * 3.14, document.getElementById("rotz").value / 180.0 * 3.14);
+    }
 
     var main = function () {
       var canvas = document.getElementById("canvas");
-
       var clock = new THREE.Clock();
       var scene = new THREE.Scene();
       var width = canvas.width;
@@ -44,46 +60,77 @@
       var renderer = new THREE.WebGLRenderer({ canvas: canvas });
       renderer.setSize(width, height);
       //document.body.appendChild( renderer.domElement );
-      context = effekseer.createContext();
-      context.init(renderer.context);
-      effects["Laser01"] = context.loadEffect("../Resources/Laser01.efk");
-      effects["Laser02"] = context.loadEffect("../Resources/Laser02.efk");
-      effects["Simple_Ring_Shape1"] = context.loadEffect("../Resources/Simple_Ring_Shape1.efk");
-      effects["block"] = context.loadEffect("../Resources/block.efk");
 
-      var grid = new THREE.GridHelper(20, 10, 0xffffff, 0xffffff);
-      scene.add(grid);
+      effekseer.initRuntime('../effekseer.wasm', () => {
+        context = effekseer.createContext();
 
-      var directionalLight = new THREE.DirectionalLight(0xffffff);
-      directionalLight.position.set(0, 0.7, 0.7);
-      scene.add(directionalLight);
-
-      var geometry = new THREE.BoxGeometry(2, 2, 2);
-      var material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-      var mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
-
-      (function renderLoop() {
-        requestAnimationFrame(renderLoop);
-        mesh.rotation.set(
-          0,
-          mesh.rotation.y + .01,
-          mesh.rotation.z + .01
+        context.init(renderer.getContext());
+        effects["Laser01"] = context.loadEffect(
+          "../Resources/Laser01.efk",
+          1.0,
+          () => {
+            // called when loading is finished.
+          },
+          (m, url) => {
+            // called when error causes.
+            console.log(m + " " + url);
+          }
         );
 
-        context.update(clock.getDelta() * 60.0);
+        // fast rendering by skipping state fetching.
+        // If there is a problem with the drawing, please set this flag to false.
+        var fastRenderMode = true;
 
-        renderer.render(scene, camera);
-        context.setProjectionMatrix(camera.projectionMatrix.elements);
-        context.setCameraMatrix(camera.matrixWorldInverse.elements);
-        context.draw();
+        if (fastRenderMode) {
+          context.setRestorationOfStatesFlag(false);
+        }
 
-      })();
+        effects["Laser02"] = context.loadEffect("../Resources/Laser02.efk");
+        effects["Simple_Ring_Shape1"] = context.loadEffect("../Resources/Simple_Ring_Shape1.efk");
+        effects["block"] = context.loadEffect("../Resources/block.efk");
+
+        var grid = new THREE.GridHelper(20, 10, 0xffffff, 0xffffff);
+        scene.add(grid);
+
+        var directionalLight = new THREE.DirectionalLight(0xffffff);
+        directionalLight.position.set(0, 0.7, 0.7);
+        scene.add(directionalLight);
+
+        var geometry = new THREE.BoxGeometry(2, 2, 2);
+        var material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+        var mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        (function renderLoop() {
+          requestAnimationFrame(renderLoop);
+          mesh.rotation.set(
+            0,
+            mesh.rotation.y + .01,
+            mesh.rotation.z + .01
+          );
+
+
+          context.update(clock.getDelta() * 60.0);
+          renderer.render(scene, camera);
+          context.setProjectionMatrix(camera.projectionMatrix.elements);
+          context.setCameraMatrix(camera.matrixWorldInverse.elements);
+          context.draw();
+
+          // Effekseer makes states dirtied. So reset three.js states
+          if (fastRenderMode) {
+            renderer.resetState();
+          }
+
+        })();
+
+      }, () => { });
     };
     window.addEventListener('DOMContentLoaded', main, false);
+
   </script>
   <script src="three.min.js"></script>
-  <script src="../effekseer_asmjs.min.js"></script>
+  <script src="../effekseer.js"></script>
+  <!-- <script src="../effekseer_asmjs.js"></script> -->
 </body>
 
 </html>

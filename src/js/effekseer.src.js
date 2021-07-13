@@ -478,6 +478,15 @@ const effekseer = (() => {
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.current_vbo);
       this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.current_ibo);
     }
+
+    disableVAO() {
+      if (this.ext_vao != null) {
+        this.ext_vao.bindVertexArrayOES(null);
+      }
+      else if (this.isWebGL2VAOEnabled) {
+        this.gl.bindVertexArray(null);
+      }
+    }
   }
 
   class EffekseerContext {
@@ -563,7 +572,10 @@ const effekseer = (() => {
         // Draw the effekseer core
         this.contextStates.save();
       }
-
+      else {
+        // avoid to make external vao dirtied.
+        this.contextStates.disableVAO();
+      }
       Core.Draw(this.nativeptr);
 
       if (this._restorationOfStatesFlag) {
@@ -577,6 +589,10 @@ const effekseer = (() => {
     beginDraw() {
       if (this._restorationOfStatesFlag) {
         this.contextStates.save();
+      }
+      else {
+        // avoid to make external vao dirtied.
+        this.contextStates.disableVAO();
       }
 
       Core.BeginDraw(this.nativeptr);

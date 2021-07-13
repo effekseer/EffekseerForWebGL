@@ -24,6 +24,12 @@ var main = function () {
             instanceMaxCount: 2000,
             squareMaxCount: 8000,
         });
+        // fast rendering by skipping state fetching.
+        // If there is a problem with the drawing, please set this flag to false.
+        var fastRenderMode = true;
+        if (fastRenderMode) {
+            context.setRestorationOfStatesFlag(false);
+        }
         effects["Laser01"] = context.loadEffect("../Resources/Laser01.efk");
         effects["Laser02"] = context.loadEffect("../Resources/Laser02.efk");
         effects["Simple_Ring_Shape1"] = context.loadEffect("../Resources/Simple_Ring_Shape1.efk");
@@ -45,6 +51,10 @@ var main = function () {
             context.setProjectionMatrix(Float32Array.from(camera.projectionMatrix.elements));
             context.setCameraMatrix(Float32Array.from(camera.matrixWorldInverse.elements));
             context.draw();
+            // Effekseer makes states dirtied. So reset three.js states
+            if (fastRenderMode) {
+                renderer.resetState();
+            }
         })();
     }, function () { console.log("Failed to initialize."); });
 };
