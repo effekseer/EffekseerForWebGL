@@ -42,6 +42,7 @@ const effekseer = (() => {
       SetPaused: Module.cwrap("EffekseerSetPaused", "void", ["number", "number", "number"]),
       SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
       SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
+      SetRandomSeed: Module.cwrap("EffekseerSetRandomSeed", "void", ["number", "number", "number"]),
       GetRestInstancesCount: Module.cwrap("EffekseerGetRestInstancesCount", "number", ["number"]),
       GetUpdateTime: Module.cwrap("EffekseerGetUpdateTime", "number", ["number"]),
       GetDrawTime: Module.cwrap("EffekseerGetDrawTime", "number", ["number"]),
@@ -330,6 +331,14 @@ const effekseer = (() => {
      */
     setSpeed(speed) {
       Core.SetSpeed(this.context.nativeptr, this.native, speed);
+    }
+
+    /**
+     * Set random seed of this effect.
+     * @param {number} seed Random seed
+     */
+    setRandomSeed(seed) {
+      Core.SetRandomSeed(this.context.nativeptr, this.native, seed);
     }
   }
 
