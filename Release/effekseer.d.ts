@@ -410,6 +410,11 @@ declare namespace effekseer {
          * @param {number} speed Speed ratio
          */
         setSpeed(speed: number): void;
+        /**
+         * Set random seed of this effect.
+         * @param {number} seed random seed
+         */
+        setRandomSeed(seed: number): void;
     }
 }
 

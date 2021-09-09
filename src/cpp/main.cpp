@@ -431,6 +431,8 @@ extern "C"
 
 	void EXPORT EffekseerSetSpeed(EfkWebViewer::Context* context, int handle, float speed) { context->manager->SetSpeed(handle, speed); }
 
+	void EXPORT EffekseerSetRandomSeed(EfkWebViewer::Context* context, int handle, float seed) { context->manager->SetRandomSeed(handle, seed); }
+
 	int32_t EXPORT EffekseerGetRestInstancesCount(EfkWebViewer::Context* context) { return context->manager->GetRestInstancesCount(); }
 
 	int EXPORT EffekseerGetUpdateTime(EfkWebViewer::Context* context) { return context->manager->GetUpdateTime(); }
