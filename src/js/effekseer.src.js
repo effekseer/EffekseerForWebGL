@@ -304,7 +304,7 @@ const effekseer = (() => {
      * @param {number} value value
      */
     setDynamicInput(index, value) {
-      Core.SetDynamicInput(this.context.nativeptr, this.native, index);
+      Core.SetDynamicInput(this.context.nativeptr, this.native, index, value);
     }
 
     /**
