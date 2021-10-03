@@ -27,6 +27,18 @@ steps:
       emcmake cmake ../src/ -DAS_WASM=OFF
       make
 
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.6'
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      python -m pip install --upgrade pip
+      python -m pip install dukpy
+      python -m pip install jsmin
+
 - task: PythonScript@0
   inputs:
     scriptSource: 'inline'
