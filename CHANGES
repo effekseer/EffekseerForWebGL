@@ -1,3 +1,10 @@
+# 1.61e
+
+Fix a bug where setDynamicInput was invalid function.
+
+Update Effekseer
+
+
 # 1.61c
 
 Update Effekseer
