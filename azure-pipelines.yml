@@ -124,7 +124,8 @@ steps:
     targetType: 'inline'
     script: |
       python -m pip install --upgrade pip
-      pip3 install chromedriver-binary==95.0.4638.17.0
+      pip3 install chromedriver-binary-auto
+      pip3 install --upgrade --force-reinstall chromedriver-binary-auto
       pip3 install selenium==3.141.0
       pip3 install requests
 
