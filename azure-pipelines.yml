@@ -122,9 +122,11 @@ steps:
     targetType: 'inline'
     script: |
       python3 -m pip install --upgrade pip
+      pip3 list
       pip3 install chromedriver-binary==95.0.4638.17.0
       pip3 install selenium==3.141.0
       pip3 install requests
+      pip3 list
 
 - task: Bash@3
   inputs:
