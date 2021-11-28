@@ -30,9 +30,9 @@ declare namespace effekseer {
 
     /**
     * Set the string of cross origin for images
-    * @param {boolean} crossOrigin
+    * @param {string} crossOrigin
     */
-    export function setImageCrossOrigin(crossOrigin: boolean): void;
+    export function setImageCrossOrigin(crossOrigin: string): void;
 
     /**
          * Initialize graphics system.
