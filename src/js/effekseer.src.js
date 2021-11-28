@@ -920,7 +920,7 @@ const effekseer = (() => {
 
     /**
      * Set the string of cross origin for images
-     * @param {boolean} crossOrigin
+     * @param {string} crossOrigin
      */
     setImageCrossOrigin(crossOrigin) {
       _imageCrossOrigin = crossOrigin;
