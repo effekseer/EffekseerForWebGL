@@ -382,6 +382,7 @@ const effekseer = (() => {
   };
 
   let _loadResource = (path, onload, onerror) => {
+
     splitted_path = path.split('?');
     var ext_path = path;
     if (splitted_path.length >= 2) {
@@ -695,18 +696,17 @@ const effekseer = (() => {
 
     /**
      * Load the effect data file (and resources).
-     * @param {string} path A URL of effect file (*.efk)
+     * @param {string|ArrayBuffer} data A URL/ArrayBuffer of effect file (*.efk)
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
      * @param {function=} redirect A function to redirect a path. First argument is an url and return redirected url.
      * @returns {EffekseerEffect} The effect data
      */
-    loadEffect(path, scale = 1.0, onload, onerror, redirect) {
+    loadEffect(data, scale = 1.0, onload, onerror, redirect) {
       this._makeContextCurrent();
 
       const effect = new EffekseerEffect(this);
-      const dirIndex = path.lastIndexOf("/");
 
       if (typeof (scale) === "function") {
         console.log("Error : second arguments is number from version 1.5");
@@ -722,13 +722,14 @@ const effekseer = (() => {
         effect.redirect = redirect;
       }
 
-      if (typeof path === "string") {
-        effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
-        _loadBinFile(path, buffer => {
+      if (typeof data === "string") {
+        const dirIndex = data.lastIndexOf("/");
+        effect.baseDir = (dirIndex >= 0) ? data.slice(0, dirIndex + 1) : "";
+        _loadBinFile(data, buffer => {
           effect._load(buffer);
         }, effect.onerror);
-      } else if (typeof path === "arraybuffer") {
-        const buffer = path;
+      } else if (data instanceof ArrayBuffer) {
+        const buffer = data;
         effect._load(buffer);
       }
 
