@@ -126,13 +126,13 @@ declare namespace effekseer {
     /**
      * Load the effect package file (resources included in the package).
      * @param {string|ArrayBuffer} data A URL/ArrayBuffer of effect file (*.efk)
+     * @param {Object} Unzip An Unzip object.
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
-     * @param {Object} Unzip An Unzip object.
      * @returns {EffekseerEffect} The effect data
      */
-    export function loadEffectPackage(data: string|ArrayBuffer, scale?: number, onload?: () => void, onerror?: (reason: string, path: string) => void, Unzip: Object): EffekseerEffect;
+    export function loadEffectPackage(data: string|ArrayBuffer, Unzip: Object, scale?: number, onload?: () => void, onerror?: (reason: string, path: string) => void): EffekseerEffect;
     /**
     * Release the specified effect. Don't touch the instance of effect after released.
     * @param {EffekseerEffect} effect The loaded effect
@@ -260,13 +260,13 @@ declare namespace effekseer {
         /**
          * Load the effect package file (resources included in the package).
          * @param {string|ArrayBuffer} data A URL/ArrayBuffer of effect file (*.efk)
+         * @param {Object} Unzip An Unzip object.
          * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
          * @param {function=} onload A function that is called at loading complete
          * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
-         * @param {Object} Unzip An Unzip object.
          * @returns {EffekseerEffect} The effect data
          */
-        loadEffectPackage(data: string|ArrayBuffer, scale?: number, onload?: () => void, onerror?: (reason: string, path: string) => void, Unzip: Object): EffekseerEffect;
+        loadEffectPackage(data: string|ArrayBuffer, Unzip: Object, scale?: number, onload?: () => void, onerror?: (reason: string, path: string) => void): EffekseerEffect;
 
         /**
         * Release the specified effect. Don't touch the instance of effect after released.

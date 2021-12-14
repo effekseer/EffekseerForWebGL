@@ -794,13 +794,14 @@ const effekseer = (() => {
     /**
      * Load the effect data file (and resources).
      * @param {string|ArrayBuffer} path A URL/ArrayBuffer of effect package file (*.efkpkg)
+     * @param {Object} Unzip a Unzip object
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
-     * @param {Object} Unzip a Unzip object
      * @returns {EffekseerEffect} The effect data
      */
-    loadEffectPackage(path, scale = 1.0, onload, onerror, Unzip) {
+    loadEffectPackage(path, Unzip, scale = 1.0, onload, onerror) {
+      if (Unzip == null)
       this._makeContextCurrent();
 
       const effect = new EffekseerEffect(this);
