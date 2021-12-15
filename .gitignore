@@ -1,0 +1,4 @@
+build_asmjs
+build_wasm
+Release
+!Release/effekseer.d.ts
