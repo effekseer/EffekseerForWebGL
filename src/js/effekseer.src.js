@@ -122,11 +122,18 @@ const effekseer = (() => {
         path = effect.redirect(path);
       }
 
-      _loadResource(path, buffer => {
-        res.buffer = buffer;
-        res.isLoaded = true;
-        effect._update();
-      }, effect.onerror);
+      const arrayBuffer = Module.resourcesMap[path];
+      if (arrayBuffer != null) {
+          res.buffer = arrayBuffer;
+          res.isLoaded = true;
+          effect._update();
+      } else {
+        _loadResource(path, buffer => {
+          res.buffer = buffer;
+          res.isLoaded = true;
+          effect._update();
+        }, effect.onerror);
+      }
       return null;
     };
 
