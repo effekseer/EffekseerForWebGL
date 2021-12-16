@@ -52,6 +52,7 @@ const effekseer = (() => {
       SetLogEnabled: Module.cwrap("EffekseerSetLogEnabled", "void", ["number"]),
     };
 
+    Module.resourcesMap = {};
 
     Module._isPowerOfTwo = img => {
       return _isImagePowerOfTwo(img);
@@ -77,7 +78,7 @@ const effekseer = (() => {
       }
 
       {
-        const arrayBuffer = effect.resourcesMap[path];
+        const arrayBuffer = Module.resourcesMap[path];
         if (arrayBuffer != null) {
           const arrayBufferView = new Uint8Array( arrayBuffer );
           Promise.resolve(new Blob([arrayBufferView], { type: 'image/png' }))
@@ -179,7 +180,6 @@ const effekseer = (() => {
       this.isLoaded = false;
       this.scale = 1.0;
       this.resources = [];
-      this.resourcesMap = {};
       this.main_buffer = null;
     }
 
@@ -219,7 +219,7 @@ const effekseer = (() => {
       for (let dep of dependencies) {
         // const relative_path = json.files[dep].relative_path;
         const buffer = unzip.decompress(dep)
-        this.resourcesMap[dep] = buffer.buffer;
+        Module.resourcesMap[dep] = buffer.buffer;
       }
 
       const efk_buffer = unzip.decompress(efkFile);
