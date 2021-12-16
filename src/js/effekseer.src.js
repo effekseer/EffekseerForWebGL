@@ -52,6 +52,7 @@ const effekseer = (() => {
       SetLogEnabled: Module.cwrap("EffekseerSetLogEnabled", "void", ["number"]),
     };
 
+    Module.resourcesMap = {};
 
     Module._isPowerOfTwo = img => {
       return _isImagePowerOfTwo(img);
@@ -61,12 +62,14 @@ const effekseer = (() => {
       const effect = loadingEffect;
       effect.context._makeContextCurrent();
 
-      var res = effect.resources.find(res => { return res.path == path });
-      if (res) {
-        return (res.isLoaded) ? res.image : null;
+      {
+        const res = effect.resources.find(res => { return res.path == path });
+        if (res) {
+          return (res.isLoaded) ? res.image : null;
+        }
       }
 
-      var res = { path: path, isLoaded: false, image: null, isRequired: true };
+      const res = { path: path, isLoaded: false, image: null, isRequired: true };
       effect.resources.push(res);
 
       var path = effect.baseDir + path;
@@ -74,11 +77,31 @@ const effekseer = (() => {
         path = effect.redirect(path);
       }
 
-      _loadResource(path, image => {
-        res.image = image
-        res.isLoaded = true;
-        effect._update();
-      }, effect.onerror);
+      {
+        const arrayBuffer = Module.resourcesMap[path];
+        if (arrayBuffer != null) {
+          const arrayBufferView = new Uint8Array( arrayBuffer );
+          Promise.resolve(new Blob([arrayBufferView], { type: 'image/png' }))
+          .then(blob => {
+            return Promise.resolve(URL.createObjectURL(blob))
+          })
+          .then(url => {
+            const img = new Image();
+            img.onload = () => {
+              res.image = img;
+              res.isLoaded = true;
+              effect._update();
+            };
+            img.src = url;
+          });
+        } else {
+          _loadResource(path, image => {
+            res.image = image
+            res.isLoaded = true;
+            effect._update();
+          }, effect.onerror);
+        }
+      }
       return null;
     };
 
@@ -99,11 +122,18 @@ const effekseer = (() => {
         path = effect.redirect(path);
       }
 
-      _loadResource(path, buffer => {
-        res.buffer = buffer;
-        res.isLoaded = true;
-        effect._update();
-      }, effect.onerror);
+      const arrayBuffer = Module.resourcesMap[path];
+      if (arrayBuffer != null) {
+          res.buffer = arrayBuffer;
+          res.isLoaded = true;
+          effect._update();
+      } else {
+        _loadResource(path, buffer => {
+          res.buffer = buffer;
+          res.isLoaded = true;
+          effect._update();
+        }, effect.onerror);
+      }
       return null;
     };
 
@@ -169,6 +199,38 @@ const effekseer = (() => {
       Module._free(memptr);
       loadingEffect = null;
       this._update();
+    }
+
+    /**
+     * Load Effect from arraybuffer of .efkpkg file
+     * @param {ArrayBuffer} buffer a ArrayBuffer of the .efkpkg file
+     * @param {Object} Unzip a Unzip object
+     */
+    async _loadFromPackage(buffer, Unzip) {
+      const unzip = new Unzip(new Uint8Array(buffer))
+      const meta_buffer = unzip.decompress('metafile.json')
+      const textDecoder = new TextDecoder();
+      const text = textDecoder.decode(meta_buffer);
+      const json = JSON.parse(text);
+
+      let efkFile;
+      const dependencies = [];
+      for (let key in json.files) {
+        const val = json.files[key];
+        if (val.type === 'Effect') {
+          efkFile = key;
+          Array.prototype.push.apply(dependencies, val.dependencies);
+        }
+      }
+
+      for (let dep of dependencies) {
+        // const relative_path = json.files[dep].relative_path;
+        const buffer = unzip.decompress(dep)
+        Module.resourcesMap[dep] = buffer.buffer;
+      }
+
+      const efk_buffer = unzip.decompress(efkFile);
+      this._load(efk_buffer.buffer);
     }
 
     _reload() {
@@ -382,6 +444,7 @@ const effekseer = (() => {
   };
 
   let _loadResource = (path, onload, onerror) => {
+
     splitted_path = path.split('?');
     var ext_path = path;
     if (splitted_path.length >= 2) {
@@ -695,18 +758,17 @@ const effekseer = (() => {
 
     /**
      * Load the effect data file (and resources).
-     * @param {string} path A URL of effect file (*.efk)
+     * @param {string|ArrayBuffer} data A URL/ArrayBuffer of effect file (*.efk)
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
      * @param {function=} redirect A function to redirect a path. First argument is an url and return redirected url.
      * @returns {EffekseerEffect} The effect data
      */
-    loadEffect(path, scale = 1.0, onload, onerror, redirect) {
+    loadEffect(data, scale = 1.0, onload, onerror, redirect) {
       this._makeContextCurrent();
 
       const effect = new EffekseerEffect(this);
-      const dirIndex = path.lastIndexOf("/");
 
       if (typeof (scale) === "function") {
         console.log("Error : second arguments is number from version 1.5");
@@ -722,14 +784,47 @@ const effekseer = (() => {
         effect.redirect = redirect;
       }
 
-      if (typeof path === "string") {
-        effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
-        _loadBinFile(path, buffer => {
+      if (typeof data === "string") {
+        const dirIndex = data.lastIndexOf("/");
+        effect.baseDir = (dirIndex >= 0) ? data.slice(0, dirIndex + 1) : "";
+        _loadBinFile(data, buffer => {
           effect._load(buffer);
         }, effect.onerror);
-      } else if (typeof path === "arraybuffer") {
-        const buffer = path;
+      } else if (data instanceof ArrayBuffer) {
+        const buffer = data;
         effect._load(buffer);
+      }
+
+      return effect;
+    }
+
+    /**
+     * Load the effect data file (and resources).
+     * @param {string|ArrayBuffer} path A URL/ArrayBuffer of effect package file (*.efkpkg)
+     * @param {Object} Unzip a Unzip object
+     * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
+     * @param {function=} onload A function that is called at loading complete
+     * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
+     * @returns {EffekseerEffect} The effect data
+     */
+    loadEffectPackage(path, Unzip, scale = 1.0, onload, onerror) {
+      if (Unzip == null)
+      this._makeContextCurrent();
+
+      const effect = new EffekseerEffect(this);
+      effect.scale = scale;
+      effect.onload = onload;
+      effect.onerror = onerror;
+      
+      if (typeof path === "string") {
+        const dirIndex = path.lastIndexOf("/");
+        effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
+        _loadBinFile(path, buffer => {
+          effect._loadFromPackage(buffer, Unzip);
+        }, effect.onerror);
+      } else if (path instanceof ArrayBuffer) {
+        const buffer = path;
+        effect._loadFromPackage(buffer, Unzip);
       }
 
       return effect;
