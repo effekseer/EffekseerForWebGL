@@ -1,3 +1,13 @@
+# 1.62b
+
+default image.crossOrigin is changed into none.
+
+Update Effekseer
+
+# 1.62a
+
+Update Effekseer
+
 # 1.61e
 
 Fix a bug where setDynamicInput was invalid function.
