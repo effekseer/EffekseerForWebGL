@@ -2,7 +2,7 @@
 const effekseer = (() => {
   let Module = {};
   let Core = {};
-  let _imageCrossOrigin = "use-credentials";
+  let _imageCrossOrigin = "";
   let _onloadAssembly = () => { }
   let _onerrorAssembly = () => { }
   let _is_runtime_initialized = false;
