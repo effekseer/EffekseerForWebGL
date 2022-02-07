@@ -132,7 +132,7 @@ public:
 	Matrix44 projectionMatrix;
 	Matrix44 cameraMatrix;
 
-	CustomFileInterface fileInterface;
+	Effekseer::RefPtr<CustomFileInterface> fileInterface;
 
 	ALCdevice* alcDevice = nullptr;
 	ALCcontext* alcContext = nullptr;
@@ -150,6 +150,7 @@ public:
 
 	bool Init(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled)
 	{
+		fileInterface = Effekseer::MakeRefPtr<CustomFileInterface>();
 		manager = Manager::Create(instanceMaxCount);
 		renderer =
 			EffekseerRendererGL::Renderer::Create(squareMaxCount, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2, isExtentionsEnabled);
@@ -161,13 +162,13 @@ public:
 		manager->SetModelRenderer(renderer->CreateModelRenderer());
 		manager->SetTrackRenderer(renderer->CreateTrackRenderer());
 		manager->SetTextureLoader(Effekseer::MakeRefPtr<CustomTextureLoader>(renderer->GetGraphicsDevice().Get()));
-		manager->SetModelLoader(renderer->CreateModelLoader(&fileInterface));
-		manager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>(&fileInterface));
+		manager->SetModelLoader(renderer->CreateModelLoader(fileInterface));
+		manager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>(fileInterface));
 
 		manager->SetMaterialLoader(Effekseer::MakeRefPtr<EffekseerRendererGL::MaterialLoader>(
-			renderer->GetGraphicsDevice().DownCast<EffekseerRendererGL::Backend::GraphicsDevice>(), &fileInterface, false));
+			renderer->GetGraphicsDevice().DownCast<EffekseerRendererGL::Backend::GraphicsDevice>(), fileInterface, false));
 		manager->SetSoundPlayer(sound->CreateSoundPlayer());
-		manager->SetSoundLoader(sound->CreateSoundLoader(&fileInterface));
+		manager->SetSoundLoader(sound->CreateSoundLoader(fileInterface));
 
 		manager->SetCoordinateSystem(CoordinateSystem::RH);
 
