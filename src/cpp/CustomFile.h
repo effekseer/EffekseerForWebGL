@@ -29,14 +29,14 @@ public:
 		return size;
 	}
 	void Seek(int position) { currentPosition = position; }
-	int GetPosition() { return currentPosition; }
-	size_t GetLength() { return fileSize; }
+	int GetPosition() const override { return currentPosition; }
+	size_t GetLength() const override { return fileSize; }
 };
 
 class CustomFileInterface : public Effekseer::FileInterface
 {
 public:
-	Effekseer::FileReader* OpenRead(const EFK_CHAR* path, bool isRequired)
+	Effekseer::FileReaderRef OpenRead(const EFK_CHAR* path, bool isRequired)
 	{
 		// Request to load file
 		int loaded = EM_ASM_INT({ return Module._loadBinary(UTF16ToString($0), $1) != null; }, path, isRequired);
@@ -67,13 +67,13 @@ public:
 			return nullptr;
 		}
 
-		return new CustomFileReader(fileData, fileSize);
+		return Effekseer::MakeRefPtr<CustomFileReader>(fileData, fileSize);
 	}
 
-	Effekseer::FileReader* OpenRead(const EFK_CHAR* path) override { return OpenRead(path, true); }
+	Effekseer::FileReaderRef OpenRead(const EFK_CHAR* path) override { return OpenRead(path, true); }
 
-	Effekseer::FileReader* TryOpenRead(const EFK_CHAR* path) override { return OpenRead(path, false); }
+	Effekseer::FileReaderRef TryOpenRead(const EFK_CHAR* path) override { return OpenRead(path, false); }
 
-	Effekseer::FileWriter* OpenWrite(const EFK_CHAR* path) override { return nullptr; }
+	Effekseer::FileWriterRef OpenWrite(const EFK_CHAR* path) override { return nullptr; }
 };
 } // namespace EfkWebViewer

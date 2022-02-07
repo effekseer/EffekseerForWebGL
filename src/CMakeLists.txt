@@ -4,7 +4,7 @@ project(effekseer)
 option(AS_WASM "compile as wasm" OFF)
 
 # CMake version check
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.15)
 
 # Set compiler flags
 string(APPEND CMAKE_CXX_FLAGS
@@ -67,7 +67,6 @@ include_directories(
 # Enable OpenGL ES 2.0 mode
 add_definitions(-D__EFFEKSEER_RENDERER_GLES2__)
 add_definitions(-DNDEBUG)
-add_definitions(-D__EFFEKSEER_BUILD_VERSION16__)
 
 # Set source files
 file(GLOB effekseer_src
