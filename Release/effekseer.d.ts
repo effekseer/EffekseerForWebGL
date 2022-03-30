@@ -391,6 +391,15 @@ declare namespace effekseer {
         setMatrix(matrixArray: Float32Array): void;
 
         /**
+        * Set the color of this effect instance.
+        * @param {number} r R channel value of color
+        * @param {number} g G channel value of color
+        * @param {number} b B channel value of color
+        * @param {number} a A channel value of color
+        */
+        setAllColor(r: number, g: number, b: number, a: number): void;
+
+        /**
          * Set the target location of this effect instance.
          * @param {number} x X value of target location
          * @param {number} y Y value of target location

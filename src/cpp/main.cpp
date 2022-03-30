@@ -418,6 +418,12 @@ extern "C"
 		context->manager->SetDynamicInput(handle, index, value);
 	}
 
+	void EXPORT EffekseerSetAllColor(EfkWebViewer::Context* context, int handle, float r, float g, float b, float a)
+	{
+		Color color = Color(r, g, b, a);
+		context->manager->SetAllColor(handle, color);
+	}
+
 	void EXPORT EffekseerSetTargetLocation(EfkWebViewer::Context* context, int handle, float x, float y, float z)
 	{
 		context->manager->SetTargetLocation(handle, x, y, z);

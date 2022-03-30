@@ -36,6 +36,7 @@ const effekseer = (() => {
       SetRotation: Module.cwrap("EffekseerSetRotation", "void", ["number", "number", "number", "number", "number"]),
       SetScale: Module.cwrap("EffekseerSetScale", "void", ["number", "number", "number", "number", "number"]),
       SetMatrix: Module.cwrap("EffekseerSetMatrix", "void", ["number", "number", "number"]),
+      SetAllColor: Module.cwrap("EffekseerSetAllColor", "void", ["number", "number", "number", "number", "number", "number"]),
       SetTargetLocation: Module.cwrap("EffekseerSetTargetLocation", "void", ["number", "number", "number", "number", "number"]),
       GetDynamicInput: Module.cwrap("EffekseerGetDynamicInput", "number", ["number", "number", "number"]),
       SetDynamicInput: Module.cwrap("EffekseerSetDynamicInput", "void", ["number", "number", "number", "number"]),
@@ -339,6 +340,17 @@ const effekseer = (() => {
       Module.HEAPF32.set(matrixArray, arrmem >> 2);
       Core.SetMatrix(this.context.nativeptr, this.native, arrmem);
       Module.stackRestore(stack);
+    }
+
+    /**
+     * Set the color of this effect instance.
+     * @param {number} r R channel value of color
+     * @param {number} g G channel value of color
+     * @param {number} b B channel value of color
+     * @param {number} a A channel value of color
+     */
+    setAllColor(r, g, b, a) {
+      Core.SetAllColor(this.context.nativeptr, this.native, r, g, b, a);
     }
 
     /**
