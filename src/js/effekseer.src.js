@@ -522,6 +522,20 @@ const effekseer = (() => {
       }
     }
 
+    release() {
+      if (this.effekseer_vao) {
+        if (this.ext_vao) {
+          this.ext_vao.deleteVertexArrayOES(this.effekseer_vao);
+        } else if (this.isWebGL2VAOEnabled) {
+          this.gl.deleteVertexArray(this.effekseer_vao);
+        }
+
+        this.effekseer_vao = null;
+      }
+
+      this.gl = null;
+    }
+
     save() {
       // glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING) is wrong with Emscripten (Why?)
       // glGetIntegerv(GL_TEXTURE_BINDING_2D) is wrong with Emscripten (Why?)
@@ -1010,6 +1024,14 @@ const effekseer = (() => {
     * @param {EffekseerContext} context context
     */
     releaseContext(context) {
+      if (context.contextStates) {
+        context.contextStates.release();
+      }
+
+      if (context.gl) {
+        context.gl = null
+      }
+
       if (context.nativeptr == null) {
         return;
       }
