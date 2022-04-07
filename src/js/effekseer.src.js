@@ -1043,7 +1043,7 @@ const effekseer = (() => {
      * Set the flag whether Effekseer show logs
      * @param {boolean} flag
      */
-    setSetLogEnabled(flag) {
+    setLogEnabled(flag) {
       Core.SetLogEnabled(flag);
     }
 
