@@ -362,6 +362,12 @@ declare namespace effekseer {
         readonly exists: boolean;
 
         /**
+         * Set frame of this effect instance.
+         * @param {number} frame Frame of this effect instance.
+         */
+        setFrame(frame: number): void;
+
+        /**
          * Set the location of this effect instance.
          * @param {number} x X value of location
          * @param {number} y Y value of location

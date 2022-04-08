@@ -32,6 +32,7 @@ const effekseer = (() => {
       StopEffect: Module.cwrap("EffekseerStopEffect", "void", ["number", "number"]),
       StopRoot: Module.cwrap("EffekseerStopRoot", "void", ["number", "number"]),
       Exists: Module.cwrap("EffekseerExists", "number", ["number", "number"]),
+      SetFrame: Module.cwrap("EffekseerSetFrame", "void", ["number", "number", "number"]),
       SetLocation: Module.cwrap("EffekseerSetLocation", "void", ["number", "number", "number", "number", "number"]),
       SetRotation: Module.cwrap("EffekseerSetRotation", "void", ["number", "number", "number", "number", "number"]),
       SetScale: Module.cwrap("EffekseerSetScale", "void", ["number", "number", "number", "number", "number"]),
@@ -298,6 +299,14 @@ const effekseer = (() => {
      */
     get exists() {
       return !!Core.Exists(this.context.nativeptr, this.native);
+    }
+
+    /**
+     * Set frame of this effect instance.
+     * @param {number} frame Frame of this effect instance.
+     */
+    setFrame(frame) {
+      Core.SetFrame(this.context.nativeptr, this.native, frame);
     }
 
     /**

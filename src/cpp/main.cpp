@@ -386,6 +386,11 @@ extern "C"
 
 	int EXPORT EffekseerExists(EfkWebViewer::Context* context, int handle) { return context->manager->Exists(handle) ? 1 : 0; }
 
+	void EXPORT EffekseerSetFrame(EfkWebViewer::Context* context, int handle, float frame)
+	{
+		context->manager->UpdateHandleToMoveToFrame(handle, frame);
+	}
+
 	void EXPORT EffekseerSetLocation(EfkWebViewer::Context* context, int handle, float x, float y, float z)
 	{
 		context->manager->SetLocation(handle, x, y, z);
