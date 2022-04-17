@@ -1,3 +1,15 @@
+# 1.62d
+
+Update Effekseer
+
+Fixed memory leak about EffekseerContext
+
+Fixed typo about setSetLogEnabled
+
+# 1.62c
+
+Update Effekseer
+
 # 1.62b
 
 default image.crossOrigin is changed into none.
