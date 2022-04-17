@@ -10,7 +10,7 @@
 
 # Download
 
-- [1.62c](https://github.com/effekseer/EffekseerForWebGL/releases/download/162c/EffekseerForWebGL162c.zip)
+- [1.62d](https://github.com/effekseer/EffekseerForWebGL/releases/download/162d/EffekseerForWebGL162d.zip)
 
 
 - [1.53c](https://github.com/effekseer/EffekseerForWebGL/releases/download/153c/EffekseerForWebGL153c.zip)
