@@ -84,8 +84,9 @@ public:
 				GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[$1]);
 
 				var pa = gl.getParameter(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL);
+				var oldFlipY = gl.getParameter(gl.UNPACK_FLIP_Y_WEBGL);
 				GLctx.pixelStorei(GLctx.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-
+				GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, false);
 				GLctx.texImage2D(GLctx.TEXTURE_2D, 0, GLctx.RGBA, GLctx.RGBA, GLctx.UNSIGNED_BYTE, img);
 				if (Module._isPowerOfTwo(img))
 				{
@@ -93,7 +94,7 @@ public:
 				}
 
 				GLctx.pixelStorei(GLctx.UNPACK_PREMULTIPLY_ALPHA_WEBGL, pa);
-
+				GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, oldFlipY);
 				GLctx.bindTexture(GLctx.TEXTURE_2D, binding);
 			},
 			path,
