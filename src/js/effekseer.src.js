@@ -531,7 +531,7 @@ const effekseer = (() => {
         this._gl.bindVertexArray(this.effekseer_vao);
       }
 
-      this.current_active_texture_id = this._gl.getParameter(_gl.ACTIVE_TEXTURE);
+      this.current_active_texture_id = this._gl.getParameter(this._gl.ACTIVE_TEXTURE);
 
       for (var i = 0; i < this.restore_texture_slot_max; i++) {
         this._gl.activeTexture(this._gl.TEXTURE0 + i);
