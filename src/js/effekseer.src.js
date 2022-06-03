@@ -254,6 +254,7 @@ const effekseer = (() => {
         }
         if (loaded) {
           // glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING is wrong with Emscripten (Why?)
+          this.context._makeContextCurrent();
           this.context.contextStates.save();
           this._reload();
           this.context.contextStates.restore();
@@ -480,7 +481,7 @@ const effekseer = (() => {
   class ContextStates {
     constructor(gl) {
       this.restore_texture_slot_max = 8;
-      this.gl = gl;
+      this._gl = gl;
       this.ext_vao = null;
       this.isWebGL2VAOEnabled = false;
       this.effekseer_vao = null;
@@ -491,13 +492,13 @@ const effekseer = (() => {
       this.current_textures.length = this.restore_texture_slot_max;
       this.current_active_texture_id = null;
 
-      this.ext_vao = gl.getExtension('OES_vertex_array_object');
+      this.ext_vao = this._gl.getExtension('OES_vertex_array_object');
       if (this.ext_vao != null) {
         this.effekseer_vao = this.ext_vao.createVertexArrayOES();
       }
-      else if ('createVertexArray' in this.gl) {
+      else if ('createVertexArray' in this._gl) {
         this.isWebGL2VAOEnabled = true;
-        this.effekseer_vao = this.gl.createVertexArray();
+        this.effekseer_vao = this._gl.createVertexArray();
       }
     }
 
@@ -506,54 +507,54 @@ const effekseer = (() => {
         if (this.ext_vao) {
           this.ext_vao.deleteVertexArrayOES(this.effekseer_vao);
         } else if (this.isWebGL2VAOEnabled) {
-          this.gl.deleteVertexArray(this.effekseer_vao);
+          this._gl.deleteVertexArray(this.effekseer_vao);
         }
 
         this.effekseer_vao = null;
       }
 
-      this.gl = null;
+      this._gl = null;
     }
 
     save() {
       // glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING) is wrong with Emscripten (Why?)
       // glGetIntegerv(GL_TEXTURE_BINDING_2D) is wrong with Emscripten (Why?)
 
-      this.current_vbo = this.gl.getParameter(this.gl.ARRAY_BUFFER_BINDING);
-      this.current_ibo = this.gl.getParameter(this.gl.ELEMENT_ARRAY_BUFFER_BINDING);
+      this.current_vbo = this._gl.getParameter(this._gl.ARRAY_BUFFER_BINDING);
+      this.current_ibo = this._gl.getParameter(this._gl.ELEMENT_ARRAY_BUFFER_BINDING);
       if (this.ext_vao != null) {
-        this.current_vao = this.gl.getParameter(this.ext_vao.VERTEX_ARRAY_BINDING_OES);
+        this.current_vao = this._gl.getParameter(this.ext_vao.VERTEX_ARRAY_BINDING_OES);
         this.ext_vao.bindVertexArrayOES(this.effekseer_vao);
       }
       else if (this.isWebGL2VAOEnabled) {
-        this.current_vao = this.gl.getParameter(this.gl.VERTEX_ARRAY_BINDING);
-        this.gl.bindVertexArray(this.effekseer_vao);
+        this.current_vao = this._gl.getParameter(this._gl.VERTEX_ARRAY_BINDING);
+        this._gl.bindVertexArray(this.effekseer_vao);
       }
 
-      this.current_active_texture_id = gl.getParameter(gl.ACTIVE_TEXTURE);
+      this.current_active_texture_id = this._gl.getParameter(this._gl.ACTIVE_TEXTURE);
 
       for (var i = 0; i < this.restore_texture_slot_max; i++) {
-        this.gl.activeTexture(this.gl.TEXTURE0 + i);
-        this.current_textures[i] = gl.getParameter(gl.TEXTURE_BINDING_2D);
+        this._gl.activeTexture(this._gl.TEXTURE0 + i);
+        this.current_textures[i] = this._gl.getParameter(this._gl.TEXTURE_BINDING_2D);
       }
     }
 
     restore() {
       for (var i = 0; i < this.restore_texture_slot_max; i++) {
-        this.gl.activeTexture(this.gl.TEXTURE0 + i);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.current_textures[i]);
+        this._gl.activeTexture(this._gl.TEXTURE0 + i);
+        this._gl.bindTexture(this._gl.TEXTURE_2D, this.current_textures[i]);
       }
-      this.gl.activeTexture(this.current_active_texture_id);
+      this._gl.activeTexture(this.current_active_texture_id);
 
       if (this.ext_vao != null) {
         this.ext_vao.bindVertexArrayOES(this.current_vao);
       }
       else if (this.isWebGL2VAOEnabled) {
-        this.gl.bindVertexArray(this.current_vao);
+        this._gl.bindVertexArray(this.current_vao);
       }
 
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.current_vbo);
-      this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.current_ibo);
+      this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this.current_vbo);
+      this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this.current_ibo);
     }
 
     disableVAO() {
@@ -561,7 +562,7 @@ const effekseer = (() => {
         this.ext_vao.bindVertexArrayOES(null);
       }
       else if (this.isWebGL2VAOEnabled) {
-        this.gl.bindVertexArray(null);
+        this._gl.bindVertexArray(null);
       }
     }
   }
@@ -579,8 +580,8 @@ const effekseer = (() => {
      * @param {object} settings Some settings with Effekseer initialization
      */
     init(webglContext, settings) {
-      this.gl = webglContext;
-      this.contextStates = new ContextStates(this.gl);
+      this._gl = webglContext;
+      this.contextStates = new ContextStates(this._gl);
 
       var instanceMaxCount = 4000;
       var squareMaxCount = 10000;
@@ -597,7 +598,7 @@ const effekseer = (() => {
           enableExtensionsByDefault = settings.enableExtensionsByDefault;
         }
       }
-      window.gl = this.gl;
+      window.gl = this._gl;
       // Setup native OpenGL context
       this.ctx = Module.GL.registerContext(webglContext, {
         majorVersion: 1, minorVersion: 0, enableExtensionsByDefault: enableExtensionsByDefault
@@ -644,7 +645,7 @@ const effekseer = (() => {
 
       if (this._restorationOfStatesFlag) {
         // Save WebGL states
-        program = this.gl.getParameter(gl.CURRENT_PROGRAM);
+        program = this._gl.getParameter(this._gl.CURRENT_PROGRAM);
 
         // Draw the effekseer core
         this.contextStates.save();
@@ -659,7 +660,7 @@ const effekseer = (() => {
         this.contextStates.restore();
 
         // Restore WebGL states
-        this.gl.useProgram(program);
+        this._gl.useProgram(program);
       }
     }
 
@@ -1007,8 +1008,8 @@ const effekseer = (() => {
         context.contextStates.release();
       }
 
-      if (context.gl) {
-        context.gl = null
+      if (context._gl) {
+        context._gl = null
       }
 
       if (context.nativeptr == null) {
