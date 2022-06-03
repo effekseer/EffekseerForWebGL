@@ -645,7 +645,7 @@ const effekseer = (() => {
 
       if (this._restorationOfStatesFlag) {
         // Save WebGL states
-        program = this._gl.getParameter(_gl.CURRENT_PROGRAM);
+        program = this._gl.getParameter(this._gl.CURRENT_PROGRAM);
 
         // Draw the effekseer core
         this.contextStates.save();
