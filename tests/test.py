@@ -8,7 +8,7 @@ import glob
 
 class CompareTest(unittest.TestCase):
     def compare_results(self):
-        screenshot_file_paths = glob.glob('screenshots', '*.png')
+        screenshot_file_paths = glob.glob('screenshots/*.png')
         for screenshot_file_path in screenshot_file_paths:
             file_name = os.path.basename(screenshot_file_path)
             target_file_path = '../TestData/Tests/WebGL/' + file_name
