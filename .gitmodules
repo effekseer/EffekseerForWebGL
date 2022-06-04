@@ -4,3 +4,6 @@
 [submodule "TestData"]
 	path = TestData
 	url = https://github.com/effekseer/TestData.git
+[submodule "ResourceData"]
+	path = ResourceData
+	url = https://github.com/effekseer/ResourceData.git
