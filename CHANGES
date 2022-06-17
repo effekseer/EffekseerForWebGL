@@ -1,3 +1,9 @@
+# 1.62e
+
+Updated Effekseer
+
+Fixed a bug where multiple context causes an error
+
 # 1.62d
 
 Update Effekseer
