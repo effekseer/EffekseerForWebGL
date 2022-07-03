@@ -145,6 +145,22 @@ public:
 	//! pass strings
 	std::string tempStr;
 
+	void CalculateCameraDirectionAndPosition(const Effekseer::Matrix44& matrix, Effekseer::Vector3D& direction, Effekseer::Vector3D& position)
+	{
+		const auto& mat = matrix;
+
+		direction = -::Effekseer::Vector3D(matrix.Values[0][2], matrix.Values[1][2], matrix.Values[2][2]);
+
+		{
+			auto localPos = ::Effekseer::Vector3D(-mat.Values[3][0], -mat.Values[3][1], -mat.Values[3][2]);
+			auto f = ::Effekseer::Vector3D(mat.Values[0][2], mat.Values[1][2], mat.Values[2][2]);
+			auto r = ::Effekseer::Vector3D(mat.Values[0][0], mat.Values[1][0], mat.Values[2][0]);
+			auto u = ::Effekseer::Vector3D(mat.Values[0][1], mat.Values[1][1], mat.Values[2][1]);
+
+			position = r * localPos.X + u * localPos.Y + f * localPos.Z;
+		}
+	}
+
 public:
 	Context() = default;
 	~Context() = default;
@@ -192,6 +208,14 @@ public:
 
 	void Draw()
 	{
+		::Effekseer::Vector3D cameraPosition;
+		::Effekseer::Vector3D cameraFrontDirection;
+		CalculateCameraDirectionAndPosition(cameraMatrix, cameraFrontDirection, cameraPosition);
+
+		Effekseer::Manager::LayerParameter layerParam;
+		layerParam.ViewerPosition = cameraPosition;
+		manager->SetLayerParameter(0, layerParam);
+
 		renderer->SetProjectionMatrix(projectionMatrix);
 		renderer->SetCameraMatrix(cameraMatrix);
 
@@ -238,6 +262,7 @@ public:
 
 //! pass strings
 std::string tempStr;
+
 } // namespace EfkWebViewer
 
 #define EXPORT EMSCRIPTEN_KEEPALIVE
