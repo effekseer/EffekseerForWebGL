@@ -137,6 +137,6 @@ git submodule update --init
 ```
 emsdk install latest
 emsdk activate latest
-pip install dukpy jsmin
+python -m pip install dukpy jsmin
 python build.py
 ```
