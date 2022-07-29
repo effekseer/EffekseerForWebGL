@@ -167,6 +167,8 @@ public:
 
 	bool Init(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled)
 	{
+		Effekseer::SetLogger([](Effekseer::LogType type, const std::string& s) -> void { PrintEffekseerLog("EffekseerLog : " + s); });
+
 		fileInterface = Effekseer::MakeRefPtr<CustomFileInterface>();
 		manager = Manager::Create(instanceMaxCount);
 		renderer =
