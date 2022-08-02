@@ -451,6 +451,11 @@ extern "C"
 		context->manager->SetDynamicInput(handle, index, value);
 	}
 
+	void EXPORT EffekseerSendTrigger(EfkWebViewer::Context* context, int handle, int32_t index)
+	{
+		context->manager->SendTrigger(handle, index);
+	}
+
 	void EXPORT EffekseerSetAllColor(EfkWebViewer::Context* context, int handle, float r, float g, float b, float a)
 	{
 		Color color = Color(r, g, b, a);
