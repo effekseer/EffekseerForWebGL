@@ -41,6 +41,7 @@ const effekseer = (() => {
       SetTargetLocation: Module.cwrap("EffekseerSetTargetLocation", "void", ["number", "number", "number", "number", "number"]),
       GetDynamicInput: Module.cwrap("EffekseerGetDynamicInput", "number", ["number", "number", "number"]),
       SetDynamicInput: Module.cwrap("EffekseerSetDynamicInput", "void", ["number", "number", "number", "number"]),
+      SendTrigger: Module.cwrap("EffekseerSendTrigger", "void", ["number", "number", "number"]),
       SetPaused: Module.cwrap("EffekseerSetPaused", "void", ["number", "number", "number"]),
       SetShown: Module.cwrap("EffekseerSetShown", "void", ["number", "number", "number"]),
       SetSpeed: Module.cwrap("EffekseerSetSpeed", "void", ["number", "number", "number"]),
@@ -389,6 +390,14 @@ const effekseer = (() => {
      */
     setDynamicInput(index, value) {
       Core.SetDynamicInput(this.context.nativeptr, this.native, index, value);
+    }
+    
+    /**
+     * Sends the specified trigger to the currently playing effect
+     * @param {number} index trigger index
+     */
+    sendTrigger(index) {
+      Core.SendTrigger(this.context.nativeptr, this.native, index);
     }
 
     /**

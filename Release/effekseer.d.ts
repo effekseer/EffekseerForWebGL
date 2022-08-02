@@ -428,6 +428,12 @@ declare namespace effekseer {
         setDynamicInput(index: number, value: number): void;
 
         /**
+         * Sends the specified trigger to the currently playing effect
+         * @param {number} index trigger index
+         */
+        sendTrigger(index: number): void;
+
+        /**
          * Set the paused flag of this effect instance.
          * if specified true, this effect playing will not advance.
          * @param {boolean} paused Paused flag
