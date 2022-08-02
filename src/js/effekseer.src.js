@@ -396,7 +396,7 @@ const effekseer = (() => {
      * Sends the specified trigger to the currently playing effect
      * @param {number} index trigger index
      */
-     sendTrigger(index) {
+    sendTrigger(index) {
       Core.SendTrigger(this.context.nativeptr, this.native, index);
     }
 
