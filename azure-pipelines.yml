@@ -116,7 +116,7 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: 'Release'
-    ArtifactName: 'EffekseerForWebGL162b'
+    ArtifactName: 'EffekseerForWebGL170Beta2'
     publishLocation: 'Container'
 
 - task: Bash@3
