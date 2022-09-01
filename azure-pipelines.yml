@@ -6,7 +6,7 @@ trigger:
     - 16x
 
 pool:
-  vmImage: 'macos-11'
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: Bash@3
