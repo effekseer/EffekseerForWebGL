@@ -2,6 +2,7 @@ import unittest
 import os
 import time
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import shutil
 import filecmp
@@ -38,6 +39,7 @@ class DisplayTest(unittest.TestCase):
         options.add_argument('--disable-features=CrossSiteDocumentBlockingIfIsolatin')
         options.add_argument('--enable-webgl')
         options.add_argument('--enable-asm-webassembly')
+        options.add_argument('--headless')
 
         d = DesiredCapabilities.CHROME
         d['goog:loggingPrefs'] = { 'browser':'ALL' }
@@ -59,11 +61,11 @@ class DisplayTest(unittest.TestCase):
             name = os.path.basename(path)
             self.browser.get("file://"+ os.path.abspath('index.html'))
             time.sleep(1)
-            self.browser.find_element_by_id(name).click()
+            self.browser.find_element(By.ID, name).click()
             time.sleep(1)
             for step in range(1) :
                 with self.subTest(name=name) :
-                    self.browser.find_element_by_id('step').click()
+                    self.browser.find_element(By.ID, 'step').click()
                     time.sleep(1)
                     with open('screenshots/' + name +'_step' + str(step) + '.png', 'wb') as f:
                         f.write(self.capturePng())

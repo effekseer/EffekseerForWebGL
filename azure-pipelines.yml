@@ -6,7 +6,7 @@ trigger:
     - 16x
 
 pool:
-  vmImage: 'macos-10.15'
+  vmImage: 'macos-latest'
 
 steps:
 - task: Bash@3
@@ -31,7 +31,7 @@ steps:
 
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.6'
+    versionSpec: '3.7'
 
 - task: Bash@3
   inputs:
@@ -124,8 +124,8 @@ steps:
     targetType: 'inline'
     script: |
       python3 -m pip install --upgrade pip
-      pip3 install chromedriver-binary==95.0.4638.54.0
-      pip3 install selenium==3.141.0
+      pip3 install chromedriver-binary==105.0.5195.19.0
+      pip3 install selenium==4.4.3
       pip3 install requests
 
 - task: Bash@3
