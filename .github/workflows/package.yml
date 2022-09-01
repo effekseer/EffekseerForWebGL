@@ -35,6 +35,12 @@ jobs:
         emcmake cmake ../src/ -DAS_WASM=OFF
         make
 
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.7'
+        architecture: 'x64'
+
     - name: pip
       shell: bash
       run: |
