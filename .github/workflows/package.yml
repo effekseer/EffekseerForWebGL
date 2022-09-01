@@ -8,6 +8,11 @@ on:
       - 16x      
     tags:
       - v*
+  pull_request:
+    branches:
+      - master
+      - 15x
+      - 16x
 
 jobs:
   build:
