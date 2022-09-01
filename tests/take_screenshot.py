@@ -39,6 +39,7 @@ class DisplayTest(unittest.TestCase):
         options.add_argument('--disable-features=CrossSiteDocumentBlockingIfIsolatin')
         options.add_argument('--enable-webgl')
         options.add_argument('--enable-asm-webassembly')
+        options.add_argument('--headless')
 
         d = DesiredCapabilities.CHROME
         d['goog:loggingPrefs'] = { 'browser':'ALL' }
