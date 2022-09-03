@@ -26,6 +26,8 @@ class DisplayTest(unittest.TestCase):
             files.append(file.replace('\\', '/'))
         for file in glob.glob('../TestData/Effects/16/*.efkefc', recursive=True) :
             files.append(file.replace('\\', '/'))
+        for file in glob.glob('../TestData/Effects/17/*.efkefc', recursive=True) :
+            files.append(file.replace('\\', '/'))
         for file in glob.glob('../ResourceData/samples/03_Hanmado01/Effect/*.efkefc', recursive=True) :
             files.append(file.replace('\\', '/'))
         with open("test-list.json", "w") as f:
