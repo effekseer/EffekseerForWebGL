@@ -125,7 +125,7 @@ jobs:
 
     - uses: actions/upload-artifact@v1
       with:
-        name: EffekseerForWebGL170Beta3
+        name: EffekseerForWebGL170
         path: Release
   
     - name: pip

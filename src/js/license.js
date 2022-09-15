@@ -1,5 +1,5 @@
 /*!
- *  Effekseer for WebGL v1.70Beta2
+ *  Effekseer for WebGL v1.70
  *  https://github.com/effekseer/EffekseerForWebGL
  *
  *  This software is licensed under the MIT License.
