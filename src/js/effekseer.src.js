@@ -638,6 +638,13 @@ const effekseer = (() => {
         }
       }
       window.gl = this._gl;
+
+      window.ext_timer = window.gl.getExtension("EXT_disjoint_timer_query_webgl2");
+      this._availableList = [];
+      this._usingList = [];
+      this._drawCount = 0;
+      this._accumulatedDrawTime = 0;
+
       // Setup native OpenGL context
       this.ctx = Module.GL.registerContext(webglContext, {
         majorVersion: 1, minorVersion: 0, enableExtensionsByDefault: enableExtensionsByDefault
@@ -678,6 +685,10 @@ const effekseer = (() => {
      * Main rendering.
      */
     draw() {
+      // Begin draw time query
+      const availableQuery = this._availableList.length ? this._availableList.shift() : this._gl.createQuery();
+      this._gl.beginQuery(window.ext_timer.TIME_ELAPSED_EXT, availableQuery);
+
       this._makeContextCurrent();
 
       let program = null;
@@ -700,6 +711,33 @@ const effekseer = (() => {
 
         // Restore WebGL states
         this._gl.useProgram(program);
+      }
+
+      // End draw time query
+      this._gl.endQuery(window.ext_timer.TIME_ELAPSED_EXT);
+      this._usingList.push(availableQuery);
+
+      // Get draw time query
+      const disjoint = this._gl.getParameter(window.ext_timer.GPU_DISJOINT_EXT);
+      if (disjoint) {
+        this._usingList.forEach(query => this._gl.deleteQuery(query));
+      } else {
+        const usingQuery = this._usingList.length ? this._usingList[0] : null;
+        if (usingQuery) {
+          const resultAvailable = this._gl.getQueryParameter(usingQuery, this._gl.QUERY_RESULT_AVAILABLE);
+          if (resultAvailable) {
+            const result = this._gl.getQueryParameter(usingQuery, this._gl.QUERY_RESULT);
+            this._accumulatedDrawTime += result;
+            if (this._drawCount >= 300) {
+              const averageDrawTime = this._accumulatedDrawTime / this._drawCount;
+              this._drawCount = 0;
+              this._accumulatedDrawTime = 0;
+              console.log(`Average draw time: ${averageDrawTime} nano seconds`);
+            }
+            this._drawCount++;
+            this._availableList.push(this._usingList.shift());
+          }
+        }
       }
     }
 
