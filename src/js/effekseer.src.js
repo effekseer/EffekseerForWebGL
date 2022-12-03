@@ -626,6 +626,8 @@ const effekseer = (() => {
       var squareMaxCount = 10000;
       var enableExtensionsByDefault = true;
 
+      window.gl = this._gl;
+      
       if (settings) {
         if ("instanceMaxCount" in settings) {
           instanceMaxCount = settings.instanceMaxCount;
@@ -636,14 +638,15 @@ const effekseer = (() => {
         if ("enableExtensionsByDefault" in settings) {
           enableExtensionsByDefault = settings.enableExtensionsByDefault;
         }
+        if ("enableTimerQuery" in settings && settings.enableTimerQuery) {
+          window.ext_timer = window.gl.getExtension("EXT_disjoint_timer_query_webgl2");
+          this._availableList = [];
+          this._usingList = [];
+          this._drawCount = 0;
+          this._accumulatedDrawTime = 0;
+        }
       }
-      window.gl = this._gl;
 
-      window.ext_timer = window.gl.getExtension("EXT_disjoint_timer_query_webgl2");
-      this._availableList = [];
-      this._usingList = [];
-      this._drawCount = 0;
-      this._accumulatedDrawTime = 0;
 
       // Setup native OpenGL context
       this.ctx = Module.GL.registerContext(webglContext, {
@@ -685,9 +688,7 @@ const effekseer = (() => {
      * Main rendering.
      */
     draw() {
-      // Begin draw time query
-      const availableQuery = this._availableList.length ? this._availableList.shift() : this._gl.createQuery();
-      this._gl.beginQuery(window.ext_timer.TIME_ELAPSED_EXT, availableQuery);
+      const availableQuery = this.startQuery();
 
       this._makeContextCurrent();
 
@@ -713,29 +714,45 @@ const effekseer = (() => {
         this._gl.useProgram(program);
       }
 
-      // End draw time query
-      this._gl.endQuery(window.ext_timer.TIME_ELAPSED_EXT);
-      this._usingList.push(availableQuery);
+      this.endQuery(availableQuery);
+    }
 
-      // Get draw time query
-      const disjoint = this._gl.getParameter(window.ext_timer.GPU_DISJOINT_EXT);
-      if (disjoint) {
-        this._usingList.forEach(query => this._gl.deleteQuery(query));
-      } else {
-        const usingQuery = this._usingList.length ? this._usingList[0] : null;
-        if (usingQuery) {
-          const resultAvailable = this._gl.getQueryParameter(usingQuery, this._gl.QUERY_RESULT_AVAILABLE);
-          if (resultAvailable) {
-            const result = this._gl.getQueryParameter(usingQuery, this._gl.QUERY_RESULT);
-            this._accumulatedDrawTime += result;
-            if (this._drawCount >= 300) {
-              const averageDrawTime = this._accumulatedDrawTime / this._drawCount;
-              this._drawCount = 0;
-              this._accumulatedDrawTime = 0;
-              console.log(`Average draw time: ${averageDrawTime} nano seconds`);
+    startQuery() {
+      if (window.ext_timer != null) {
+        // Begin draw time query
+        const availableQuery = this._availableList.length ? this._availableList.shift() : this._gl.createQuery();
+        this._gl.beginQuery(window.ext_timer.TIME_ELAPSED_EXT, availableQuery);
+
+        return availableQuery;
+      }
+    }
+
+    endQuery(availableQuery) {
+      if (window.ext_timer != null) {
+        // End draw time query
+        this._gl.endQuery(window.ext_timer.TIME_ELAPSED_EXT);
+        this._usingList.push(availableQuery);
+
+        // Get draw time query
+        const disjoint = this._gl.getParameter(window.ext_timer.GPU_DISJOINT_EXT);
+        if (disjoint) {
+          this._usingList.forEach(query => this._gl.deleteQuery(query));
+        } else {
+          const usingQuery = this._usingList.length ? this._usingList[0] : null;
+          if (usingQuery) {
+            const resultAvailable = this._gl.getQueryParameter(usingQuery, this._gl.QUERY_RESULT_AVAILABLE);
+            if (resultAvailable) {
+              const result = this._gl.getQueryParameter(usingQuery, this._gl.QUERY_RESULT);
+              this._accumulatedDrawTime += result;
+              if (this._drawCount >= 300) {
+                const averageDrawTime = this._accumulatedDrawTime / this._drawCount;
+                this._drawCount = 0;
+                this._accumulatedDrawTime = 0;
+                console.log(`Average draw time: ${averageDrawTime} nano seconds`);
+              }
+              this._drawCount++;
+              this._availableList.push(this._usingList.shift());
             }
-            this._drawCount++;
-            this._availableList.push(this._usingList.shift());
           }
         }
       }
