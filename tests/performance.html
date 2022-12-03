@@ -122,7 +122,13 @@
             // effekseer.setSetLogEnabled(true);
             renderContext.context = effekseer.createContext();
 
-            renderContext.context.init(renderContext.renderer.context);
+            renderContext.context.init(renderContext.renderer.context, {
+                enableTimerQuery: true, // enable GPU timer query
+                onTimerQueryReport: (nanoTime) => { // called when GPU timer query is reported
+                    console.log(`Effekseer timer query report: ${nanoTime} ns`);
+                },
+                timerQueryReportIntervalCount: 60, // interval dray count to report GPU timer query
+            });
             
             // renderContext.context.setRestorationOfStatesFlag(false);
 
