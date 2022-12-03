@@ -39,7 +39,7 @@ asm.js version
 
 ## JavaScript
 
-### 1.6
+### 1.7
 
 ```js
 
@@ -114,31 +114,8 @@ if(useWASM) {
   main();
 }
 
-```
+For more information
 
-# How to develop
+- [How to use](docs/HowToUse.md)
 
-## Requirements
-
-- git
-- python
-- cmake
-- mingw-make (Windows only)
-- Emscripten 1.38.38 or later (Add directory to PATH)
-
-## Clone the repositories
-
-```
-git clone https://github.com/effekseer/EffekseerForWebGL
-cd EffekseerForWebGL
-git submodule update --init
-```
-
-## Build
-
-```
-emsdk install latest
-emsdk activate latest
-python -m pip install dukpy jsmin
-python build.py
-```
+- [How to build](docs/HowToBuild.md)
