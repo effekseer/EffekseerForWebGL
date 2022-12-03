@@ -114,6 +114,8 @@ if(useWASM) {
   main();
 }
 
+```
+
 For more information
 
 - [How to use](docs/HowToUse.md)
