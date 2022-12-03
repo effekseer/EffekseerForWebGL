@@ -644,6 +644,15 @@ const effekseer = (() => {
           this._usingList = [];
           this._drawCount = 0;
           this._accumulatedDrawTime = 0;
+
+          if ("onTimerQueryReport" in settings) {
+            this._onTimerQueryReport = settings.onTimerQueryReport;
+          }
+          if ("timerQueryReportIntervalCount" in settings) {
+            this._timerQueryReportIntervalCount = settings.timerQueryReportIntervalCount;
+          } else {
+            this._timerQueryReportIntervalCount = 300;
+          }
         }
       }
 
@@ -688,7 +697,7 @@ const effekseer = (() => {
      * Main rendering.
      */
     draw() {
-      const availableQuery = this.startQuery();
+      const availableQuery = this._startQuery();
 
       this._makeContextCurrent();
 
@@ -714,10 +723,10 @@ const effekseer = (() => {
         this._gl.useProgram(program);
       }
 
-      this.endQuery(availableQuery);
+      this._endQuery(availableQuery);
     }
 
-    startQuery() {
+    _startQuery() {
       if (window.ext_timer != null) {
         // Begin draw time query
         const availableQuery = this._availableList.length ? this._availableList.shift() : this._gl.createQuery();
@@ -727,7 +736,7 @@ const effekseer = (() => {
       }
     }
 
-    endQuery(availableQuery) {
+    _endQuery(availableQuery) {
       if (window.ext_timer != null) {
         // End draw time query
         this._gl.endQuery(window.ext_timer.TIME_ELAPSED_EXT);
@@ -744,11 +753,13 @@ const effekseer = (() => {
             if (resultAvailable) {
               const result = this._gl.getQueryParameter(usingQuery, this._gl.QUERY_RESULT);
               this._accumulatedDrawTime += result;
-              if (this._drawCount >= 300) {
+              if (this._drawCount >= this._timerQueryReportIntervalCount) {
                 const averageDrawTime = this._accumulatedDrawTime / this._drawCount;
                 this._drawCount = 0;
                 this._accumulatedDrawTime = 0;
-                console.log(`Average draw time: ${averageDrawTime} nano seconds`);
+                if (this._onTimerQueryReport != null) {
+                  this._onTimerQueryReport(averageDrawTime);
+                }
               }
               this._drawCount++;
               this._availableList.push(this._usingList.shift());
