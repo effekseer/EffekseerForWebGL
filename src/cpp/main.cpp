@@ -165,14 +165,14 @@ public:
 	Context() = default;
 	~Context() = default;
 
-	bool Init(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled)
+	bool Init(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled, bool isPremultipliedAlphaEnabled)
 	{
 		Effekseer::SetLogger([](Effekseer::LogType type, const std::string& s) -> void { PrintEffekseerLog("EffekseerLog : " + s); });
 
 		fileInterface = Effekseer::MakeRefPtr<CustomFileInterface>();
 		manager = Manager::Create(instanceMaxCount);
 		renderer =
-			EffekseerRendererGL::Renderer::Create(squareMaxCount, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2, isExtentionsEnabled);
+			EffekseerRendererGL::Renderer::Create(squareMaxCount, EffekseerRendererGL::OpenGLDeviceType::OpenGLES2, isExtentionsEnabled, isPremultipliedAlphaEnabled);
 		sound = EffekseerSound::Sound::Create(16);
 
 		manager->SetSpriteRenderer(renderer->CreateSpriteRenderer());
@@ -275,7 +275,7 @@ extern "C"
 {
 	using namespace Effekseer;
 
-	EfkWebViewer::Context* EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled)
+	EfkWebViewer::Context* EXPORT EffekseerInit(int instanceMaxCount, int squareMaxCount, bool isExtentionsEnabled, bool isPremultipliedAlphaEnabled)
 	{
 		auto context = new EfkWebViewer::Context();
 		// Initialize OpenAL
@@ -284,7 +284,7 @@ extern "C"
 		alcMakeContextCurrent(context->alcContext);
 
 		// Initialize viewer
-		if (!context->Init(instanceMaxCount, squareMaxCount, isExtentionsEnabled))
+		if (!context->Init(instanceMaxCount, squareMaxCount, isExtentionsEnabled, isPremultipliedAlphaEnabled))
 		{
 			delete context;
 			return nullptr;

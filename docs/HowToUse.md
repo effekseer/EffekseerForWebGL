@@ -15,6 +15,14 @@ effekseerContext.init(webGLRenderingContext, {
 });
 ```
 
+## Support Premultiplied alpha
+
+You need to specify enablePremultipliedAlpha in settings to render as Premultiplied alpha
+
+```js
+context.init(webGLRenderingContext, { enablePremultipliedAlpha: true });
+```
+
 ## How to use with Threee.js PostProcessing
 
 Please read this code
