@@ -9,7 +9,7 @@ const effekseer = (() => {
   let _onRuntimeInitialized = () => {
     // C++ functions
     Core = {
-      Init: Module.cwrap("EffekseerInit", "number", ["number", "number", "number"]),
+      Init: Module.cwrap("EffekseerInit", "number", ["number", "number", "number", "number"]),
       Terminate: Module.cwrap("EffekseerTerminate", "void", ["number"]),
       Update: Module.cwrap("EffekseerUpdate", "void", ["number", "number"]),
       BeginUpdate: Module.cwrap("EffekseerBeginUpdate", "void", ["number"]),
@@ -625,6 +625,7 @@ const effekseer = (() => {
       var instanceMaxCount = 4000;
       var squareMaxCount = 10000;
       var enableExtensionsByDefault = true;
+      var enablePremultipliedAlpha = false;
 
       window.gl = this._gl;
       
@@ -637,6 +638,9 @@ const effekseer = (() => {
         }
         if ("enableExtensionsByDefault" in settings) {
           enableExtensionsByDefault = settings.enableExtensionsByDefault;
+        }
+        if ("enablePremultipliedAlpha" in settings) {
+          enablePremultipliedAlpha = settings.enablePremultipliedAlpha;
         }
         if ("enableTimerQuery" in settings && settings.enableTimerQuery) {
           window.ext_timer = window.gl.getExtension("EXT_disjoint_timer_query_webgl2");
@@ -667,7 +671,7 @@ const effekseer = (() => {
 
       // Initializes Effekseer core.
       this.contextStates.save();
-      this.nativeptr = Core.Init(instanceMaxCount, squareMaxCount, enableExtensionsByDefault);
+      this.nativeptr = Core.Init(instanceMaxCount, squareMaxCount, enableExtensionsByDefault, enablePremultipliedAlpha);
       this.contextStates.restore();
     }
 
