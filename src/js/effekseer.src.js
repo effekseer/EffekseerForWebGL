@@ -923,15 +923,15 @@ const effekseer = (() => {
     }
 
     /**
-     * Load the effect data file (and resources).
-     * @param {string|ArrayBuffer} path A URL/ArrayBuffer of effect package file (*.efkpkg)
+     * Load the effect package file (resources included in the package).
+     * @param {string|ArrayBuffer} data A URL/ArrayBuffer of effect package file (*.efkpkg)
      * @param {Object} Unzip a Unzip object
      * @param {number} scale A magnification rate for the effect. The effect is loaded magnificating with this specified number.
      * @param {function=} onload A function that is called at loading complete
      * @param {function=} onerror A function that is called at loading error. First argument is a message. Second argument is an url.
      * @returns {EffekseerEffect} The effect data
      */
-    loadEffectPackage(path, Unzip, scale = 1.0, onload, onerror) {
+    loadEffectPackage(data, Unzip, scale = 1.0, onload, onerror) {
       if (Unzip == null)
       this._makeContextCurrent();
 
@@ -939,15 +939,15 @@ const effekseer = (() => {
       effect.scale = scale;
       effect.onload = onload;
       effect.onerror = onerror;
-      
-      if (typeof path === "string") {
-        const dirIndex = path.lastIndexOf("/");
-        effect.baseDir = (dirIndex >= 0) ? path.slice(0, dirIndex + 1) : "";
-        _loadBinFile(path, buffer => {
+
+      if (typeof data === "string") {
+        const dirIndex = data.lastIndexOf("/");
+        effect.baseDir = (dirIndex >= 0) ? data.slice(0, dirIndex + 1) : "";
+        _loadBinFile(data, buffer => {
           effect._loadFromPackage(buffer, Unzip);
         }, effect.onerror);
-      } else if (path instanceof ArrayBuffer) {
-        const buffer = path;
+      } else if (data instanceof ArrayBuffer) {
+        const buffer = data;
         effect._loadFromPackage(buffer, Unzip);
       }
 
