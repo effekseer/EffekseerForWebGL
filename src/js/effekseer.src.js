@@ -532,12 +532,20 @@ const effekseer = (() => {
       this.current_active_texture_id = null;
 
       this.ext_vao = this._gl.getExtension('OES_vertex_array_object');
+      let vao = null;
       if (this.ext_vao != null) {
-        this.effekseer_vao = this.ext_vao.createVertexArrayOES();
+        vao = this.ext_vao.createVertexArrayOES();
       }
       else if ('createVertexArray' in this._gl) {
         this.isWebGL2VAOEnabled = true;
-        this.effekseer_vao = this._gl.createVertexArray();
+        vao = this._gl.createVertexArray();
+      }
+      if (vao) {
+        let GL = Module.GL;
+        let id = GL.getNewId(GL.vaos);
+        vao.name = id;
+        GL.vaos[id] = vao;
+        this.effekseer_vao = vao;
       }
     }
 
