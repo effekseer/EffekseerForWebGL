@@ -3,7 +3,7 @@ import { defineConfig } from 'rollup';
 import replace from '@rollup/plugin-replace';
 
 export default defineConfig({
-    input: 'src/js/main.js',
+    input: 'src/js/main.mjs',
     plugins: [
         replace({
             preventAssignment: true,

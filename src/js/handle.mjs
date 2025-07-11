@@ -1,8 +1,8 @@
-import Effekseer from '../Effekseer.js';
+import Effekseer from '../Effekseer.mjs';
 
 export class Handle {
     /**
-     * @param {import('./context.js').Context} context
+     * @param {import('./context.mjs').Context} context
      * @param {number} nativeptr
      */
     constructor(context, nativeptr) {

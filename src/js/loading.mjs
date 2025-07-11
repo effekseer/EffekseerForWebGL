@@ -4,7 +4,7 @@
 export const _resourcesMap = {};
 
 /**
- * @type {import('./effect.js').Effect}
+ * @type {import('./effect.mjs').Effect}
  */
 let _loadingEffect = null;
 
@@ -81,8 +81,8 @@ const _getMimeType = (path) => {
 }
 
 /**
- * @param {import('../Effekseer.js').TheImage} image 
- * @returns {import('../Effekseer.js').TheImage}
+ * @param {import('../Effekseer.mjs').TheImage} image 
+ * @returns {import('../Effekseer.mjs').TheImage}
  */
 export const _drawEffectImage = (image) => {
     if (!_isPowerOfTwo(image.width) || !_isPowerOfTwo(image.height)) {
@@ -101,7 +101,7 @@ export const _drawEffectImage = (image) => {
 
 /**
  * @param {string} path 
- * @returns {import('../Effekseer.js').TheImage | null}
+ * @returns {import('../Effekseer.mjs').TheImage | null}
  */
 export const _loadEffectImage = (path) => {
     const effect = _loadingEffect;

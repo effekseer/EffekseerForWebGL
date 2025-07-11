@@ -1,9 +1,9 @@
-import Effekseer from '../Effekseer.js';
-import { _resourcesMap, _setLoadingEffect } from './loading.js';
+import Effekseer from '../Effekseer.mjs';
+import { _resourcesMap, _setLoadingEffect } from './loading.mjs';
 
 export class Effect {
     /**
-     * @type {import('./context.js').Context}
+     * @type {import('./context.mjs').Context}
      */
     context;
     /**
@@ -26,7 +26,7 @@ export class Effect {
      * @type {{
      * path: string,
      * isLoaded: boolean,
-     * image: import('../Effekseer.js').TheImage,
+     * image: import('../Effekseer.mjs').TheImage,
      * customFile: ArrayBufferLike,
      * isRequired: boolean}[]}
      */
@@ -49,7 +49,7 @@ export class Effect {
     redirect;
 
     /**
-     * @param {import('./context.js').Context} context
+     * @param {import('./context.mjs').Context} context
      */
     constructor(context) {
         this.context = context;

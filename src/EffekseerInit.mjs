@@ -1,4 +1,4 @@
-import { createContext, releaseContext, Context, Effect, Handle } from './js/main.js';
+import { createContext, releaseContext, Context, Effect, Handle } from './js/main.mjs';
 
 /**
  * @param {{}} [moduleArg] 
@@ -8,7 +8,7 @@ import { createContext, releaseContext, Context, Effect, Handle } from './js/mai
  * Context: typeof Context;
  * Effect: typeof Effect;
  * Handle: typeof Handle;
- * } & import('./Effekseer.js').EffekseerModule>}
+ * } & import('./Effekseer.mjs').EffekseerModule>}
  */
 const EffekseerInit = (moduleArg = {}) => { return; }
 export default EffekseerInit;

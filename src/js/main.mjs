@@ -1,6 +1,6 @@
-import { Context } from './context.js';
-import { Effect } from './effect.js';
-import { Handle } from './handle.js';
+import { Context } from './context.mjs';
+import { Effect } from './effect.mjs';
+import { Handle } from './handle.mjs';
 
 /**
  * Create a context to render in multiple scenes
@@ -31,5 +31,5 @@ export const releaseContext = (context) => {
     context.native = null;
 }
 
-export { _loadEffectImage, _loadEffectCustomFile } from './loading.js';
+export { _loadEffectImage, _loadEffectCustomFile } from './loading.mjs';
 export { Context, Effect, Handle };

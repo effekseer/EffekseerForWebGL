@@ -1,8 +1,8 @@
-import Effekseer from '../Effekseer.js';
-import { _loadBuffer } from './loading.js';
-import { Effect } from './effect.js';
-import { Handle } from './handle.js';
-import { getProperty } from './utils.js';
+import Effekseer from '../Effekseer.mjs';
+import { _loadBuffer } from './loading.mjs';
+import { Effect } from './effect.mjs';
+import { Handle } from './handle.mjs';
+import { getProperty } from './utils.mjs';
 
 class ContextStates {
     /**
@@ -113,7 +113,7 @@ export class Context {
     ctx;
 
     /**
-     * @type {import('../../build_wasm/types.js').NativeService}
+     * @type {import('../../build_wasm/types.d.ts').NativeService}
      */
     native;
 
@@ -122,7 +122,7 @@ export class Context {
     }
 
     /**
-     * @param {import('../Effekseer.js').EffekseerSettings} obj 
+     * @param {import('../Effekseer.mjs').EffekseerSettings} obj 
      */
     _getEffekseerSettings(obj) {
         return {
@@ -134,7 +134,7 @@ export class Context {
     }
 
     /**
-     * @param {import('../Effekseer.js').EmscriptenWebGLContextAttributes} obj 
+     * @param {import('../Effekseer.mjs').EmscriptenWebGLContextAttributes} obj 
      */
     _getEmscriptenWebGLContextAttributes(obj) {
         return {
@@ -157,8 +157,8 @@ export class Context {
 
     /**
      * @param {WebGL2RenderingContext} webglContext
-     * @param {import('../Effekseer.js').EffekseerSettings} settings
-     * @param {import('../Effekseer.js').EmscriptenWebGLContextAttributes} attributes
+     * @param {import('../Effekseer.mjs').EffekseerSettings} settings
+     * @param {import('../Effekseer.mjs').EmscriptenWebGLContextAttributes} attributes
      */
     init(webglContext, settings, attributes) {
         this._gl = webglContext;
