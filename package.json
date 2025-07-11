@@ -4,7 +4,8 @@
     "version": "0.0.1",
     "main": "Release/effekseer.js",
     "scripts": {
-        "build": "npx rollup -c"
+        "build": "npx rollup -c",
+        "types": "npx esm-d-ts gen src/EffekseerInit.js -o Release/effekseer.d.ts"
     },
     "devDependencies": {
         "@rollup/plugin-replace": "^6.0.2",
