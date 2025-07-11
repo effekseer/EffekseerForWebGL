@@ -1,7 +1,6 @@
 
 import { defineConfig } from 'rollup';
 import replace from '@rollup/plugin-replace';
-import { generateDTS } from '@typhonjs-build-test/esm-d-ts';
 
 export default defineConfig({
     input: 'src/js/main.js',
@@ -12,10 +11,6 @@ export default defineConfig({
             values: {
                 'this.Module = this.Module || {}': 'Module'
             }
-        }),
-        generateDTS.plugin({
-            input: 'src/EffekseerInit.js',
-            output: 'Release/effekseer.d.ts'
         })
     ],
     output: {

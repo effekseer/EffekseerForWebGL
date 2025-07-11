@@ -28,6 +28,11 @@ def compile(build_dir, target_dir, option):
 
     os.chdir('../')
 
+    if platform.system() == 'Windows':
+        subprocess.check_call(['cmd', '/c', 'npm run types'])
+    else:
+        subprocess.check_call(['sh', '-c', 'npm run types'])
+
 compile('build_wasm', '../src/', '-G Ninja')
 
 shutil.copy('build_wasm/effekseer.js', 'Release/effekseer.js')

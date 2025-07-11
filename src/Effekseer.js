@@ -34,7 +34,7 @@
  */
 
 /**
- * @typedef {import('../build_wasm/types.js').MainModule} EffekseerModule
+ * @typedef {import('../build_wasm/types.d.ts').MainModule} EffekseerModule
  */
 
 /**
