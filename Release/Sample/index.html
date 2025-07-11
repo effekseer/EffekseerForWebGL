@@ -63,7 +63,7 @@
       renderer.setSize(width, height);
       //document.body.appendChild( renderer.domElement );
 
-      effekseer.initRuntime('../effekseer.wasm', () => {
+      EffekseerInit().then((effekseer) => {
         context = effekseer.createContext();
 
         context.init(renderer.getContext());
@@ -125,14 +125,13 @@
 
         })();
 
-      }, () => { });
+      }).catch(reason => console.error(reason))
     };
     window.addEventListener('DOMContentLoaded', main, false);
 
   </script>
   <script src="three.min.js"></script>
   <script src="../effekseer.js"></script>
-  <!-- <script src="../effekseer_asmjs.js"></script> -->
 </body>
 
 </html>

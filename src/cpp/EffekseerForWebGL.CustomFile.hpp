@@ -1,13 +1,13 @@
-
 #pragma once
 
-#include "Effekseer.h"
+#include <Effekseer.h>
+
 #include <algorithm>
 #include <emscripten.h>
 #include <math.h>
 #include <stdlib.h>
 
-namespace EfkWebViewer
+namespace EffekseerForWebGL
 {
 class CustomFileReader : public Effekseer::FileReader
 {
@@ -39,7 +39,7 @@ public:
 	Effekseer::FileReaderRef OpenRead(const EFK_CHAR* path, bool isRequired)
 	{
 		// Request to load file
-		int loaded = EM_ASM_INT({ return Module._loadBinary(UTF16ToString($0), $1) != null; }, path, isRequired);
+		int loaded = EM_ASM_INT({ return Module._loadEffectCustomFile(UTF16ToString($0), $1) != null; }, path, isRequired);
 		if (!loaded)
 		{
 			return nullptr;
@@ -51,7 +51,7 @@ public:
 		// Copy data from arraybuffer
 		EM_ASM_INT(
 			{
-				var buffer = Module._loadBinary(UTF16ToString($0), $3);
+				var buffer = Module._loadEffectCustomFile(UTF16ToString($0), $3);
 				var memptr = _malloc(buffer.byteLength);
 				HEAP8.set(new Uint8Array(buffer), memptr);
 				setValue($1, memptr, "i32");
@@ -76,4 +76,4 @@ public:
 
 	Effekseer::FileWriterRef OpenWrite(const EFK_CHAR* path) override { return nullptr; }
 };
-} // namespace EfkWebViewer
+} // namespace EffekseerForWebGL

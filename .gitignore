@@ -1,4 +1,8 @@
-build_asmjs
-build_wasm
-Release
-!Release/effekseer.d.ts
+.dts/
+.vscode/
+
+build_wasm/
+
+node_modules/
+
+Release/

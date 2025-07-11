@@ -3,22 +3,25 @@
 - git
 - python
 - cmake
-- mingw-make (Windows only)
-- Emscripten 1.38.38 or later (Add directory to PATH)
+- ninja
+- Emscripten
 
 ## Clone the repositories
 
 ```
-git clone https://github.com/effekseer/EffekseerForWebGL
+git clone https://github.com/emscripten-core/emsdk.git
+cd emsdk
+./emsdk install latest
+./emsdk activate latest
+
+git clone https://github.com/Watunder/EffekseerForWebGL
 cd EffekseerForWebGL
-git submodule update --init
+git submodule update --init --depth 1
 ```
 
 ## Build
 
 ```
-emsdk install latest
-emsdk activate latest
-python -m pip install dukpy jsmin
+cd /path/to/EffekseerForWebGL
 python build.py
 ```

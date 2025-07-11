@@ -1,0 +1,15 @@
+{
+    "type": "module",
+    "name": "effekseer",
+    "version": "0.0.1",
+    "main": "Release/effekseer.js",
+    "scripts": {
+        "build": "npx rollup -c"
+    },
+    "devDependencies": {
+        "@rollup/plugin-replace": "^6.0.2",
+        "@typhonjs-build-test/esm-d-ts": "^0.2.2",
+        "rollup": "npm:@rollup/wasm-node@^4.44.2",
+        "typescript": "^5.8.3"
+    }
+}
