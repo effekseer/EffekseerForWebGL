@@ -96,10 +96,12 @@ export class Effect {
         Promise.all(dependencies.map(async (dependency) => {
             const buffer = await zip.file(dependency).async('arraybuffer');
             _resourcesMap[dependency] = buffer;
-        }))
-
-        const efkBuffer = await zip.file(efkFile).async('arraybuffer');
-        this._load(efkBuffer);
+        })).then(async () => {
+            const efkBuffer = await zip.file(efkFile).async('arraybuffer');
+            this._load(efkBuffer);
+        }).catch(reason => {
+            this.onerror(reason);
+        });
     }
 
     /**

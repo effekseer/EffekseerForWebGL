@@ -67,20 +67,6 @@ const _isPowerOfTwo = (value) => {
 }
 
 /**
- * @param {string} path 
- * @returns {string | null}
- */
-const _getMimeType = (path) => {
-    const extension = path.split('.').pop().toLowerCase();
-    const mimeTypes = {
-        'png': 'image/png',
-        'jpg': 'image/jpeg',
-        'jpeg': 'image/jpeg'
-    };
-    return mimeTypes[extension] ?? null;
-}
-
-/**
  * @param {import('../Effekseer.mjs').TheImage} image 
  * @returns {import('../Effekseer.mjs').TheImage}
  */
@@ -128,27 +114,23 @@ export const _loadEffectImage = (path) => {
         path = effect.redirect(path);
     }
 
-    const type = _getMimeType(path);
-
     const buffer = _resourcesMap[path];
     if (buffer) {
         const arrayBufferView = new Uint8Array(buffer);
-        const blob = new Blob([arrayBufferView], { type: type });
+        const blob = new Blob([arrayBufferView], { type: 'application/octet-stream' });
         path = URL.createObjectURL(blob);
     }
 
-    if (type) {
-        const image = new Image();
-        image.onload = () => {
-            resource.image = _drawEffectImage(image);
-            resource.isLoaded = true;
-            effect._update();
-        }
-        image.onerror = () => {
-            effect.onerror(new Error(`Failed to load the image from ${path}`));
-        }
-        image.src = path;
+    const image = new Image();
+    image.onload = () => {
+        resource.image = _drawEffectImage(image);
+        resource.isLoaded = true;
+        effect._update();
     }
+    image.onerror = () => {
+        effect.onerror(new Error(`Failed to load the image from ${path}`));
+    }
+    image.src = path;
 
     return null;
 }
