@@ -89,7 +89,7 @@ file(GLOB effekseer_src
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/Common/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/OpenGL/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/GLSLGenerator/*.cpp
-  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
+  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL/EffekseerSoundAL/*.cpp
   ${PROJECT_SOURCE_DIR}/cpp/*.cpp
 )
 
