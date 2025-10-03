@@ -48,7 +48,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.12'
         architecture: 'arm64'
 
     - name: pip
@@ -137,9 +137,8 @@ jobs:
       shell: bash
       run: |
         python3 -m pip install --upgrade pip
-        pip3 install chromedriver-binary==105.0.5195.19.0
-        pip3 install selenium==4.4.3
-        pip3 install requests
+        python3 -m pip install -U selenium
+        python3 -m pip install requests
 
     - name: test
       shell: bash
