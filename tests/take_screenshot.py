@@ -3,7 +3,6 @@ import os
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import shutil
 import filecmp
 import base64
@@ -43,10 +42,9 @@ class DisplayTest(unittest.TestCase):
         options.add_argument('--enable-asm-webassembly')
         options.add_argument('--headless')
 
-        d = DesiredCapabilities.CHROME
-        d['goog:loggingPrefs'] = { 'browser':'ALL' }
+        options.set_capability('goog:loggingPrefs', { 'browser':'ALL' })
 
-        self.browser = webdriver.Chrome(options=options, desired_capabilities=d)
+        self.browser = webdriver.Chrome(options=options)
         self.browser.set_window_size(320, 320)
 
     @classmethod
