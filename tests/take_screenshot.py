@@ -1,11 +1,9 @@
 import unittest
 import os
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
 import shutil
 import filecmp
 import base64
@@ -61,14 +59,15 @@ class DisplayTest(unittest.TestCase):
         # requests.post('https://echo.effekseer.org', files=files)
 
     def test_some_effects(self):
-        wait = WebDriverWait(self.browser, 30)
         for path in self.files:
             name = os.path.basename(path)
             self.browser.get("file://"+ os.path.abspath('index.html'))
-            wait.until(EC.element_to_be_clickable((By.ID, name))).click()
+            time.sleep(1)
+            self.browser.find_element(By.ID, name).click()
+            time.sleep(1)
             for step in range(1) :
                 with self.subTest(name=name) :
-                    wait.until(EC.element_to_be_clickable((By.ID, 'step'))).click()
+                    self.browser.find_element(By.ID, 'step').click()
                     time.sleep(1)
                     with open('screenshots/' + name +'_step' + str(step) + '.png', 'wb') as f:
                         f.write(self.capturePng())
