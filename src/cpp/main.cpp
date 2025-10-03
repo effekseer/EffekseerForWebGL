@@ -2,9 +2,9 @@
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
 #include <AL/alc.h>
-#include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
-#include <EffekseerRenderer/EffekseerRendererGL.RendererImplemented.h>
-#include <EffekseerRenderer/GraphicsDevice.h>
+#include <EffekseerRendererGL/EffekseerRendererGL.MaterialLoader.h>
+#include <EffekseerRendererGL/EffekseerRendererGL.RendererImplemented.h>
+#include <EffekseerRendererGL/GraphicsDevice.h>
 
 #include <algorithm>
 #include <emscripten.h>
