@@ -84,6 +84,7 @@ file(GLOB effekseer_src
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Model/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Noise/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/*.cpp
+  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/EffekseerRendererCommon/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL/EffekseerRendererGL/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/Common/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/OpenGL/*.cpp
