@@ -14,7 +14,8 @@ string(APPEND CMAKE_CXX_FLAGS
   " --memory-init-file 0"
 )
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set linker flags
 
