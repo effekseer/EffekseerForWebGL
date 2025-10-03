@@ -11,6 +11,7 @@ string(APPEND CMAKE_CXX_FLAGS
   " -O2"
   " -Wno-inconsistent-missing-override"
   " --llvm-lto 1"
+  " --memory-init-file 0"
 )
 
 set(CMAKE_CXX_STANDARD 14)
