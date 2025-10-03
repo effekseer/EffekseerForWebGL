@@ -125,7 +125,7 @@ jobs:
             outfile_js.write(data_es5)
             outfile_min_js.write(jsmin.jsmin(data_es5))
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: EffekseerForWebGL170
         path: Release
@@ -144,7 +144,7 @@ jobs:
         cd tests
         python3 take_screenshot.py
   
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: screenshots
         path: tests/screenshots
