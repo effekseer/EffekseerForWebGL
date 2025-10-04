@@ -17,8 +17,8 @@ git submodule update --init
 ## Build
 
 ```
-emsdk install latest
-emsdk activate latest
+emsdk install 3.1.54
+emsdk activate 3.1.54
 python -m pip install dukpy jsmin
 python build.py
 ```
