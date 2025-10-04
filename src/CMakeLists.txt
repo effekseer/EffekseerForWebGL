@@ -31,7 +31,7 @@ if(AS_WASM)
       " -s ALLOW_MEMORY_GROWTH=1"
       " -s EXPORT_NAME=\"'effekseer_native'\""
       " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" "
-      " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString']\" "
+      " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString', 'UTF16ToString', 'stackSave', 'stackRestore', 'stackAlloc']\" "
       " --post-js ${PROJECT_SOURCE_DIR}/js/post.js"
     )
 
@@ -47,7 +47,7 @@ else()
       " -s ALLOW_MEMORY_GROWTH=1"
       " -s EXPORT_NAME=\"'effekseer'\""
       " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" "
-      " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString']\" "
+      " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString', 'UTF16ToString', 'stackSave', 'stackRestore', 'stackAlloc']\" "
       " --post-js ${PROJECT_SOURCE_DIR}/js/post.js"
     )
 
