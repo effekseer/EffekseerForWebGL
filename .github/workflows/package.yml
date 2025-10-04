@@ -5,7 +5,8 @@ on:
     branches:    
       - master
       - 15x
-      - 16x      
+      - 16x
+      - 17x
     tags:
       - v*
   pull_request:
@@ -13,6 +14,7 @@ on:
       - master
       - 15x
       - 16x
+      - 17x
 
 jobs:
   build:
@@ -40,11 +42,14 @@ jobs:
         emcmake cmake ../src/ -DAS_WASM=OFF
         make
 
+    - name: Install gettext dependency
+      run: brew install gettext
+
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.7'
-        architecture: 'x64'
+        python-version: '3.12'
+        architecture: 'arm64'
 
     - name: pip
       shell: bash
@@ -123,7 +128,7 @@ jobs:
             outfile_js.write(data_es5)
             outfile_min_js.write(jsmin.jsmin(data_es5))
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: EffekseerForWebGL170
         path: Release
@@ -132,9 +137,8 @@ jobs:
       shell: bash
       run: |
         python3 -m pip install --upgrade pip
-        pip3 install chromedriver-binary==105.0.5195.19.0
-        pip3 install selenium==4.4.3
-        pip3 install requests
+        python3 -m pip install -U selenium
+        python3 -m pip install requests
 
     - name: test
       shell: bash
@@ -142,7 +146,7 @@ jobs:
         cd tests
         python3 take_screenshot.py
   
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: screenshots
         path: tests/screenshots

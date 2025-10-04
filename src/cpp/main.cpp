@@ -2,9 +2,9 @@
 #include "EffekseerRendererGL.h"
 #include "EffekseerSoundAL.h"
 #include <AL/alc.h>
-#include <EffekseerRenderer/EffekseerRendererGL.MaterialLoader.h>
-#include <EffekseerRenderer/EffekseerRendererGL.RendererImplemented.h>
-#include <EffekseerRenderer/GraphicsDevice.h>
+#include <EffekseerRendererGL/EffekseerRendererGL.MaterialLoader.h>
+#include <EffekseerRendererGL/EffekseerRendererGL.RendererImplemented.h>
+#include <EffekseerRendererGL/GraphicsDevice.h>
 
 #include <algorithm>
 #include <emscripten.h>
@@ -65,7 +65,7 @@ public:
 	{
 
 		// Request to load image
-		int loaded = EM_ASM_INT({ return Module._loadImage(UTF16ToString($0)) != null; }, path);
+               int loaded = EM_ASM_INT({ return Module._loadImage(Module.UTF16ToString($0)) != null; }, path);
 		if (!loaded)
 		{
 			// Loading incompleted
@@ -80,7 +80,7 @@ public:
 			{
 				var binding = GLctx.getParameter(GLctx.TEXTURE_BINDING_2D);
 
-				var img = Module._loadImage(UTF16ToString($0));
+                               var img = Module._loadImage(Module.UTF16ToString($0));
 				GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[$1]);
 
 				var pa = gl.getParameter(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL);

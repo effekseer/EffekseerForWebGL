@@ -14,7 +14,8 @@ string(APPEND CMAKE_CXX_FLAGS
   " --memory-init-file 0"
 )
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set linker flags
 
@@ -30,7 +31,7 @@ if(AS_WASM)
       " -s ALLOW_MEMORY_GROWTH=1"
       " -s EXPORT_NAME=\"'effekseer_native'\""
       " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" "
-      " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString']\" "
+      " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString', 'UTF16ToString', 'stackSave', 'stackRestore', 'stackAlloc']\" "
       " --post-js ${PROJECT_SOURCE_DIR}/js/post.js"
     )
 
@@ -46,7 +47,7 @@ else()
       " -s ALLOW_MEMORY_GROWTH=1"
       " -s EXPORT_NAME=\"'effekseer'\""
       " -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" "
-      " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString']\" "
+      " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString', 'UTF16ToString', 'stackSave', 'stackRestore', 'stackAlloc']\" "
       " --post-js ${PROJECT_SOURCE_DIR}/js/post.js"
     )
 
@@ -83,11 +84,12 @@ file(GLOB effekseer_src
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Model/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/Effekseer/Effekseer/Noise/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/*.cpp
-  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL/EffekseerRenderer/*.cpp
+  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererCommon/EffekseerRendererCommon/*.cpp
+  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerRendererGL/EffekseerRendererGL/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/Common/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/OpenGL/*.cpp
   ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerMaterialCompiler/GLSLGenerator/*.cpp
-  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL/EffekseerSound/*.cpp
+  ${EFFEKSEER_DIR}/Dev/Cpp/EffekseerSoundAL/EffekseerSoundAL/*.cpp
   ${PROJECT_SOURCE_DIR}/cpp/*.cpp
 )
 
