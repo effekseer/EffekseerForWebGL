@@ -1,3 +1,4 @@
+import argparse
 import sys
 import os
 import shutil
@@ -16,7 +17,7 @@ def compile(build_dir,target_dir, option, license_js, effekseer_core_js, effekse
                            "-G", "MinGW Makefiles", option, target_dir])
         subprocess.check_call(["mingw32-make"])
     else:
-        subprocess.check_call(["command", "emcmake", "cmake", option, target_dir])
+        subprocess.check_call(["emcmake", "cmake", option, target_dir])
         subprocess.check_call(["make"])
 
     outfile_js = open(effekseer_js, "w")
@@ -39,22 +40,40 @@ def compile(build_dir,target_dir, option, license_js, effekseer_core_js, effekse
     os.chdir('../')
 
 
-compile('build_asmjs',
-    '../src/',
-    '-DAS_WASM=OFF',
-    license_js = os.path.join("..", "src", "js", "license.js"),
-    effekseer_core_js = os.path.join(".", "effekseer.core.js"),
-    effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),
-    effekseer_js = os.path.join("..", "Release", "effekseer_asmjs.js"),
-    effekseer_min_js = os.path.join("..", "Release", "effekseer_asmjs.min.js"))
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--skip-asmjs",
+        action="store_true",
+        help="Skip building the asm.js output.",
+    )
+    return parser.parse_args()
 
-compile('build_wasm',
-    '../src/',
-    '-DAS_WASM=ON',
-    license_js = os.path.join("..", "src", "js", "license.js"),
-    effekseer_core_js = os.path.join(".", "effekseer.core.js"),
-    effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),
-    effekseer_js = os.path.join("..", "Release", "effekseer.js"),
-    effekseer_min_js = os.path.join("..", "Release", "effekseer.min.js"))
 
-shutil.copy('build_wasm/effekseer.core.wasm', 'Release/effekseer.wasm')
+def main():
+    args = parse_args()
+
+    if not args.skip_asmjs:
+        compile('build_asmjs',
+            '../src/',
+            '-DAS_WASM=OFF',
+            license_js = os.path.join("..", "src", "js", "license.js"),
+            effekseer_core_js = os.path.join(".", "effekseer.core.js"),
+            effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),
+            effekseer_js = os.path.join("..", "Release", "effekseer_asmjs.js"),
+            effekseer_min_js = os.path.join("..", "Release", "effekseer_asmjs.min.js"))
+
+    compile('build_wasm',
+        '../src/',
+        '-DAS_WASM=ON',
+        license_js = os.path.join("..", "src", "js", "license.js"),
+        effekseer_core_js = os.path.join(".", "effekseer.core.js"),
+        effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),
+        effekseer_js = os.path.join("..", "Release", "effekseer.js"),
+        effekseer_min_js = os.path.join("..", "Release", "effekseer.min.js"))
+
+    shutil.copy('build_wasm/effekseer.core.wasm', 'Release/effekseer.wasm')
+
+
+if __name__ == "__main__":
+    main()

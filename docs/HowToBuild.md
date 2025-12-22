@@ -4,7 +4,7 @@
 - python
 - cmake
 - mingw-make (Windows only)
-- Emscripten 1.38.38 or later (Add directory to PATH)
+- Emscripten 3.1.47 or later (Add directory to PATH)
 
 ## Clone the repositories
 
@@ -17,8 +17,8 @@ git submodule update --init
 ## Build
 
 ```
-emsdk install 3.1.54
-emsdk activate 3.1.54
+emsdk install 3.1.47
+emsdk activate 3.1.47
 python -m pip install dukpy jsmin
 python build.py
 ```
