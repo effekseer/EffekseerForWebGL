@@ -16,7 +16,7 @@ def compile(build_dir,target_dir, option, license_js, effekseer_core_js, effekse
                            "-G", "MinGW Makefiles", option, target_dir])
         subprocess.check_call(["mingw32-make"])
     else:
-        subprocess.check_call(["command", "emcmake", "cmake", option, target_dir])
+        subprocess.check_call(["emcmake", "cmake", option, target_dir])
         subprocess.check_call(["make"])
 
     outfile_js = open(effekseer_js, "w")
