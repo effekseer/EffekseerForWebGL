@@ -1,15 +1,18 @@
 name: webgl-emsdk-1.38.11
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
+      - main
       - 15x
       - 16x
       - 17x
   pull_request:
     branches:
       - master
+      - main
       - 15x
       - 16x
       - 17x
