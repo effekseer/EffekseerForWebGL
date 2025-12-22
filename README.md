@@ -130,13 +130,5 @@ This matches the GitHub Actions workflow in `.github/workflows/emsdk-1.38.11.yml
 git submodule update --init --depth 1
 git clone https://github.com/emscripten-core/emsdk.git -b 3.1.19 --depth 1
 ./emsdk/emsdk install sdk-fastcomp-tag-1.38.11-64bit
-./emsdk/emsdk activate sdk-fastcomp-tag-1.38.11-64bit
-source ./emsdk/emsdk_env.sh
-if [ ! -f "$BINARYEN_ROOT/bin/wasm.js" ]; then
-  binaryen_src_root="${BINARYEN_ROOT%_64bit_binaryen}"
-  cp "${binaryen_src_root}/bin/wasm.js" "$BINARYEN_ROOT/bin/"
-fi
-python3 -m pip install --upgrade pip
-python3 -m pip install dukpy jsmin
-python3 build.py --skip-asmjs
+bash scripts/build_emsdk_1_38_11.sh
 ```
