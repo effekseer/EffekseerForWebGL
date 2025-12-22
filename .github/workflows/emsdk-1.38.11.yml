@@ -42,6 +42,23 @@ jobs:
         run: |
           ./emsdk/emsdk activate sdk-fastcomp-tag-1.38.11-64bit
           source ./emsdk/emsdk_env.sh
+          if [ ! -f "$BINARYEN_ROOT/bin/wasm.js" ]; then
+            binaryen_src_root="${BINARYEN_ROOT%_64bit_binaryen}"
+            binaryen_src_wasm="${binaryen_src_root}/bin/wasm.js"
+            mkdir -p "$BINARYEN_ROOT/bin"
+            if [ -f "$binaryen_src_wasm" ]; then
+              cp "$binaryen_src_wasm" "$BINARYEN_ROOT/bin/"
+            else
+              python3 - <<'PY'
+import os
+import urllib.request
+
+dest = os.path.join(os.environ["BINARYEN_ROOT"], "bin", "wasm.js")
+url = "https://raw.githubusercontent.com/WebAssembly/binaryen/1.38.11/bin/wasm.js"
+urllib.request.urlretrieve(url, dest)
+PY
+            fi
+          fi
           python3 -m pip install --upgrade pip
           python3 -m pip install dukpy jsmin
           python3 build.py --skip-asmjs
