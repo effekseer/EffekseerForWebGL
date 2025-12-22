@@ -1,0 +1,53 @@
+name: webgl-emsdk-1.38.11
+
+on:
+  push:
+    branches:
+      - master
+      - 15x
+      - 16x
+      - 17x
+  pull_request:
+    branches:
+      - master
+      - 15x
+      - 16x
+      - 17x
+
+jobs:
+  build:
+    name: Build WebGL (emsdk 1.38.11)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1
+
+      - name: Cache emsdk
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ./emsdk
+          key: ${{ runner.os }}-emsdk-1_38_11-v1
+
+      - name: Install emsdk 1.38.11
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git -b 3.1.19 --depth 1
+          cd emsdk
+          ./emsdk install sdk-fastcomp-tag-1.38.11-64bit
+
+      - name: Build
+        run: |
+          ./emsdk/emsdk activate sdk-fastcomp-tag-1.38.11-64bit
+          source ./emsdk/emsdk_env.sh
+          python3 -m pip install --upgrade pip
+          python3 -m pip install dukpy jsmin
+          python3 build.py
+
+      - name: Upload Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: Release-emsdk-1.38.11
+          path: Release

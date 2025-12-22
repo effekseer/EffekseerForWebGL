@@ -121,3 +121,18 @@ For more information
 - [How to use](docs/HowToUse.md)
 
 - [How to build](docs/HowToBuild.md)
+
+## CI build (emsdk 1.38.11)
+
+This matches the GitHub Actions workflow in `.github/workflows/emsdk-1.38.11.yml`.
+
+```
+git submodule update --init --depth 1
+git clone https://github.com/emscripten-core/emsdk.git -b 3.1.19 --depth 1
+./emsdk/emsdk install sdk-fastcomp-tag-1.38.11-64bit
+./emsdk/emsdk activate sdk-fastcomp-tag-1.38.11-64bit
+source ./emsdk/emsdk_env.sh
+python3 -m pip install --upgrade pip
+python3 -m pip install dukpy jsmin
+python3 build.py
+```
