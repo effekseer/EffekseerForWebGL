@@ -44,7 +44,7 @@ jobs:
           source ./emsdk/emsdk_env.sh
           python3 -m pip install --upgrade pip
           python3 -m pip install dukpy jsmin
-          python3 build.py
+          python3 build.py --skip-asmjs
 
       - name: Upload Release
         uses: actions/upload-artifact@v4

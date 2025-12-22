@@ -134,5 +134,5 @@ git clone https://github.com/emscripten-core/emsdk.git -b 3.1.19 --depth 1
 source ./emsdk/emsdk_env.sh
 python3 -m pip install --upgrade pip
 python3 -m pip install dukpy jsmin
-python3 build.py
+python3 build.py --skip-asmjs
 ```
