@@ -132,3 +132,14 @@ git clone https://github.com/emscripten-core/emsdk.git -b 3.1.19 --depth 1
 ./emsdk/emsdk install sdk-fastcomp-tag-1.38.11-64bit
 bash scripts/build_emsdk_1_38_11.sh
 ```
+
+## CI build (emsdk 2.0.19)
+
+This matches the GitHub Actions workflow in `.github/workflows/emsdk-2.0.19.yml`.
+
+```
+git submodule update --init --depth 1
+git clone --depth 1 https://github.com/emscripten-core/emsdk.git
+./emsdk/emsdk install sdk-2.0.19-64bit
+bash scripts/build_emsdk_2_0_19.sh
+```
