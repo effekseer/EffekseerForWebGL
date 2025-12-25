@@ -1,0 +1,51 @@
+name: webgl-emsdk-2.0.19
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+      - 15x
+      - 16x
+      - 17x
+  pull_request:
+    branches:
+      - master
+      - main
+      - 15x
+      - 16x
+      - 17x
+
+jobs:
+  build:
+    name: Build WebGL (emsdk 2.0.19)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1
+
+      - name: Cache emsdk
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ./emsdk
+          key: ${{ runner.os }}-emsdk-2_0_19-v1
+
+      - name: Install emsdk 2.0.19
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install sdk-2.0.19-64bit
+
+      - name: Build
+        run: bash scripts/build_emsdk_2_0_19.sh
+
+      - name: Upload Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: Release-emsdk-2.0.19
+          path: Release
