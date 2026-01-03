@@ -228,7 +228,6 @@ const effekseer = (() => {
       }
 
       for (let dep of dependencies) {
-        // const relative_path = json.files[dep].relative_path;
         const buffer = unzip.decompress(dep)
         Module.resourcesMap[dep] = buffer.buffer;
       }
