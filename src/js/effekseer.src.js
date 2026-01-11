@@ -229,7 +229,13 @@ const effekseer = (() => {
 
       for (let dep of dependencies) {
         const buffer = unzip.decompress(dep)
-        Module.resourcesMap[dep] = buffer.buffer;
+        const fileInfo = json.files[dep];
+
+        if (fileInfo.type === 'Curve' && fileInfo.dependencies) {
+          Module.resourcesMap[dep + '.efkcurve'] = unzip.decompress(fileInfo.dependencies[0]);
+        } else {
+          Module.resourcesMap[dep] = buffer.buffer;
+        }
       }
 
       const efk_buffer = unzip.decompress(efkFile);
