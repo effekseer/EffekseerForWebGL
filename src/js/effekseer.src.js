@@ -233,6 +233,8 @@ const effekseer = (() => {
 
         if (fileInfo.type === 'Curve' && fileInfo.dependencies) {
           Module.resourcesMap[dep + '.efkcurve'] = unzip.decompress(fileInfo.dependencies[0]);
+        } else if (fileInfo.type === 'Model' && fileInfo.dependencies) {
+          Module.resourcesMap[dep] = unzip.decompress(fileInfo.dependencies[0]);
         } else {
           Module.resourcesMap[dep] = buffer.buffer;
         }
