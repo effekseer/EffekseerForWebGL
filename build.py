@@ -47,11 +47,18 @@ def parse_args():
         action="store_true",
         help="Skip building the asm.js output.",
     )
+    parser.add_argument(
+        "--emsdk-1-38-clamp",
+        action="store_true",
+        help="Enable the legacy clamp mode used by emscripten 1.38 fastcomp builds.",
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+
+    extra_option = '-DEMSCRIPTEN_1_38_CLAMP=ON' if args.emsdk_1_38_clamp else None
 
     if not args.skip_asmjs:
         compile('build_asmjs',
@@ -65,7 +72,7 @@ def main():
 
     compile('build_wasm',
         '../src/',
-        '-DAS_WASM=ON',
+        '-DAS_WASM=ON' if extra_option is None else '-DAS_WASM=ON ' + extra_option,
         license_js = os.path.join("..", "src", "js", "license.js"),
         effekseer_core_js = os.path.join(".", "effekseer.core.js"),
         effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),

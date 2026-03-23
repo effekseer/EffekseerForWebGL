@@ -2,6 +2,7 @@
 project(effekseer)
 
 option(AS_WASM "compile as wasm" OFF)
+option(EMSCRIPTEN_1_38_CLAMP "Use legacy clamp mode for emscripten 1.38 fastcomp builds" OFF)
 
 # CMake version check
 cmake_minimum_required(VERSION 3.15)
@@ -34,6 +35,12 @@ if(AS_WASM)
       " -s EXTRA_EXPORTED_RUNTIME_METHODS=\"['cwrap', 'UTF8ToString', 'UTF16ToString', 'stackSave', 'stackRestore', 'stackAlloc']\" "
       " --post-js ${PROJECT_SOURCE_DIR}/js/post.js"
     )
+
+    if(EMSCRIPTEN_1_38_CLAMP)
+        string(APPEND CMAKE_EXE_LINKER_FLAGS
+          " -s BINARYEN_TRAP_MODE=clamp"
+        )
+    endif()
 
 else()
 

@@ -42,4 +42,4 @@ fi
 
 python3 -m pip install --upgrade pip
 python3 -m pip install dukpy jsmin
-python3 build.py --skip-asmjs
+python3 build.py --skip-asmjs --emsdk-1-38-clamp
