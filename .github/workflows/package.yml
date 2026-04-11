@@ -53,7 +53,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: EffekseerForWebGL180Beta3
+        name: EffekseerForWebGL1.80.0
         path: Release
   
     - name: pip
