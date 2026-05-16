@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Effekseer WebGPU Three.js Sample</title>
+  <style>
+    body {
+      margin: 0;
+      background: #16181d;
+      color: #e5e7eb;
+      font-family: system-ui, sans-serif;
+    }
+    main {
+      display: grid;
+      min-height: 100vh;
+      place-items: center;
+      gap: 16px;
+    }
+    canvas {
+      width: 640px;
+      height: 480px;
+      max-width: min(100vw, 640px);
+      background: #20242c;
+      image-rendering: auto;
+    }
+    #status {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <canvas id="canvas" width="320" height="240"></canvas>
+    <div id="status">Loading WebGPU runtime...</div>
+  </main>
+
+  <script src="three.min.js"></script>
+  <script src="EffekseerForWebGPUThreeJsRuntime.js"></script>
+  <script src="effekseer.webgpu.js"></script>
+  <script>
+    function countChangedPixels(a, b) {
+      var count = 0;
+      for (var i = 0; i < a.length; i += 4) {
+        var delta =
+          Math.abs(a[i + 0] - b[i + 0]) +
+          Math.abs(a[i + 1] - b[i + 1]) +
+          Math.abs(a[i + 2] - b[i + 2]) +
+          Math.abs(a[i + 3] - b[i + 3]);
+        if (delta > 24) {
+          count++;
+        }
+      }
+      return count;
+    }
+
+    function nextFrame() {
+      return new Promise(function(resolve) {
+        requestAnimationFrame(resolve);
+      });
+    }
+
+    function setResult(status, message) {
+      window.effekseerWebGPURuntimeSampleResult = { status: status, message: message };
+      document.documentElement.setAttribute('data-effekseer-webgpu-runtime-status', status);
+      document.getElementById('status').textContent = message;
+      console.log((status === 'passed' ? 'EFFEKSEER_WEBGPU_RUNTIME_SAMPLE_PASS ' : 'EFFEKSEER_WEBGPU_RUNTIME_SAMPLE_FAIL ') + message);
+    }
+
+    async function main() {
+      var canvas = document.getElementById('canvas');
+      var width = canvas.width;
+      var height = canvas.height;
+
+      var camera = new THREE.PerspectiveCamera(30.0, width / height, 1.0, 1000.0);
+      camera.position.set(20, 20, 20);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+      camera.updateMatrixWorld(true);
+
+      var runtime = await effekseerWebGPU.initRuntime({
+        wasmUrl: 'EffekseerForWebGPUThreeJsRuntime.wasm'
+      });
+      var context = runtime.createContext({ width: width, height: height });
+
+      var background = await context.drawToCanvas(canvas, camera, 1);
+      var backgroundPixels = new Uint8ClampedArray(background.data);
+
+      var effect = await context.loadEffect('SimpleLaser.efk');
+      context.play(effect, 0, 0, 0);
+
+      var imageData = null;
+      for (var frame = 0; frame < 36; frame++) {
+        await nextFrame();
+        imageData = await context.drawToCanvas(canvas, camera, 1);
+      }
+
+      var changedPixels = countChangedPixels(backgroundPixels, imageData.data);
+      if (changedPixels <= 100) {
+        throw new Error('Changed pixels were too few: ' + changedPixels);
+      }
+
+      setResult('passed', 'completed changedPixels=' + changedPixels);
+
+      async function renderLoop() {
+        await nextFrame();
+        await context.drawToCanvas(canvas, camera, 1);
+        renderLoop();
+      }
+      renderLoop();
+    }
+
+    main().catch(function(error) {
+      setResult('failed', error && error.message ? error.message : String(error));
+      console.error(error);
+    });
+  </script>
+</body>
+</html>

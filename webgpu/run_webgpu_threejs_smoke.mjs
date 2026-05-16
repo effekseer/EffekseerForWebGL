@@ -76,11 +76,11 @@ try {
 	if (result.status !== 'passed') {
 		throw new Error(result.message || 'Effekseer WebGPU Three.js smoke failed.');
 	}
-	console.log(`EFFEKSEER_WEBGPU_THREEJS_SMOKE_PASS ${result.message || ''}`.trim());
+	console.log(`EFFEKSEER_WEBGPU_THREEJS_RUNNER_PASS ${result.message || ''}`.trim());
 } finally {
 	await stopBrowser(browser);
 	server.close();
-	fs.rmSync(userDataDir, {recursive: true, force: true, maxRetries: 10, retryDelay: 100});
+	await removeDirectory(userDataDir);
 }
 
 function parseOptions(optionArgs) {
@@ -287,7 +287,7 @@ async function waitForResult(cdp, browser, getStderr) {
 		}
 
 		const response = await cdp.send('Runtime.evaluate', {
-			expression: 'globalThis.Module && Module.effekseerWebGPUTestResult ? Module.effekseerWebGPUTestResult : null',
+			expression: '(globalThis.Module && Module.effekseerWebGPUTestResult) || globalThis.effekseerWebGPURuntimeSampleResult || null',
 			returnByValue: true,
 			awaitPromise: false,
 		});
@@ -298,7 +298,7 @@ async function waitForResult(cdp, browser, getStderr) {
 
 		await delay(250);
 	}
-	throw new Error('Timed out waiting for Effekseer WebGPU Three.js smoke result.');
+	throw new Error('Timed out waiting for Effekseer WebGPU Three.js browser result.');
 }
 
 async function captureScreenshot(cdp, screenshotPath) {
@@ -321,4 +321,19 @@ async function stopBrowser(browser) {
 		new Promise((resolve) => browser.once('exit', resolve)),
 		delay(3000),
 	]);
+}
+
+async function removeDirectory(directory) {
+	for (let attempt = 0; attempt < 20; attempt++) {
+		try {
+			fs.rmSync(directory, {recursive: true, force: true});
+			return;
+		} catch (error) {
+			if (attempt === 19) {
+				console.warn(`Failed to remove temporary browser profile ${directory}: ${error.message}`);
+				return;
+			}
+			await delay(100);
+		}
+	}
 }
