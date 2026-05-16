@@ -122,6 +122,8 @@ For more information
 
 - [How to build](docs/HowToBuild.md)
 
+- [WebGPU Three.js smoke](docs/WebGPUThreeJS.md)
+
 ## CI build (emsdk 1.38.11)
 
 This matches the GitHub Actions workflow in `.github/workflows/emsdk-1.38.11.yml`.

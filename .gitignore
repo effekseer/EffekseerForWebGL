@@ -1,4 +1,5 @@
 build_asmjs
 build_wasm
+build_webgpu_threejs
 Release
 !Release/effekseer.d.ts
