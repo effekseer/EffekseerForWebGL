@@ -62,6 +62,7 @@ jobs:
         python3 -m pip install --upgrade pip
         python3 -m pip install -U selenium
         python3 -m pip install requests
+        python3 -m pip install pillow
 
     - name: test
       shell: bash
