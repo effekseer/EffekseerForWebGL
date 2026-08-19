@@ -17,5 +17,5 @@ fi
 source "$emsdk_dir/emsdk_env.sh"
 
 python3 -m pip install --upgrade pip
-python3 -m pip install dukpy jsmin
+python3 -m pip install dukpy==0.5.1 jsmin
 python3 build.py
