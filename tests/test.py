@@ -2,7 +2,6 @@ import unittest
 import os
 import time
 import shutil
-import filecmp
 import base64
 import glob
 
@@ -24,7 +23,7 @@ class CompareTest(unittest.TestCase):
             print('compare : ' + screenshot_file_path + ' vs ' + target_file_path)
 
             if os.path.exists(target_file_path):
-                is_same = filecmp.cmp(target_file_path, screenshot_file_path, shallow=False)
+                is_same = pixels_equal(target_file_path, screenshot_file_path)
                 if not is_same:
                     report = describe_difference(target_file_path, screenshot_file_path)
                     failures.append(f'{file_name} differs:\n{indent(report)}')
@@ -35,6 +34,13 @@ class CompareTest(unittest.TestCase):
             print('\n'.join(failures))
 
         self.assertFalse(failures, 'Screenshot mismatches found (see log above).')
+
+
+def pixels_equal(expected_path, actual_path):
+    with Image.open(expected_path) as expected_img, Image.open(actual_path) as actual_img:
+        expected = expected_img.convert('RGBA')
+        actual = actual_img.convert('RGBA')
+        return expected.size == actual.size and expected.tobytes() == actual.tobytes()
 
 
 def indent(text, padding='    '):
@@ -80,17 +86,21 @@ def analyze_pixels(expected_path, actual_path):
     diff_gray = diff.convert('L')
     histogram = diff_gray.histogram()
     total_pixels = diff_gray.width * diff_gray.height
-    identical_pixels = histogram[0]
-    changed_pixels = total_pixels - identical_pixels
+    # Include every channel: grayscale rounding can hide small RGB changes,
+    # and an RGBA bounding box can otherwise ignore RGB-only differences.
+    channel_max = diff.getchannel('R')
+    for channel in ('G', 'B', 'A'):
+        channel_max = ImageChops.lighter(channel_max, diff.getchannel(channel))
+    changed_pixels = total_pixels - channel_max.histogram()[0]
 
     total_intensity = sum(value * count for value, count in enumerate(histogram))
     average_delta = total_intensity / float(total_pixels) if total_pixels else 0.0
 
     percent_changed = (changed_pixels / total_pixels) * 100 if total_pixels else 0
-    bbox = diff.getbbox()
+    bbox = channel_max.getbbox()
 
     if changed_pixels == 0:
-        lines.append('Pixel data identical; PNG metadata differs.')
+        lines.append('Pixel data identical; PNG encoding or metadata differs.')
     else:
         lines.append(
             f'Pixel diff: {changed_pixels:,}/{total_pixels:,} pixels changed ({percent_changed:.4g}%).'

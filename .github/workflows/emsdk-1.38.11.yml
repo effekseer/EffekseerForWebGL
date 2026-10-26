@@ -20,19 +20,26 @@ on:
 jobs:
   build:
     name: Build WebGL (emsdk 1.38.11)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Initialize submodules
         run: git submodule update --init --depth 1
 
+      # Legacy fastcomp requires CMake's pre-4.0 compatibility policies.
+      - name: Install CMake 3.31.6
+        run: |
+          python3 -m venv "$RUNNER_TEMP/cmake"
+          "$RUNNER_TEMP/cmake/bin/python" -m pip install cmake==3.31.6
+          echo "$RUNNER_TEMP/cmake/bin" >> "$GITHUB_PATH"
+
       - name: Cache emsdk
         id: cache
         uses: actions/cache@v4
         with:
           path: ./emsdk
-          key: ${{ runner.os }}-emsdk-1_38_11-v1
+          key: ${{ runner.os }}-ubuntu-24.04-emsdk-1_38_11-cmake-3.31.6-v2
 
       - name: Install emsdk 1.38.11
         if: steps.cache.outputs.cache-hit != 'true'
