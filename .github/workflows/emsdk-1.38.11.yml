@@ -31,7 +31,9 @@ jobs:
       - name: Install CMake 3.31.6
         run: |
           python3 -m venv "$RUNNER_TEMP/cmake"
-          "$RUNNER_TEMP/cmake/bin/python" -m pip install cmake==3.31.6
+          # Python 3.12 venvs omit distutils; legacy emscripten imports it.
+          "$RUNNER_TEMP/cmake/bin/python" -m pip install cmake==3.31.6 setuptools==80.9.0
+          "$RUNNER_TEMP/cmake/bin/python" -c "from distutils.spawn import find_executable; assert find_executable('cmake')"
           echo "$RUNNER_TEMP/cmake/bin" >> "$GITHUB_PATH"
 
       - name: Cache emsdk

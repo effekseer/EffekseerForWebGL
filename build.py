@@ -7,17 +7,17 @@ import platform
 import dukpy
 import jsmin
 
-def compile(build_dir,target_dir, option, license_js, effekseer_core_js, effekseer_src_js, effekseer_js, effekseer_min_js):
+def compile(build_dir,target_dir, options, license_js, effekseer_core_js, effekseer_src_js, effekseer_js, effekseer_min_js):
     if not os.path.exists(build_dir):
         os.mkdir(build_dir)
     os.chdir(build_dir)
 
     if platform.system() == "Windows":
         subprocess.check_call(["cmd", "/c", "emcmake", "cmake",
-                           "-G", "MinGW Makefiles", option, target_dir])
+                           "-G", "MinGW Makefiles", *options, target_dir])
         subprocess.check_call(["mingw32-make"])
     else:
-        subprocess.check_call(["emcmake", "cmake", option, target_dir])
+        subprocess.check_call(["emcmake", "cmake", *options, target_dir])
         subprocess.check_call(["make"])
 
     outfile_js = open(effekseer_js, "w")
@@ -58,12 +58,14 @@ def parse_args():
 def main():
     args = parse_args()
 
-    extra_option = '-DEMSCRIPTEN_1_38_CLAMP=ON' if args.emsdk_1_38_clamp else None
+    wasm_options = ['-DAS_WASM=ON']
+    if args.emsdk_1_38_clamp:
+        wasm_options.append('-DEMSCRIPTEN_1_38_CLAMP=ON')
 
     if not args.skip_asmjs:
         compile('build_asmjs',
             '../src/',
-            '-DAS_WASM=OFF',
+            ['-DAS_WASM=OFF'],
             license_js = os.path.join("..", "src", "js", "license.js"),
             effekseer_core_js = os.path.join(".", "effekseer.core.js"),
             effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),
@@ -72,7 +74,7 @@ def main():
 
     compile('build_wasm',
         '../src/',
-        '-DAS_WASM=ON' if extra_option is None else '-DAS_WASM=ON ' + extra_option,
+        wasm_options,
         license_js = os.path.join("..", "src", "js", "license.js"),
         effekseer_core_js = os.path.join(".", "effekseer.core.js"),
         effekseer_src_js = os.path.join("..", "src", "js", "effekseer.src.js"),
