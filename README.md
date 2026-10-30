@@ -13,7 +13,9 @@ We start to implemenet new version here. It supports WebGPU and WebGL
 
 # Download
 
-- [1.70e](https://github.com/effekseer/Effekseer/releases/download/1803/EffekseerForWebGL1.80.3.zip)
+- [1.80.8](https://github.com/effekseer/Effekseer/releases/download/1808/EffekseerForWebGL1.80.8.zip)
+
+- [1.80.3](https://github.com/effekseer/Effekseer/releases/download/1803/EffekseerForWebGL1.80.3.zip)
 
 - [1.70e](https://github.com/effekseer/EffekseerForWebGL/releases/download/170e/EffekseerForWebGL170e.zip)
 
